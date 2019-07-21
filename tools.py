@@ -79,9 +79,9 @@ def data_from_simba(ph_file, magcols, mag_lim, ind_select):
     flux_err = flux - mag_to_jansky(Lapp + Lapp_err)
 
     # Adding error floors due to systematic errors in filters
-    irac_bands = 17:18
+    irac_bands = [17,18]
     flux_err = flux_err + 0.05*flux # 0.05 for all
-    flux_err[irac_bands] = flux_err[irac_bands] + 0.2*flux[irac_bands] # 0.2 for the IRAC bands
+    flux_err[irac_bands[0]:irac_bands[1]] = flux_err[irac_bands[0]:irac_bands[1]] + 0.2*flux[irac_bands[0]:irac_bands[1]] # 0.2 for the IRAC bands
 
     # Create array with redshifts
     z = np.full(len(Lapp[0]), redshift)
