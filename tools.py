@@ -11,6 +11,7 @@ Email: s1650043@ed.ac.uk
 '''
 ## IMPORT LIBRARIES
 from astropy.io import fits
+import h5py
 ##
 
 def read_eigensystem(evecfile, verbose=True):
