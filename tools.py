@@ -132,7 +132,7 @@ def fill_flux(flux, z, minz, maxz, dz, ll_obs, ind):
     for i in range(0, nband):
         fluxarr[i][ind_zz] = ff[i]
 
-    fluxarr = fluxarr[ind]
+    #fluxarr = fluxarr[ind]
 
     return fluxarr
 
