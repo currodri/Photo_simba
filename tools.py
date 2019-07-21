@@ -152,9 +152,11 @@ def superflux(minz, manz, dz, ind, wave, flux, flux_err, z, ll_obs):
 
     return flux_super, flux_super_err
 
-caesar_id, flux, flux_err, z, Kmag = data_from_simba('/home/rad/data/m100n1024/s50/Groups/phot_m100n1024_026.hdf5', [6,0,7],29.5,0)
 
 wave,spec,mean,var,ind,minz,maxz,dz,filternames,ll_eff = read_eigensystem('../VWSC_simba/EBASIS/VWSC_eigenbasis_0p5z3_wavemin2500.fits', '../VWSC_simba/FILTERS/vwsc_uds.lis')
+ind_filt = [0,1,2,3,4,5,6,7,8,11,12]
+caesar_id, flux, flux_err, z, Kmag = data_from_simba('/home/rad/data/m100n1024/s50/Groups/phot_m100n1024_026.hdf5', ind_filt,29.5,0)
+
 
 flux_super, flux_super_err = superflux(minz, maxz, dz, ind, wave, flux, flux_err, z, ll_eff)
 
