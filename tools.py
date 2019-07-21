@@ -145,7 +145,7 @@ caesar_id, flux, flux_err, z, Kmag = data_from_simba('/home/rad/data/m100n1024/s
 
 wave,spec,mean,var,ind,minz,maxz,dz,filternames = read_eigensystem('../VWSC_simba/EBASIS/VWSC_eigenbasis_0p5z3_wavemin2500.fits')
 
-flux_super, flux_super_err = superflux(minz, manz, dz, ind, wave, flux, flux_err, z)
+flux_super, flux_super_err = superflux(minz, maxz, dz, ind, wave, flux, flux_err, z)
 
 print(flux_err)
 print(flux_super_err)
