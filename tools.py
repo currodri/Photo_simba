@@ -20,7 +20,7 @@ pc_in_m = 3.08567758**16
 Mpc_in_cm = 3.08567758**23
 ##
 
-def read_eigensystem(evecfile, verbose=True):
+def read_eigensystem(evecfile, filterfile, verbose=True):
     '''
     This routine reads in the eigenbasis of super colours in .fits format and
     spits out the wavelength, eigenvectors, variance  and mean spectrum.
@@ -46,7 +46,13 @@ def read_eigensystem(evecfile, verbose=True):
         print(str(len(spec))+' eigenvectors extracted')
         print('Minimum redshift of the survey used: '+str(minz))
         print('Maximum redshift of the survey used: '+str(minz))
-    return wave,spec,mean,var,ind,minz,maxz,dz,filternames
+
+    # Read in filter effective wavelengths into array
+    ll_eff = np.zeros(len(filternames))
+    f = open(filterfile).readlines()
+    for i in range(0, len(filternames)):
+        ll_eff = float(f[i].split()[1])
+    return wave,spec,mean,var,ind,minz,maxz,dz,filternames,ll_eff
 
 def mag_to_jansky(mag_AB):
     '''
@@ -126,7 +132,7 @@ def fill_flux(flux, z, minz, maxz, dz, ll_obs, ind):
     return fluxarr
 
 
-def superflux(minz, manz, dz, ind, wave, flux, flux_err, z):
+def superflux(minz, manz, dz, ind, wave, flux, flux_err, z, ll_obs):
     '''
     Calculate rest-frame f_lambda and put into correct PCA supergrid
     '''
@@ -136,16 +142,16 @@ def superflux(minz, manz, dz, ind, wave, flux, flux_err, z):
     flux_super_err = np.zeros((ngal, nband))
 
     for i in range(0, ngal):
-        flux_super[i] = fill_flux(flux[i],z[i],minz,maxz,ll_eff,ind)
-        flux_super_err[i] = fill_flux(flux_err[i],z[i],minz,maxz,ll_eff,ind)
+        flux_super[i] = fill_flux(flux[i],z[i],minz,maxz,ll_obs,ind)
+        flux_super_err[i] = fill_flux(flux_err[i],z[i],minz,maxz,ll_obs,ind)
 
     return flux_super, flux_super_err
 
 caesar_id, flux, flux_err, z, Kmag = data_from_simba('/home/rad/data/m100n1024/s50/Groups/phot_m100n1024_026.hdf5', [6,0,7],29.5,0)
 
-wave,spec,mean,var,ind,minz,maxz,dz,filternames = read_eigensystem('../VWSC_simba/EBASIS/VWSC_eigenbasis_0p5z3_wavemin2500.fits')
+wave,spec,mean,var,ind,minz,maxz,dz,filternames,ll_eff = read_eigensystem('../VWSC_simba/EBASIS/VWSC_eigenbasis_0p5z3_wavemin2500.fits')
 
-flux_super, flux_super_err = superflux(minz, maxz, dz, ind, wave, flux, flux_err, z)
+flux_super, flux_super_err = superflux(minz, maxz, dz, ind, wave, flux, flux_err, z, ll_eff)
 
 print(flux_err)
 print(flux_super_err)
