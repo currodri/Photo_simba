@@ -67,16 +67,17 @@ def data_from_simba(ph_file, magcols, mag_lim, ind_select):
     f = h5py.File(ph_file,'r') # Read in .hdf5 file with photometry catalogue
     header = f['HEADER_INFO']
     redshift = header[0].split()[2] # Get redshift of snapshot
-    Lapp = []
+    Lapp_old = []
     for i in range(len(magcols)):
         imag = int(magcols[i])
         Lapp.append(f['appmag_%d'%imag]) # Save mags for the selected filters
-    Lapp = np.asarray(Lapp)  # Apparent magnitudes of galaxies in each desired band
-    mask = np.where(Lapp[1]<mag_lim) # Apply magnitude limit given by mag_lim
-    for i in range(0, len(Lapp)):
-        Lapp[i] = Lapp[i][mask]
-    print(Lapp)
-    Lapp_err = np.full((len(Lapp)),0.01) # Create array with magnitude errors
+    Lapp_old = np.asarray(Lapp_old)  # Apparent magnitudes of galaxies in each desired band
+    mask = np.where(Lapp_old[1]<mag_lim) # Apply magnitude limit given by mag_lim
+    Lapp = np.zeros((len(magcols),len(mask[0])))
+    for i in range(0, len(magcols)):
+        Lapp[i] = Lapp_old[i][mask]
+
+    Lapp_err = np.full((len(magcols),len(mask[0])),0.01) # Create array with magnitude errors
 
     flux = mag_to_jansky(Lapp)
     flux_err = flux - mag_to_jansky(Lapp + Lapp_err)
