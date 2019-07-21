@@ -74,6 +74,7 @@ def data_from_simba(ph_file, magcols, mag_lim, ind_select):
     Lapp = np.asarray(Lapp)  # Apparent magnitudes of galaxies in each desired band
     mask = np.where(Lapp[1]<mag_lim) # Apply magnitude limit given by mag_lim
     for i in range(0, len(Lapp)):
+        print(len())
         Lapp[i] = Lapp[i][mask]
     print(Lapp)
     Lapp_err = np.full((len(Lapp)),0.01) # Create array with magnitude errors
