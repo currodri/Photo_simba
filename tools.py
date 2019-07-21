@@ -142,7 +142,7 @@ def superflux(minz, manz, dz, ind, wave, flux, flux_err, z, ll_obs):
     Calculate rest-frame f_lambda and put into correct PCA supergrid
     '''
     ngal = len(flux[0])
-    nband = len(wave)
+    nband = len(ind)
     flux_super = np.zeros((ngal, nband))
     flux_super_err = np.zeros((ngal, nband))
 
