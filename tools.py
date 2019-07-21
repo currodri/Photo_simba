@@ -147,8 +147,8 @@ def superflux(minz, manz, dz, ind, wave, flux, flux_err, z, ll_obs):
     flux_super_err = np.zeros((ngal, nband))
 
     for i in range(0, ngal):
-        flux_super[i] = fill_flux(flux[i],z[i],minz,maxz,dz,ll_obs,ind)
-        flux_super_err[i] = fill_flux(flux_err[i],z[i],minz,maxz,dz,ll_obs,ind)
+        flux_super[i] = fill_flux(flux[i],z[i],minz,maxz,dz,ll_obs[ind],ind)
+        flux_super_err[i] = fill_flux(flux_err[i],z[i],minz,maxz,dz,ll_obs[ind],ind)
 
     return flux_super, flux_super_err
 
@@ -158,7 +158,7 @@ ind_filt = [0,1,2,3,4,5,6,7,8,11,12]
 caesar_id, flux, flux_err, z, Kmag = data_from_simba('/home/rad/data/m100n1024/s50/Groups/phot_m100n1024_026.hdf5', ind_filt,29.5,0)
 
 
-flux_super, flux_super_err = superflux(minz, maxz, dz, ind, wave, flux, flux_err, z, ll_eff)
+flux_super, flux_super_err = superflux(minz, maxz, dz, ind_filt, wave, flux, flux_err, z, ll_eff)
 
 print(flux_err)
 print(flux_super_err)
