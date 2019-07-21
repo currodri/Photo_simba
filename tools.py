@@ -48,10 +48,10 @@ def read_eigensystem(evecfile, filterfile, verbose=True):
         print('Maximum redshift of the survey used: '+str(minz))
 
     # Read in filter effective wavelengths into array
-    ll_eff = np.zeros(len(filternames))
     f = open(filterfile).readlines()
+    ll_eff = np.zeros(len(f))
     for i in range(0, len(f)):
-        ll_eff = float(f[i].split()[1])
+        ll_eff[i] = float(f[i].split()[1])
     return wave,spec,mean,var,ind,minz,maxz,dz,filternames,ll_eff
 
 def mag_to_jansky(mag_AB):
