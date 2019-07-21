@@ -13,6 +13,11 @@ Email: s1650043@ed.ac.uk
 from astropy.io import fits
 import numpy as np
 import h5py
+## CONSTANTS
+c_in_AA = 2.99792**18
+sol_lum_in_erg = 3.839**33
+pc_in_m = 3.08567758**16
+Mpc_in_cm = 3.08567758**23
 ##
 
 def read_eigensystem(evecfile, verbose=True):
@@ -65,6 +70,7 @@ def data_from_simba(ph_file, magcols, mag_lim, ind_select):
     - Obtain K-mag array
     '''
     f = h5py.File(ph_file,'r') # Read in .hdf5 file with photometry catalogue
+    caesar_id = f['CAESAR_ID'][:]
     header = f['HEADER_INFO']
     redshift = header[0].split()[2] # Get redshift of snapshot
     Lapp_old = []
@@ -93,4 +99,53 @@ def data_from_simba(ph_file, magcols, mag_lim, ind_select):
     # Get magnitude of selection filter
     Kmag = Lapp[ind_select]
 
-    return flux, flux_err, z, Kmag
+    return caesar_id, flux, flux_err, z, Kmag
+
+def fill_flux(flux, z, minz, maxz, dz, ll_obs, ind):
+    '''
+    Place f_nu_obs into super-sampled array and then convert into f_lambda_rest.
+    '''
+    nredshift = int((maxz-minz)/dz) + 1
+    zbin = np.linspace(minz, maxzm, nredshift)
+    nz = len(zbin)
+    nband = len(ll_obs)
+    ff = c_in_AA * flux / (ll_obs**2) # f_nu_obs to f_lambda_obs
+    ff = ff * (1+z) # f_lambda_obs to f_lambda_rest
+
+    # Find into which redshift bin the galaxy lands
+    tmp = abs(z - zbin)
+    ind_zz = tmp.argmin()
+
+    # Find into which band bin to put flux into
+    fluxarr = np.zeros((nband,nz))
+    for i in range(0, nband):
+        fluxarr[i][ind_zz] = ff[i]
+
+    fluxarr = fluxarr[ind]
+
+    return fluxarr
+
+
+def superflux(minz, manz, dz, ind, wave, flux, flux_err, z):
+    '''
+    Calculate rest-frame f_lambda and put into correct PCA supergrid
+    '''
+    ngal = len(flux[0])
+    nband = len(wave)
+    flux_super = np.zeros((ngal, nband))
+    flux_super_err = np.zeros((ngal, nband))
+
+    for i in range(0, ngal):
+        flux_super[i] = fill_flux(flux[i],z[i],minz,maxz,ll_eff,ind)
+        flux_super_err[i] = fill_flux(flux_err[i],z[i],minz,maxz,ll_eff,ind)
+
+    return flux_super, flux_super_err
+
+caesar_id, flux, flux_err, z, Kmag = data_from_simba('/home/rad/data/m100n1024/s50/Groups/phot_m100n1024_026.hdf5', [6,0,7],29.5,0)
+
+wave,spec,mean,var,ind,minz,maxz,dz,filternames = read_eigensystem('../VWSC_simba/EBASIS/VWSC_eigenbasis_0p5z3_wavemin2500.fits')
+
+flux_super, flux_super_err = superflux(minz, manz, dz, ind, wave, flux, flux_err, z)
+
+print(flux_err)
+print(flux_super_err)
