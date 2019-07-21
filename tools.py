@@ -72,9 +72,9 @@ def data_from_simba(ph_file, magcols, mag_lim, ind_select):
         imag = int(magcols[i])
         Lapp.append(f['appmag_%d'%imag]) # Save mags for the selected filters
     Lapp = np.asarray(Lapp)  # Apparent magnitudes of galaxies in each desired band
-
+    print(Lapp)
     Lapp = Lapp[np.where(Lapp<mag_lim)] # Apply magnitude limit given by mag_lim
-
+    print(Lapp)
     Lapp_err = np.full((len(Lapp)),0.01) # Create array with magnitude errors
 
     flux = mag_to_jansky(Lapp)
