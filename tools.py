@@ -78,7 +78,7 @@ def data_from_simba(ph_file, magcols, mag_lim, ind_select):
     f = h5py.File(ph_file,'r') # Read in .hdf5 file with photometry catalogue
     caesar_id = f['CAESAR_ID'][:]
     header = f['HEADER_INFO']
-    redshift = int(header[0].split()[2]) # Get redshift of snapshot
+    redshift = float(header[0].split()[2]) # Get redshift of snapshot
     Lapp_old = []
     for i in range(len(magcols)):
         imag = int(magcols[i])
