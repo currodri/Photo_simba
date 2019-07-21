@@ -142,8 +142,8 @@ def superflux(minz, manz, dz, ind, wave, flux, flux_err, z, ll_obs):
     flux_super_err = np.zeros((ngal, nband))
 
     for i in range(0, ngal):
-        flux_super[i] = fill_flux(flux[i],z[i],minz,maxz,ll_obs,ind)
-        flux_super_err[i] = fill_flux(flux_err[i],z[i],minz,maxz,ll_obs,ind)
+        flux_super[i] = fill_flux(flux[i],z[i],minz,maxz,dz,ll_obs,ind)
+        flux_super_err[i] = fill_flux(flux_err[i],z[i],minz,maxz,dz,ll_obs,ind)
 
     return flux_super, flux_super_err
 
