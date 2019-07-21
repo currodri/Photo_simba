@@ -112,7 +112,7 @@ def fill_flux(flux, z, minz, maxz, dz, ll_obs, ind):
     Place f_nu_obs into super-sampled array and then convert into f_lambda_rest.
     '''
     nredshift = int((maxz-minz)/dz) + 1
-    zbin = np.linspace(minz, maxzm, nredshift)
+    zbin = np.linspace(minz, maxz, nredshift)
     nz = len(zbin)
     nband = len(ll_obs)
     ff = c_in_AA * flux / (ll_obs**2) # f_nu_obs to f_lambda_obs
