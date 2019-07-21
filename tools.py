@@ -84,26 +84,31 @@ def data_from_simba(ph_file, magcols, mag_lim, ind_select):
         imag = int(magcols[i])
         Lapp_old.append(f['appmag_%d'%imag]) # Save mags for the selected filters
     Lapp_old = np.asarray(Lapp_old)  # Apparent magnitudes of galaxies in each desired band
-    mask = np.where(Lapp_old[1]<mag_lim) # Apply magnitude limit given by mag_lim
-    Lapp = np.zeros((len(magcols),len(mask[0])))
-    for i in range(0, len(magcols)):
-        Lapp[i] = Lapp_old[i][mask]
-
-    Lapp_err = np.full((len(magcols),len(mask[0])),0.01) # Create array with magnitude errors
+    # Apply magnitude limit given by mag_lim
+    Lapp = []
+    for i in range(0, len(Lapp_old[0])):
+        if Lapp_old[1][i]< mag_lim:
+            l = np.zeros(len(magcols))
+            for j in range(0, len(magcols)):
+                l[j] = Lapp_old[j][i]
+        Lapp.append(l)
+    Lapp = np.asarray(Lapp)
+    Lapp_err = np.full((len(Lapp),len(magcols)),0.01) # Create array with magnitude errors
 
     flux = mag_to_jansky(Lapp)
     flux_err = flux - mag_to_jansky(Lapp + Lapp_err)
 
     # Adding error floors due to systematic errors in filters
-    irac_bands = [17,18]
+    irac_bands = [3,4]
     flux_err = flux_err + 0.05*flux # 0.05 for all
-    flux_err[irac_bands[0]:irac_bands[1]] = flux_err[irac_bands[0]:irac_bands[1]] + 0.2*flux[irac_bands[0]:irac_bands[1]] # 0.2 for the IRAC bands
+    for i in range(0, len(irac_bands)):
+        flux_err[:,irac_bands[i]] = flux_err[:,irac_bands[i]] + 0.2*flux[:,irac_bands[i]] # 0.2 for the IRAC bands
 
     # Create array with redshifts
     z = np.full(len(Lapp[0]), redshift)
 
     # Get magnitude of selection filter
-    Kmag = Lapp[ind_select]
+    Kmag = Lapp[:,ind_select]
 
     return caesar_id, flux, flux_err, z, Kmag
 
