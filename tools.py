@@ -64,7 +64,7 @@ def mag_to_jansky(mag_AB):
 
     return f_nu
 
-def data_from_simba(ph_file, nbands, magcols, mag_lim, ind_filt):
+def data_from_simba(ph_file, n_bands, magcols, mag_lim, ind_filt):
     '''
     This routine reads in the selected apparent magnitudes from the SIMBA loser
     files in order to:
@@ -79,7 +79,7 @@ def data_from_simba(ph_file, nbands, magcols, mag_lim, ind_filt):
     caesar_id = f['CAESAR_ID'][:]
     header = f['HEADER_INFO']
     redshift = float(header[0].split()[2]) # Get redshift of snapshot
-    Lapp_old = np.zeros((len(caesar_id),nbands))
+    Lapp_old = np.zeros((len(caesar_id),n_bands))
     ind = [1,3,4,5,6,7,8,9,10,11,12]
     # Apparent magnitudes of galaxies in each desired band
     for (i,i_filt) in zip(ind, ind_filt):
@@ -119,7 +119,7 @@ def fill_flux(flux, z, minz, maxz, dz, ll_obs, ind):
     nredshift = int((maxz-minz)/dz) + 1
     zbin = np.linspace(minz, maxz, nredshift)
     nz = len(zbin)
-    nband = len(ll_obs)
+    n_band = len(ll_obs)
     ff = c_in_AA * flux / (ll_obs**2) # f_nu_obs to f_lambda_obs
     ff = ff * (1+z) # f_lambda_obs to f_lambda_rest
 
@@ -128,8 +128,8 @@ def fill_flux(flux, z, minz, maxz, dz, ll_obs, ind):
     ind_zz = tmp.argmin()
 
     # Find into which band bin to put flux into
-    fluxarr = np.zeros((nband,nz))
-    for i in range(0, nband):
+    fluxarr = np.zeros((n_band,nz))
+    for i in range(0, n_band):
         fluxarr[i][ind_zz] = ff[i]
 
     ind_select = [[],[]]
@@ -163,7 +163,7 @@ def superflux(minz, manz, dz, ind, wave, flux, flux_err, z, ll_eff):
 wave,spec,mean,var,ind,minz,maxz,dz,filternames,ll_eff = read_eigensystem('../VWSC_simba/EBASIS/VWSC_eigenbasis_0p5z3_wavemin2500.fits', '../VWSC_simba/FILTERS/vwsc_uds.lis')
 ind_filt = [0,1,2,3,4,5,6,7,8,11,12]
 n_bands = len(ll_eff)
-caesar_id, flux, flux_err, z, Kmag = data_from_simba('/home/rad/data/m100n1024/s50/Groups/phot_m100n1024_026.hdf5', nbands, ind_filt,29.5,8)
+caesar_id, flux, flux_err, z, Kmag = data_from_simba('/home/rad/data/m100n1024/s50/Groups/phot_m100n1024_026.hdf5', n_bands, ind_filt,29.5,8)
 
 ll_obs = ll_eff[ind_filt]
 
