@@ -116,6 +116,7 @@ def fill_flux(flux, z, minz, maxz, dz, ll_obs, ind):
     nredshift = int((maxz-minz)/dz) + 1
     zbin = np.linspace(minz, maxz, nredshift)
     nz = len(zbin)
+    print(nz)
     n_band = len(ll_obs)
     ff = c_in_AA * flux / (ll_obs**2) # f_nu_obs to f_lambda_obs
     ff = ff * (1+z) # f_lambda_obs to f_lambda_rest
