@@ -132,8 +132,8 @@ def fill_flux(flux, z, minz, maxz, dz, ll_obs, ind):
 
     ind_select = [[],[]]
     for i in range(0, len(ind)):
-        row = ind[i]%nz
-        column = int(ind[i]/nz)
+        column = ind[i]%nz
+        row = int(ind[i]/nz)
         ind_select[0].append(row)
         ind_select[1].append(column)
 
