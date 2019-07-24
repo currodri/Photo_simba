@@ -86,12 +86,9 @@ def data_from_simba(ph_file, n_bands, mag_lim, ind_filt, ind_select):
         Lapp_old[:,i_filt] = f['appmag_%d'%i] # Save mags for the selected filters
     # Apply magnitude limit given by mag_lim
     Lapp = []
-    for i in range(0, len(Lapp_old[0])):
-        if Lapp_old[1][i]< mag_lim:
-            l = np.zeros(len(ind))
-            for j in range(0, len(ind)):
-                l[j] = Lapp_old[j][i]
-        Lapp.append(l)
+    for i in range(0, Lapp_old.shape[0]):
+        if Lapp_old[i][8]< mag_lim:
+            Lapp.append(Lapp_old[i])
     Lapp = np.asarray(Lapp)
     Lapp_err = np.full((len(Lapp),len(ind)),0.01) # Create array with magnitude errors
 
