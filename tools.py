@@ -164,8 +164,9 @@ wave,spec,mean,var,ind,minz,maxz,dz,filternames,ll_eff = read_eigensystem('../VW
 ind_filt = [0,1,2,3,4,5,6,7,8,11,12]
 caesar_id, flux, flux_err, z, Kmag = data_from_simba('/home/rad/data/m100n1024/s50/Groups/phot_m100n1024_026.hdf5', ind_filt,29.5,0)
 
+ll_obs = ll_eff[ind_filt]
 
-flux_super, flux_super_err = superflux(minz, maxz, dz, ind_filt, wave, flux, flux_err, z, ll_eff)
+flux_super, flux_super_err = superflux(minz, maxz, dz, ind, wave, flux, flux_err, z, ll_obs)
 
 print(flux_err)
 print(flux_super_err)
