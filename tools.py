@@ -88,8 +88,8 @@ def data_from_simba(ph_file, n_bands, mag_lim, ind_filt, ind_select):
     Lapp = []
     for i in range(0, len(Lapp_old[0])):
         if Lapp_old[1][i]< mag_lim:
-            l = np.zeros(len(magcols))
-            for j in range(0, len(magcols)):
+            l = np.zeros(len(ind))
+            for j in range(0, len(ind)):
                 l[j] = Lapp_old[j][i]
         Lapp.append(l)
     Lapp = np.asarray(Lapp)
