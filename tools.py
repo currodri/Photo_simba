@@ -90,7 +90,7 @@ def data_from_simba(ph_file, n_bands, mag_lim, ind_filt, ind_select):
         if Lapp_old[i][8]< mag_lim:
             Lapp.append(Lapp_old[i])
     Lapp = np.asarray(Lapp)
-    Lapp_err = np.full((len(Lapp),len(n_bands)),0.01) # Create array with magnitude errors
+    Lapp_err = np.full((len(Lapp),n_bands),0.01) # Create array with magnitude errors
 
     flux = mag_to_jansky(Lapp)
     flux_err = flux - mag_to_jansky(Lapp + Lapp_err)
