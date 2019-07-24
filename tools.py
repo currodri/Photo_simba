@@ -64,7 +64,7 @@ def mag_to_jansky(mag_AB):
 
     return f_nu
 
-def data_from_simba(ph_file, magcols, mag_lim, ind_select):
+def data_from_simba(ph_file, nbands, magcols, mag_lim, ind_filt):
     '''
     This routine reads in the selected apparent magnitudes from the SIMBA loser
     files in order to:
@@ -79,11 +79,11 @@ def data_from_simba(ph_file, magcols, mag_lim, ind_select):
     caesar_id = f['CAESAR_ID'][:]
     header = f['HEADER_INFO']
     redshift = float(header[0].split()[2]) # Get redshift of snapshot
-    Lapp_old = []
-    for i in range(len(magcols)):
-        imag = int(magcols[i])
-        Lapp_old.append(f['appmag_%d'%imag]) # Save mags for the selected filters
-    Lapp_old = np.asarray(Lapp_old)  # Apparent magnitudes of galaxies in each desired band
+    Lapp_old = np.zeros((len(caesar_id),nbands))
+    ind = [1,3,4,5,6,7,8,9,10,11,12]
+    # Apparent magnitudes of galaxies in each desired band
+    for (i,i_filt) in zip(ind, ind_filt):
+        Lapp_old[:,i_filt] = f['appmag_%d'%i] # Save mags for the selected filters
     # Apply magnitude limit given by mag_lim
     Lapp = []
     for i in range(0, len(Lapp_old[0])):
@@ -93,13 +93,13 @@ def data_from_simba(ph_file, magcols, mag_lim, ind_select):
                 l[j] = Lapp_old[j][i]
         Lapp.append(l)
     Lapp = np.asarray(Lapp)
-    Lapp_err = np.full((len(Lapp),len(magcols)),0.01) # Create array with magnitude errors
+    Lapp_err = np.full((len(Lapp),len(ind)),0.01) # Create array with magnitude errors
 
     flux = mag_to_jansky(Lapp)
     flux_err = flux - mag_to_jansky(Lapp + Lapp_err)
 
     # Adding error floors due to systematic errors in filters
-    irac_bands = [3,4]
+    irac_bands = [9,10]
     flux_err = flux_err + 0.05*flux # 0.05 for all
     for i in range(0, len(irac_bands)):
         flux_err[:,irac_bands[i]] = flux_err[:,irac_bands[i]] + 0.2*flux[:,irac_bands[i]] # 0.2 for the IRAC bands
@@ -129,14 +129,13 @@ def fill_flux(flux, z, minz, maxz, dz, ll_obs, ind):
 
     # Find into which band bin to put flux into
     fluxarr = np.zeros((nband,nz))
-    print(shape(fluxarr))
     for i in range(0, nband):
         fluxarr[i][ind_zz] = ff[i]
 
     ind_select = [[],[]]
     for i in range(0, len(ind)):
         row = ind[i]%nz
-        column = ind[i] - nz * row
+        column = int(ind[i]/nz)
         ind_select[0].append(row)
         ind_select[1].append(column)
 
@@ -145,7 +144,7 @@ def fill_flux(flux, z, minz, maxz, dz, ll_obs, ind):
     return fluxarr
 
 
-def superflux(minz, manz, dz, ind, wave, flux, flux_err, z, ll_obs):
+def superflux(minz, manz, dz, ind, wave, flux, flux_err, z, ll_eff):
     '''
     Calculate rest-frame f_lambda and put into correct PCA supergrid
     '''
@@ -155,19 +154,20 @@ def superflux(minz, manz, dz, ind, wave, flux, flux_err, z, ll_obs):
     flux_super_err = np.zeros((ngal, nband))
 
     for i in range(0, ngal):
-        flux_super[i] = fill_flux(flux[i],z[i],minz,maxz,dz,ll_obs,ind)
-        flux_super_err[i] = fill_flux(flux_err[i],z[i],minz,maxz,dz,ll_obs,ind)
+        flux_super[i] = fill_flux(flux[i],z[i],minz,maxz,dz,ll_eff,ind)
+        flux_super_err[i] = fill_flux(flux_err[i],z[i],minz,maxz,dz,ll_eff,ind)
 
     return flux_super, flux_super_err
 
 
 wave,spec,mean,var,ind,minz,maxz,dz,filternames,ll_eff = read_eigensystem('../VWSC_simba/EBASIS/VWSC_eigenbasis_0p5z3_wavemin2500.fits', '../VWSC_simba/FILTERS/vwsc_uds.lis')
 ind_filt = [0,1,2,3,4,5,6,7,8,11,12]
-caesar_id, flux, flux_err, z, Kmag = data_from_simba('/home/rad/data/m100n1024/s50/Groups/phot_m100n1024_026.hdf5', ind_filt,29.5,0)
+n_bands = len(ll_eff)
+caesar_id, flux, flux_err, z, Kmag = data_from_simba('/home/rad/data/m100n1024/s50/Groups/phot_m100n1024_026.hdf5', nbands, ind_filt,29.5,8)
 
 ll_obs = ll_eff[ind_filt]
 
-flux_super, flux_super_err = superflux(minz, maxz, dz, ind, wave, flux, flux_err, z, ll_obs)
+flux_super, flux_super_err = superflux(minz, maxz, dz, ind, wave, flux, flux_err, z, ll_eff)
 
 print(flux_err)
 print(flux_super_err)
