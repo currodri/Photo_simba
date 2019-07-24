@@ -129,7 +129,7 @@ def fill_flux(flux, z, minz, maxz, dz, ll_obs, ind):
 
     # Find into which band bin to put flux into
     fluxarr = np.zeros((nband,nz))
-    print(len(nband), len(nz))
+    print(nband, nz)
     for i in range(0, nband):
         fluxarr[i][ind_zz] = ff[i]
 
