@@ -48,7 +48,7 @@ def read_eigensystem(evecfile, filterfile, verbose=True):
     if verbose:
         print(str(len(spec))+' eigenvectors extracted')
         print('Minimum redshift of the survey used: '+str(minz))
-        print('Maximum redshift of the survey used: '+str(minz))
+        print('Maximum redshift of the survey used: '+str(maxz))
 
     # Read in filter effective wavelengths into array
     f = open(filterfile).readlines()
@@ -375,7 +375,7 @@ def SC1_vs_SC2_scatter(pc_data):
 wave,spec,mean,var,ind,minz,maxz,dz,filternames,ll_eff = read_eigensystem('../VWSC_simba/EBASIS/VWSC_eigenbasis_0p5z3_wavemin2500.fits', '../VWSC_simba/FILTERS/vwsc_uds.lis')
 ind_filt = [0,1,2,3,4,5,6,7,8,11,12]
 n_bands = len(ll_eff)
-caesar_id, flux, flux_err, z, Kmag = data_from_simba('/home/rad/data/m100n1024/s50/Groups/phot_m100n1024_105.hdf5', n_bands, 24.5, ind_filt, 8)
+caesar_id, flux, flux_err, z, Kmag = data_from_simba('/home/rad/data/m100n1024/s50/Groups/phot_m100n1024_125.hdf5', n_bands, 24.5, ind_filt, 8)
 
 ll_obs = ll_eff[ind_filt]
 
