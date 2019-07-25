@@ -361,6 +361,7 @@ def SC1_vs_SC2_scatter(pc_data):
 
     x = pc_data[:,0] #SC1
     y = pc_data[:,1] #SC2
+    print(len(x), len(y))
     fig = plt.figure(num=None, figsize=(6, 6), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
     ax.set_ylabel('SC 2', fontsize=16)
