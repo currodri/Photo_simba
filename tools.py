@@ -336,11 +336,11 @@ def normgappy(data, error, espec, mean, cov=False, reconstruct=False, verbose=Fa
             ccov = ccov[0]
 
     # Report to user
-    if verbose:
-        print("[pca_normgappy] STATUS: Results...")
-        for i, pc in enumerate(pcs):
-            print(f"               PCA{i+1}: {pc:2.5f}")
-        print(f"               Norm: {norm:2.5f}")
+    # if verbose:
+    #     print("[pca_normgappy] STATUS: Results...")
+    #     for i, pc in enumerate(pcs):
+    #         print(f"               PCA{i+1}: {pc:2.5f}")
+    #         print(f"               Norm: {norm:2.5f}")
 
     # Return
     if reconstruct is True:
