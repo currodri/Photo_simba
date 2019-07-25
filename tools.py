@@ -385,6 +385,7 @@ pcs, norm = normgappy(flux_super,flux_super_err,spec,mean)
 
 pcs = np.asarray(pcs)
 print(pcs.shape)
-print(pcs)
+print(pcs[0])
+print(pcs[1])
 
 SC1_vs_SC2_scatter(pcs)
