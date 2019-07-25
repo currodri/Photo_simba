@@ -153,10 +153,7 @@ def superflux(minz, manz, dz, ind, wave, flux, flux_err, z, ll_eff):
     n_band = len(ind)
     flux_super = np.zeros((ngal, n_band))
     flux_super_err = np.zeros((ngal, n_band))
-    print(flux.shape)
-    print(flux_super.shape)
     for i in range(0, ngal):
-        print(len(fill_flux(flux[i],z[i],minz,maxz,dz,ll_eff,ind)))
         flux_super[i] = fill_flux(flux[i],z[i],minz,maxz,dz,ll_eff,ind)
         flux_super_err[i] = fill_flux(flux_err[i],z[i],minz,maxz,dz,ll_eff,ind)
 
@@ -377,12 +374,9 @@ ind_filt = [0,1,2,3,4,5,6,7,8,11,12]
 n_bands = len(ll_eff)
 caesar_id, flux, flux_err, z, Kmag = data_from_simba('/home/rad/data/m100n1024/s50/Groups/phot_m100n1024_026.hdf5', n_bands, 29.5, ind_filt, 8)
 
-print(flux.shape)
 ll_obs = ll_eff[ind_filt]
 
 flux_super, flux_super_err = superflux(minz, maxz, dz, ind, wave, flux, flux_err, z, ll_eff)
-
-print(flux_super.shape)
 
 pcs, norm = normgappy(flux_super,flux_super_err,spec,mean, verbose=True)
 
