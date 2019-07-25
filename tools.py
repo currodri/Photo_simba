@@ -367,8 +367,8 @@ def SC1_vs_SC2_scatter(pc_data):
     ax.set_ylabel('SC 2', fontsize=16)
     ax.set_xlabel('SC 1', fontsize=16)
     ax.scatter(x,y)
-    ax.set_xlim([-50,150])
-    ax.set_ylim([-20, 30])
+    #ax.set_xlim([-50,150])
+    #ax.set_ylim([-20, 30])
     fig.tight_layout()
     fig.savefig('../color_plots/sc1_vs_sc2.png',
                     format='png', dpi=250, bbox_inches='tight')
