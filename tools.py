@@ -13,6 +13,9 @@ Email: s1650043@ed.ac.uk
 from astropy.io import fits
 import numpy as np
 import h5py
+import matplotlib
+matplotlib.use('Agg') # Must be before importing matplotlib.pyplot or pylab!
+import matplotlib.pyplot as plt
 ## CONSTANTS
 c_in_AA = 2.99792**18
 sol_lum_in_erg = 3.839**33
