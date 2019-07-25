@@ -157,6 +157,7 @@ def superflux(minz, manz, dz, ind, wave, flux, flux_err, z, ll_eff):
     print(flux.shape)
     print(flux_super.shape)
     for i in range(0, ngal):
+        print(len(fill_flux(flux[i],z[i],minz,maxz,dz,ll_eff,ind)))
         flux_super[i] = fill_flux(flux[i],z[i],minz,maxz,dz,ll_eff,ind)
         flux_super_err[i] = fill_flux(flux_err[i],z[i],minz,maxz,dz,ll_eff,ind)
 
