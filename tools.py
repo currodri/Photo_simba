@@ -141,6 +141,7 @@ def fill_flux(flux, z, minz, maxz, dz, ll_obs, ind):
         ind_select[1].append(column)
 
     fluxarr = fluxarr[ind_select]
+    print(len(fluxarr))
 
     return fluxarr
 
@@ -153,7 +154,8 @@ def superflux(minz, manz, dz, ind, wave, flux, flux_err, z, ll_eff):
     n_band = len(ll_eff)
     flux_super = np.zeros((ngal, n_band))
     flux_super_err = np.zeros((ngal, n_band))
-
+    print(flux.shape)
+    print(flux_super.shape)
     for i in range(0, ngal):
         flux_super[i] = fill_flux(flux[i],z[i],minz,maxz,dz,ll_eff,ind)
         flux_super_err[i] = fill_flux(flux_err[i],z[i],minz,maxz,dz,ll_eff,ind)
