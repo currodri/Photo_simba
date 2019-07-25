@@ -106,7 +106,7 @@ def data_from_simba(ph_file, n_bands, mag_lim, ind_filt, ind_select):
         flux_err[:,irac_bands[i]] = flux_err[:,irac_bands[i]] + 0.2*flux[:,irac_bands[i]] # 0.2 for the IRAC bands
 
     # Create array with redshifts
-    z = np.full(len(Lapp[0]), redshift)
+    z = np.full(Lapp.shape[0], redshift)
 
     # Get magnitude of selection filter
     Kmag = Lapp[:,ind_select]
@@ -141,7 +141,6 @@ def fill_flux(flux, z, minz, maxz, dz, ll_obs, ind):
         ind_select[1].append(column)
 
     fluxarr = fluxarr[ind_select]
-    print(len(fluxarr))
 
     return fluxarr
 
