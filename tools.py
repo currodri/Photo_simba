@@ -374,6 +374,7 @@ ind_filt = [0,1,2,3,4,5,6,7,8,11,12]
 n_bands = len(ll_eff)
 caesar_id, flux, flux_err, z, Kmag = data_from_simba('/home/rad/data/m100n1024/s50/Groups/phot_m100n1024_026.hdf5', n_bands, 29.5, ind_filt, 8)
 
+print(flux.shape)
 ll_obs = ll_eff[ind_filt]
 
 flux_super, flux_super_err = superflux(minz, maxz, dz, ind, wave, flux, flux_err, z, ll_eff)
