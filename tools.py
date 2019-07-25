@@ -378,6 +378,8 @@ ll_obs = ll_eff[ind_filt]
 
 flux_super, flux_super_err = superflux(minz, maxz, dz, ind, wave, flux, flux_err, z, ll_eff)
 
+print(flux_super.shape)
+
 pcs, norm = normgappy(flux_super,flux_super_err,spec,mean, verbose=True)
 
 pcs = np.asarray(pcs)
