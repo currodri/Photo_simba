@@ -251,8 +251,6 @@ def uvj_quench(redshift,caesar_id,Labs,quench_file):
             U_non.append(Labs[0][i])
             V_non.append(Labs[1][i])
             J_non.append(Labs[2][i])
-        if len(q_time)>100:
-            print('I found 100 quenched galaxies')
     q_time = np.asarray(q_time)
     tau_q = np.asarray(tau_q)
     U = np.asarray(U)
