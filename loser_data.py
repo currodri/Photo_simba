@@ -230,6 +230,8 @@ def uvj_quench(redshift,caesar_id,Labs,quench_file):
                             possible_q.append(galaxy.galaxy_t[end])
                             possible_tau.append(quench.quench_time/galaxy.galaxy_t[end])
         if possible_q:
+            if len(possible_2)>=2:
+                print(possible_q)
             possible_q = np.asarray(possible_q)
             diff = t_hubble - possible_q
             q_time.append(np.amin(diff))
@@ -315,7 +317,7 @@ if __name__ == '__main__':
 
     lfile = '/home/rad/data/%s/%s/Groups/phot_%s_%03d.hdf5' % (MODEL,WIND,MODEL,int(SNAP))
     redshift,t_hubble,boxsize,colorinfo,nbands,ngal,caesar_id,sfr,LyC,mformed,mstar,L_FIR,meanage,Zstar,A_V,Labs,Labs_nd,Lapp,Lapp_nd = read_mags(lfile,magcols)
-    print 'z=',redshift,'L=',boxsize,'Nbands=',nbands,'Ngal=',ngal #,'\n',mstar,'\n',Lmag,'\n',Lmag_nd
+    print ('z=',redshift,'L=',boxsize,'Nbands=',nbands,'Ngal=',ngal) #,'\n',mstar,'\n',Lmag,'\n',Lmag_nd
     cfile = '/home/rad/data/%s/%s/Groups/%s_%03d.hdf5' % (MODEL,WIND,MODEL,int(SNAP))
     #redshift_caesar,ms_caesar,sfr_caesar = read_caesar(cfile)
 

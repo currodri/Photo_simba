@@ -97,8 +97,8 @@ def completeness_lim(Mstar, z, q):
     output = np.zeros(l)
     output[q&(Mstar>q_lim)]     = 1 #if quenched, only above q_lim
     output[(~q)&(Mstar>sf_lim)] = 1 #if star forming, above sf_lim
-    print 'Based on PRIMUS: sf M*_lim = %.2f'%np.log10(sf_lim)
-    print '                 q  M*_lim = %.2f'%np.log10(q_lim)
+    print ('Based on PRIMUS: sf M*_lim = %.2f'%np.log10(sf_lim))
+    print ('                 q  M*_lim = %.2f'%np.log10(q_lim))
     return output.astype(bool)
 
 
@@ -183,7 +183,7 @@ def conv_eff(mass, z):
     M1   = 10**(11.590+1.195*z/(z+1))
     beta = 1.376-0.826*z/(z+1)
     gama = 0.608+0.329*z/(z+1)
-    print "log(Mmax/Msun) = %.2f at z=%.2f"%(np.log10(M1*(beta/gama)**(1/(beta+gama))), z)
+    print ("log(Mmax/Msun) = %.2f at z=%.2f"%(np.log10(M1*(beta/gama)**(1/(beta+gama))), z))
     return 2.0*N/((mass/M1)**(-beta)+(mass/M1)**gama)
 
 
