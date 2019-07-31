@@ -144,7 +144,6 @@ def fill_flux(flux, z, minz, maxz, dz, ll_obs, ind):
 
     return fluxarr
 
-
 def superflux(minz, manz, dz, ind, wave, flux, flux_err, z, ll_eff):
     '''
     Calculate rest-frame f_lambda and put into correct PCA supergrid
@@ -372,6 +371,7 @@ def SC1_vs_SC2_scatter(pc_data):
     fig.tight_layout()
     fig.savefig('../color_plots/sc1_vs_sc2.png',
                     format='png', dpi=250, bbox_inches='tight')
+
 wave,spec,mean,var,ind,minz,maxz,dz,filternames,ll_eff = read_eigensystem('../VWSC_simba/EBASIS/VWSC_eigenbasis_0p5z3_wavemin2500.fits', '../VWSC_simba/FILTERS/vwsc_uds.lis')
 ind_filt = [0,1,2,3,4,5,6,7,8,11,12]
 n_bands = len(ll_eff)
@@ -384,8 +384,5 @@ flux_super, flux_super_err = superflux(minz, maxz, dz, ind, wave, flux, flux_err
 pcs, norm = normgappy(flux_super,flux_super_err,spec,mean)
 
 pcs = np.asarray(pcs)
-print(pcs.shape)
-print(pcs[:,0])
-print(pcs[:,1])
 
 SC1_vs_SC2_scatter(pcs)
