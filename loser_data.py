@@ -188,7 +188,7 @@ def uvj_mergertime(redshift,caesar_id,Labs, merger_file):
     fig.savefig('./color_plots/uv_vj_mtime_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
     print('Merger plot done.')
 
-def uvj_quench(redshift,caesar_id,Labs,quench_file):
+def uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quench_file):
     # This function obtains the UVJ colour plot for the galaxies that a given redshift experienced a quenching
     # as determined by the quenchingFinder algorithm. The scatter points are colour coded with the time past 
     # after the last quenching (Fig 1) or the quenching timescale (Fig 2).
@@ -230,8 +230,6 @@ def uvj_quench(redshift,caesar_id,Labs,quench_file):
                             possible_q.append(galaxy.galaxy_t[end])
                             possible_tau.append(quench.quench_time/galaxy.galaxy_t[end])
         if possible_q:
-            if len(possible_q)>=2:
-                print(possible_q)
             possible_q = np.asarray(possible_q)
             diff = t_hubble - possible_q
             q_time.append(np.amin(diff))
@@ -239,6 +237,9 @@ def uvj_quench(redshift,caesar_id,Labs,quench_file):
             U.append(Labs[0][i])
             V.append(Labs[1][i])
             J.append(Labs[2][i])
+            if q_time[-1] > 1 and (U[-1]-V[-1]) < 1.5 and (v[-1]-J[-1]) < 1.0:
+                print(np.log10(sfr[i]/mstar[i]+1e-14))
+                print(sfr_condition_2('end',t_hubble))
             if possible_tau[np.argmin(diff)] >= (10**(-1.5)):
                 U_slow.append(Labs[0][i])
                 V_slow.append(Labs[1][i])
@@ -337,4 +338,4 @@ if __name__ == '__main__':
     merg_data = '/home/curro/quenchingSIMBA/code/mergers/%s/merger_results.pkl' % (MODEL)
     quench_data = '/home/curro/quenchingSIMBA/code/quench_analysis/%s/quenching_results.pkl' % (MODEL)
     #uvj_mergertime(redshift,caesar_id,Labs,merg_data)
-    uvj_quench(redshift,caesar_id,Labs,quench_data)
+    uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quench_data)
