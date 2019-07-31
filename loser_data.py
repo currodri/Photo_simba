@@ -104,7 +104,7 @@ def uv_vj_plot(ngal, Lapp, SFR=0, MS=0):
     else:
         ax.hexbin(x, y, gridsize=50,bins='log', cmap='Greys')
         fig.tight_layout()
-        fig.savefig('./color_plots/uv_vj_hexbin_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+        fig.savefig('../color_plots/uv_vj_hexbin_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 def histo_mag(ngal, Lapp, filtername, nbins):
     # Simple function that provides the histogram distribution for a given band.
     # It requires the magnitudes in that band Lapp, the name of the filter from 
@@ -118,7 +118,7 @@ def histo_mag(ngal, Lapp, filtername, nbins):
     bin_cent = 0.5*(bin_edges[1:]+bin_edges[:-1])
     ax.step(bin_cent, bin_count/float(ngal), where='mid')
     fig.tight_layout()
-    fig.savefig('./color_plots/'+str(filtername[0])+str(filtername[1])+'_histo_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/'+str(filtername[0])+str(filtername[1])+'_histo_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 def scatter_app_vs_mass(ngal,Lapp,mass,filtername):
     # This plots the scattered distribution for a given band wrt the stellar mass 
     fig = plt.figure(num=None, figsize=(6, 6), dpi=80, facecolor='w', edgecolor='k')
@@ -127,7 +127,7 @@ def scatter_app_vs_mass(ngal,Lapp,mass,filtername):
     ax.set_xlabel(r'$\log(M_*[M_{\odot}])$', fontsize=16)
     ax.hexbin(mass, Lapp, gridsize=50,bins='log', cmap='Greys')
     fig.tight_layout()
-    fig.savefig('./color_plots/'+str(filtername[0])+str(filtername[1])+'_scatter_mass_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight') 
+    fig.savefig('../color_plots/'+str(filtername[0])+str(filtername[1])+'_scatter_mass_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight') 
 def uvj_mergertime(redshift,caesar_id,Labs, merger_file):
     # This function obtains the UVJ colour plot for the galaxies that a given redshift experienced a merger
     # as determined by the mergerFinder algorithm. The scatter points are colour coded with the time past 
@@ -185,7 +185,7 @@ def uvj_mergertime(redshift,caesar_id,Labs, merger_file):
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(t_h - t_m)$', fontsize=16)
     fig.tight_layout()
-    fig.savefig('./color_plots/uv_vj_mtime_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/uv_vj_mtime_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
     print('Merger plot done.')
 
 def uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quench_file):
@@ -274,7 +274,7 @@ def uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quench_file):
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(t_h - t_q)$', fontsize=16)
     fig.tight_layout()
-    fig.savefig('./color_plots/uv_vj_qtime_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/uv_vj_qtime_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
     print('First quench plot done')
     fig2 = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig2.add_subplot(1,1,1)
@@ -285,7 +285,7 @@ def uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quench_file):
     cb = fig2.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(\tau_q/t_{H})$', fontsize=16)
     fig2.tight_layout()
-    fig2.savefig('./color_plots/uv_vj_qscale_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig2.savefig('../color_plots/uv_vj_qscale_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
     
     U_slow = np.asarray(U_slow)
     V_slow = np.asarray(V_slow)
@@ -308,7 +308,7 @@ def uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quench_file):
     #cb = fig2.colorbar(sc, ax=ax, orientation='horizontal')
     #cb.set_label(label=r'$\log(\tau_q/t_{H})$', fontsize=16)
     fig3.tight_layout()
-    fig3.savefig('./color_plots/uv_vj_qsf_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig3.savefig('../color_plots/uv_vj_qsf_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
 
 ###########################################################################
