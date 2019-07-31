@@ -237,7 +237,7 @@ def uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quench_file):
             U.append(Labs[0][i])
             V.append(Labs[1][i])
             J.append(Labs[2][i])
-            if q_time[-1] > 1 and (U[-1]-V[-1]) < 1.5 and (v[-1]-J[-1]) < 1.0:
+            if q_time[-1] > 1 and (U[-1]-V[-1]) < 1.5 and (V[-1]-J[-1]) < 1.0:
                 print(np.log10(sfr[i]/mstar[i]+1e-14))
                 print(sfr_condition_2('end',t_hubble))
             if possible_tau[np.argmin(diff)] >= (10**(-1.5)):
