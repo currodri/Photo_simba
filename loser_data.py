@@ -231,6 +231,8 @@ def uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quench_file):
                                 if not galaxy.galaxy_t[end] <= galaxy.rate[k+1] < t_hubble:
                                     possible_q.append(galaxy.galaxy_t[end])
                                     possible_tau.append(quench.quench_time/galaxy.galaxy_t[end])
+                                else:
+                                    print(galaxy.galaxy_t[end], galaxy.rate[k+1], t_hubble)
         if possible_q:
             possible_q = np.asarray(possible_q)
             diff = t_hubble - possible_q
