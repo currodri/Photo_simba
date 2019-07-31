@@ -12,7 +12,7 @@ import h5py
 import cPickle as pickle
 
 import sys
-sys.path.insert(0, '../SH_Project')
+sys.path.insert(0, '../../SH_Project')
 import matplotlib
 matplotlib.use('Agg') # Must be before importing matplotlib.pyplot or pylab!
 import matplotlib.pyplot as plt
