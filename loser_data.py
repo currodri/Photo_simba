@@ -238,7 +238,7 @@ def uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quench_file):
             V.append(Labs[1][i])
             J.append(Labs[2][i])
             if q_time[-1] > 1 and (U[-1]-V[-1]) < 1.5 and (V[-1]-J[-1]) < 1.0:
-                print(np.log10(sfr[i]/mstar[i]+1e-14))
+                print(np.log10(sfr[i]/(10**mstar[i])+1e-14))
                 print(sfr_condition_2('end',t_hubble))
             if possible_tau[np.argmin(diff)] >= (10**(-1.5)):
                 U_slow.append(Labs[0][i])
@@ -319,8 +319,8 @@ if __name__ == '__main__':
     print ('z=',redshift,'L=',boxsize,'Nbands=',nbands,'Ngal=',ngal) #,'\n',mstar,'\n',Lmag,'\n',Lmag_nd
     cfile = '/home/rad/data/%s/%s/Groups/%s_%03d.hdf5' % (MODEL,WIND,MODEL,int(SNAP))
     #redshift_caesar,ms_caesar,sfr_caesar = read_caesar(cfile)
-    print(sfr)
-    print(mstar)
+    #print(sfr)
+    #print(mstar)
     # check that the caesar and phot files indeed have the same M*,SFRs, to within tol
     #tol = 0.001
     #for i in range(len(ms_caesar)):
