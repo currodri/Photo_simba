@@ -204,6 +204,7 @@ def uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quench_file):
     V = []
     J = []
     q_time = []
+    sSFR = []
     tau_q = []
     U_non = []
     V_non = []
@@ -238,6 +239,7 @@ def uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quench_file):
             U.append(Labs[0][i])
             V.append(Labs[1][i])
             J.append(Labs[2][i])
+            sSFR.append(np.log10(sfr[i]/(10**mstar[i])+1e-14))
             if q_time[-1] > 1 and (U[-1]-V[-1]) < 1.5 and (V[-1]-J[-1]) < 1.0:
                 print(np.log10(sfr[i]/(10**mstar[i])+1e-14))
                 print(sfr_condition_2('end',t_hubble))
@@ -265,6 +267,18 @@ def uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quench_file):
     J_non = np.asarray(J_non)
     x_non = V_non - J_non
     y_non = U_non - V_non
+
+    fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
+    ax = fig.add_subplot(1,1,1)
+    ax.set_xlabel('V - J', fontsize=16)
+    ax.set_ylabel('U - V', fontsize=16)
+    ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
+    sc = ax.scatter(x,y,c=sSFR,cmap='plasma',s=8)
+    cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
+    cb.set_label(label=r'$\log(sSFR)$', fontsize=16)
+    fig.tight_layout()
+    fig.savefig('../color_plots/uv_vj_qssfr_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
     ax.set_xlabel('V - J', fontsize=16)
