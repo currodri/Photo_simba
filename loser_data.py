@@ -228,11 +228,11 @@ def uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quench_file):
                         end = quench.below11
                         if galaxy.galaxy_t[end] <= t_hubble:
                             for k in range(0, len(galaxy.rate), 3):
-                                if not galaxy.galaxy_t[end] <= galaxy.rate[k+1] < t_hubble:
+                                if galaxy.galaxy_t[end] <= galaxy.rate[k+1] < t_hubble and np.log10(sfr[i]/(10**mstar[i])+1e-14) >= sfr_condition_2('start',t_hubble):
+                                    pass
+                                else:
                                     possible_q.append(galaxy.galaxy_t[end])
                                     possible_tau.append(quench.quench_time/galaxy.galaxy_t[end])
-                                else:
-                                    print(galaxy.galaxy_t[end], galaxy.rate[k+1], t_hubble)
         if possible_q:
             possible_q = np.asarray(possible_q)
             diff = t_hubble - possible_q
