@@ -319,7 +319,8 @@ if __name__ == '__main__':
     print ('z=',redshift,'L=',boxsize,'Nbands=',nbands,'Ngal=',ngal) #,'\n',mstar,'\n',Lmag,'\n',Lmag_nd
     cfile = '/home/rad/data/%s/%s/Groups/%s_%03d.hdf5' % (MODEL,WIND,MODEL,int(SNAP))
     #redshift_caesar,ms_caesar,sfr_caesar = read_caesar(cfile)
-
+    print(sfr)
+    print(mstar)
     # check that the caesar and phot files indeed have the same M*,SFRs, to within tol
     #tol = 0.001
     #for i in range(len(ms_caesar)):
