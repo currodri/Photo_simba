@@ -230,7 +230,7 @@ def uvj_quench(redshift,caesar_id,Labs,quench_file):
                             possible_q.append(galaxy.galaxy_t[end])
                             possible_tau.append(quench.quench_time/galaxy.galaxy_t[end])
         if possible_q:
-            if len(possible_2)>=2:
+            if len(possible_q)>=2:
                 print(possible_q)
             possible_q = np.asarray(possible_q)
             diff = t_hubble - possible_q
