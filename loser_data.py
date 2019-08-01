@@ -369,6 +369,6 @@ if __name__ == '__main__':
     file = open(data_file, 'rb')
     d = pickle.load(file)
     file.close()
-    quenchings = d['quenched_galaxies']
+    quenchings = d['galaxies']
     #uvj_mergertime(redshift,caesar_id,Labs,merg_data)
     uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quenchings)
