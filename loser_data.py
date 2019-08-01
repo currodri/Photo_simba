@@ -188,7 +188,7 @@ def uvj_mergertime(redshift,caesar_id,Labs, merger_file):
     fig.savefig('../color_plots/uv_vj_mtime_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
     print('Merger plot done.')
 
-def uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quench_file):
+def uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quenchings):
     # This function obtains the UVJ colour plot for the galaxies that a given redshift experienced a quenching
     # as determined by the quenchingFinder algorithm. The scatter points are colour coded with the time past 
     # after the last quenching (Fig 1) or the quenching timescale (Fig 2).
@@ -196,10 +196,6 @@ def uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quench_file):
     cosmo = FlatLambdaCDM(H0=100*0.68, Om0=0.3, Ob0=0.04799952624117699,Tcmb0=2.73)
     t_hubble = cosmo.age(redshift_2).value
     # Start by selecting the galaxies in the snapshot that experienced a merger before
-    file = open(quench_file, 'rb')
-    d = pickle.load(file)
-    quenchings = d['quenched_galaxies']
-    print('Quench pickle file read.')
     U = []
     V = []
     J = []
@@ -220,29 +216,34 @@ def uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quench_file):
         possible_q = []
         possible_tau = []
         for j in range(0, len(quenchings)):
-            galaxy = quenchings[j]
-            for red_filt in galaxy.all_z[galaxy.caesar_id==float(caesar_id[i])]:
-                if red_filt == redshift_2:
-                   # print('Match found')
-                    for quench in galaxy.quenching:
-                        end = quench.below11
-                        if galaxy.galaxy_t[end] <= t_hubble and galaxy.rate:
-                            for k in range(0, len(galaxy.rate), 4):
-                                if galaxy.galaxy_t[end] <= galaxy.rate[k+1] < t_hubble and np.log10(sfr[i]/(10**mstar[i])+1e-14) >= sfr_condition_2('start',t_hubble):
-                                    #print(galaxy.galaxy_t[end],galaxy.rate[k+1])
-                                    #print(np.log10(sfr[i]/(10**mstar[i])+1e-14), sfr_condition_2('start',t_hubble))
-                                    pass
-                                elif np.log10(sfr[i]/(10**mstar[i])+1e-14) < sfr_condition_2('end',t_hubble):
-                                    possible_q.append(galaxy.galaxy_t[end])
-                                    possible_tau.append(quench.quench_time/galaxy.galaxy_t[end])
-                        elif galaxy.galaxy_t[end] <= t_hubble and not galaxy.rate:
-                            #possible_q.append(galaxy.galaxy_t[end])
-                            #possible_tau.append(quench.quench_time/galaxy.galaxy_t[end])
-                            if np.log10(sfr[i]/(10**mstar[i])+1e-14) >= sfr_condition_2('start',t_hubble):
-                                print(np.log10(sfr[i]/(10**mstar[i])+1e-14), galaxy.id, caesar_id[i])
-                            elif np.log10(sfr[i]/(10**mstar[i])+1e-14) < sfr_condition_2('end',t_hubble):
-                                possible_q.append(galaxy.galaxy_t[end])
-                                possible_tau.append(quench.quench_time/galaxy.galaxy_t[end])
+            if not isinstance(quenchings[j].m[1],int):
+                galaxy = quenchings[j]
+                for red_filt in galaxy.z[galaxy.caesar_id==float(caesar_id[i])]:
+                    if red_filt == redshift_2:
+                    # print('Match found')
+                        for quench in galaxy.quenching:
+                            end = quench.below11
+                            if galaxy.t[1][end] <= t_hubble and galaxy.rejuvenations:
+                                for index in galaxy.rejuvenations:
+                                    if not galaxy.t[1][end] <= galaxy.t[0][index] < t_hubble and np.log10(sfr[i]/(10**mstar[i])+1e-14) < sfr_condition_2('start',t_hubble):
+                                        possible_q.append(galaxy.t[1][end])
+                                        possible_tau.append(quench.quench_time/galaxy.t[1][end])
+                                # for k in range(0, len(galaxy.rate), 4):
+                                #     if galaxy.galaxy_t[end] <= galaxy.rate[k+1] < t_hubble and np.log10(sfr[i]/(10**mstar[i])+1e-14) >= sfr_condition_2('start',t_hubble):
+                                #         #print(galaxy.galaxy_t[end],galaxy.rate[k+1])
+                                #         #print(np.log10(sfr[i]/(10**mstar[i])+1e-14), sfr_condition_2('start',t_hubble))
+                                #         pass
+                                #     elif np.log10(sfr[i]/(10**mstar[i])+1e-14) < sfr_condition_2('end',t_hubble):
+                                #         possible_q.append(galaxy.galaxy_t[end])
+                                #         possible_tau.append(quench.quench_time/galaxy.galaxy_t[end])
+                            elif galaxy.t[1][end] <= t_hubble and not galaxy.rejuvenations:
+                                #possible_q.append(galaxy.galaxy_t[end])
+                                #possible_tau.append(quench.quench_time/galaxy.galaxy_t[end])
+                                if np.log10(sfr[i]/(10**mstar[i])+1e-14) >= sfr_condition_2('start',t_hubble):
+                                    print(np.log10(sfr[i]/(10**mstar[i])+1e-14), galaxy.id, caesar_id[i])
+                                elif np.log10(sfr[i]/(10**mstar[i])+1e-14) < sfr_condition_2('start',t_hubble):
+                                    possible_q.append(galaxy.t[1][end])
+                                    possible_tau.append(quench.quench_time/galaxy.t[1][end])
         if possible_q:
             possible_q = np.asarray(possible_q)
             diff = t_hubble - possible_q
@@ -362,7 +363,12 @@ if __name__ == '__main__':
     #histo_mag(ngal, Lapp[0],filtername, 10)
     #scatter_app_vs_mass(ngal, Lapp[0], mstar, filtername)
     print('Now starting to make plots...')
-    merg_data = '/home/curro/quenchingSIMBA/code/mergers/%s/merger_results.pkl' % (MODEL)
-    quench_data = '/home/curro/quenchingSIMBA/code/quench_analysis/%s/quenching_results.pkl' % (MODEL)
+    #merg_data = '/home/curro/quenchingSIMBA/code/mergers/%s/merger_results.pkl' % (MODEL)
+    #quench_data = '/home/curro/quenchingSIMBA/code/quench_analysis/%s/quenching_results.pkl' % (MODEL)
+    data_file = '/home/curro/quenchingSIMBA/code/SH_Project/mandq_results_%s.pkl' % (MODEL)
+    file = open(data_file, 'rb')
+    d = pickle.load(file)
+    file.close()
+    quenchings = d['quenched_galaxies']
     #uvj_mergertime(redshift,caesar_id,Labs,merg_data)
-    uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quench_data)
+    uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quenchings)
