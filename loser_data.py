@@ -134,7 +134,8 @@ def ks_mass_plot(ngal, Kmag, SFR, MS, k_lim):
         if Kmag[i]<=k_lim and MS[i]>=8.0:
             mass.append(MS[i])
             mag.append(Kmag[i])
-            sSFR.append(SFR/(10**MS)+1e-14)
+            sSFR.append(SFR[i]/(10**MS[i])+1e-14)
+    print(len(mass), len(mag), len(sSFR))
     mass = np.asarray(mass)
     mag = np.asarray(mag)
     sSFR = np.asarray(sSFR)
