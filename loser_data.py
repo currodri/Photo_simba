@@ -405,7 +405,7 @@ if __name__ == '__main__':
     #print(Lapp[0][0]-Labs[0][0])
     #print(Lapp[1][20]-Labs[1][20])
     #print(Lapp[2][10]-Labs[2][10])
-    ks_mass_plot(ngal, Lapp[0], sfr, mstar, 23.0)
+    ks_mass_plot(ngal, Lapp[0], sfr, mstar, 24.5)
     # filtername = colorinfo[9].split()[6:8]
     # uv_vj_plot(ngal,Labs,Lapp[3], -10.0, None, 23.0,SFR=sfr,MS=mstar)
     # histo_mag(ngal,Lapp[3],filtername, 20)
