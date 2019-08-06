@@ -108,7 +108,7 @@ def uv_vj_plot(ngal, Lapp, SFR=0, MS=0):
         cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
         cb.set_label(label=r'$\log$(sSFR[yr$^{-1})$', fontsize=16)
         fig.tight_layout()
-        fig.savefig('./color_plots/uv_vj_ssfr_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+        fig.savefig('../color_plots/uv_vj_ssfr_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
     else:
         ax.hexbin(x, y, gridsize=50,bins='log', cmap='Greys')
         fig.tight_layout()
