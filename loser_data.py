@@ -87,15 +87,23 @@ def uv_vj_plot(ngal, Lapp, SFR=0, MS=0):
     # The bands in Lapp should be given as Lapp[0] = U, Lapp[1] = V and Lapp[2] = J
     y = np.zeros(ngal) # U-V
     x = np.zeros(ngal) # V-J
+    sSFR = np.zeros(ngal)
     for i in range(0, ngal):
-        y[i] = Lapp[0][i] - Lapp[1][i]
-        x[i] = Lapp[1][i] - Lapp[2][i]
+        ssfr = np.log10(SFR[i]/MS[i])
+        if ssfr >= -2:
+            y[i] = Lapp[0][i] - Lapp[1][i]
+            x[i] = Lapp[1][i] - Lapp[2][i]
+            sSFR[i] = ssfr
+        else:
+            y[i] = Lapp[0][i] - Lapp[1][i]
+            x[i] = Lapp[1][i] - Lapp[2][i]
+            sSFR[i] = -2.1
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
     ax.set_xlabel('V - J', fontsize=16)
     ax.set_ylabel('U - V', fontsize=16)
     if isinstance(SFR, np.ndarray) and isinstance(MS, np.ndarray):
-        sSFR = SFR/MS + 1e-14
+        #sSFR = SFR/MS + 1e-14
         sc = ax.scatter(x,y,c=np.log10(sSFR),cmap='plasma',s=8)
         cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
         cb.set_label(label=r'$\log$(sSFR[yr$^{-1})$', fontsize=16)
@@ -359,16 +367,16 @@ if __name__ == '__main__':
     #print(Lapp[1][20]-Labs[1][20])
     #print(Lapp[2][10]-Labs[2][10])
     #filtername = colorinfo[9].split()[6:8]
-   # uv_vj_plot(ngal,Lapp)#,SFR=sfr,MS=mstar)
+    uv_vj_plot(ngal,Lapp,SFR=sfr,MS=mstar)
     #histo_mag(ngal, Lapp[0],filtername, 10)
     #scatter_app_vs_mass(ngal, Lapp[0], mstar, filtername)
-    print('Now starting to make plots...')
-    #merg_data = '/home/curro/quenchingSIMBA/code/mergers/%s/merger_results.pkl' % (MODEL)
-    #quench_data = '/home/curro/quenchingSIMBA/code/quench_analysis/%s/quenching_results.pkl' % (MODEL)
-    data_file = '/home/curro/quenchingSIMBA/code/SH_Project/mandq_results_%s.pkl' % (MODEL)
-    file = open(data_file, 'rb')
-    d = pickle.load(file)
-    file.close()
-    quenchings = d['galaxies']
-    #uvj_mergertime(redshift,caesar_id,Labs,merg_data)
-    uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quenchings)
+    # print('Now starting to make plots...')
+    # #merg_data = '/home/curro/quenchingSIMBA/code/mergers/%s/merger_results.pkl' % (MODEL)
+    # #quench_data = '/home/curro/quenchingSIMBA/code/quench_analysis/%s/quenching_results.pkl' % (MODEL)
+    # data_file = '/home/curro/quenchingSIMBA/code/SH_Project/mandq_results_%s.pkl' % (MODEL)
+    # file = open(data_file, 'rb')
+    # d = pickle.load(file)
+    # file.close()
+    # quenchings = d['galaxies']
+    # #uvj_mergertime(redshift,caesar_id,Labs,merg_data)
+    # uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quenchings)
