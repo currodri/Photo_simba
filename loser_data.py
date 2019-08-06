@@ -85,19 +85,25 @@ def uv_vj_plot(ngal, Lapp, SFR=0, MS=0):
     # Simple function that provides U-V vs V_J colours for all the galaxies in a given snapshot
     # If SFR and stellar mass are provided, scatter points are color-coded with sSFR
     # The bands in Lapp should be given as Lapp[0] = U, Lapp[1] = V and Lapp[2] = J
-    y = np.zeros(ngal) # U-V
-    x = np.zeros(ngal) # V-J
-    sSFR = np.zeros(ngal)
+    #y = np.zeros(ngal) # U-V
+    #x = np.zeros(ngal) # V-J
+    #sSFR = np.zeros(ngal)
+    y = []
+    x = []
+    sSFR = []
     for i in range(0, ngal):
         ssfr = np.log10(SFR[i]/MS[i]+1e-14)
         if ssfr >= -0.5:
-            y[i] = Lapp[0][i] - Lapp[1][i]
-            x[i] = Lapp[1][i] - Lapp[2][i]
-            sSFR[i] = ssfr
-        else:
-            y[i] = Lapp[0][i] - Lapp[1][i]
-            x[i] = Lapp[1][i] - Lapp[2][i]
-            sSFR[i] = -0.6
+            y.append(Lapp[0][i] - Lapp[1][i])
+            x.append(Lapp[1][i] - Lapp[2][i])
+            sSFR.append(ssfr)
+        # else:
+        #     y[i] = Lapp[0][i] - Lapp[1][i]
+        #     x[i] = Lapp[1][i] - Lapp[2][i]
+        #     sSFR[i] = -0.6
+    y = np.asarray(y)
+    x = np.asarray(x)
+    sSFR = np.asarray(sSFR)
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
     ax.set_xlabel('V - J', fontsize=16)
