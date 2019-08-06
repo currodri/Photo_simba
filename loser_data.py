@@ -89,7 +89,7 @@ def uv_vj_plot(ngal, Lapp, SFR=0, MS=0):
     x = np.zeros(ngal) # V-J
     sSFR = np.zeros(ngal)
     for i in range(0, ngal):
-        ssfr = np.log10(SFR[i]/MS[i])
+        ssfr = np.log10(SFR[i]/MS[i]+1e-14)
         if ssfr >= -2:
             y[i] = Lapp[0][i] - Lapp[1][i]
             x[i] = Lapp[1][i] - Lapp[2][i]
@@ -104,7 +104,7 @@ def uv_vj_plot(ngal, Lapp, SFR=0, MS=0):
     ax.set_ylabel('U - V', fontsize=16)
     if isinstance(SFR, np.ndarray) and isinstance(MS, np.ndarray):
         #sSFR = SFR/MS + 1e-14
-        sc = ax.scatter(x,y,c=np.log10(sSFR),cmap='plasma',s=8)
+        sc = ax.scatter(x,y,c=sSFR,cmap='plasma',s=8)
         cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
         cb.set_label(label=r'$\log$(sSFR[yr$^{-1})$', fontsize=16)
         fig.tight_layout()
