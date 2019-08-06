@@ -81,7 +81,7 @@ def read_caesar(caesarfile):
     sfr = np.asarray([i.sfr for i in sim.galaxies])
     return z,ms,sfr
 
-def uv_vj_plot(ngal, Lapp, sfr_lim, m_lim, k_lim, SFR=0, MS=0):
+def uv_vj_plot(ngal, Lapp, Kmag, sfr_lim, m_lim, k_lim, SFR=0, MS=0):
     # Simple function that provides U-V vs V_J colours for all the galaxies in a given snapshot
     # If SFR and stellar mass are provided, scatter points are color-coded with sSFR
     # The bands in Lapp should be given as Lapp[0] = U, Lapp[1] = V and Lapp[2] = J
@@ -93,7 +93,7 @@ def uv_vj_plot(ngal, Lapp, sfr_lim, m_lim, k_lim, SFR=0, MS=0):
     sSFR = []
     for i in range(0, ngal):
         ssfr = np.log10(SFR[i]/(10**MS[i])+1e-14)
-        if ssfr >= sfr_lim and Lapp[3][i]<=k_lim:
+        if ssfr >= sfr_lim and Kmag[i]<=k_lim:
             y.append(Lapp[0][i] - Lapp[1][i])
             x.append(Lapp[1][i] - Lapp[2][i])
             sSFR.append(ssfr)
@@ -376,8 +376,8 @@ if __name__ == '__main__':
     #print(Lapp[1][20]-Labs[1][20])
     #print(Lapp[2][10]-Labs[2][10])
     filtername = colorinfo[9].split()[6:8]
-    uv_vj_plot(ngal,Labs, -10.0, None, -23.0,SFR=sfr,MS=mstar)
-    histo_mag(ngal,Labs[3],filtername, 10)
+    uv_vj_plot(ngal,Labs,Lapp[3], -10.0, None, 23.0,SFR=sfr,MS=mstar)
+    histo_mag(ngal,Lapp[3],filtername, 20)
     #scatter_app_vs_mass(ngal, Lapp[0], mstar, filtername)
     # print('Now starting to make plots...')
     # #merg_data = '/home/curro/quenchingSIMBA/code/mergers/%s/merger_results.pkl' % (MODEL)
