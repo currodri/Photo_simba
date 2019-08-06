@@ -376,7 +376,7 @@ if __name__ == '__main__':
     #print(Lapp[1][20]-Labs[1][20])
     #print(Lapp[2][10]-Labs[2][10])
     filtername = colorinfo[9].split()[6:8]
-    uv_vj_plot(ngal,Labs, -10.0, None, 23.0,SFR=sfr,MS=mstar)
+    uv_vj_plot(ngal,Labs, -10.0, None, -23.0,SFR=sfr,MS=mstar)
     histo_mag(ngal,Labs[3],filtername, 10)
     #scatter_app_vs_mass(ngal, Lapp[0], mstar, filtername)
     # print('Now starting to make plots...')
