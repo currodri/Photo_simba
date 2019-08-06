@@ -90,14 +90,14 @@ def uv_vj_plot(ngal, Lapp, SFR=0, MS=0):
     sSFR = np.zeros(ngal)
     for i in range(0, ngal):
         ssfr = np.log10(SFR[i]/MS[i]+1e-14)
-        if ssfr >= -2:
+        if ssfr >= -0.5:
             y[i] = Lapp[0][i] - Lapp[1][i]
             x[i] = Lapp[1][i] - Lapp[2][i]
             sSFR[i] = ssfr
         else:
             y[i] = Lapp[0][i] - Lapp[1][i]
             x[i] = Lapp[1][i] - Lapp[2][i]
-            sSFR[i] = -2.1
+            sSFR[i] = -0.6
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
     ax.set_xlabel('V - J', fontsize=16)
