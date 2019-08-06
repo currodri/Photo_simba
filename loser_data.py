@@ -95,7 +95,7 @@ def uv_vj_plot(ngal, Lapp, m_lim, SFR, MS):
         if MS[i]>=9.5:
             y.append(Lapp[0][i] - Lapp[1][i])
             x.append(Lapp[1][i] - Lapp[2][i])
-            sSFR.append(SFR[i]/MS[i] + 1e-14)
+            sSFR.append(SFR[i]/(10**MS[i]) + 1e-14)
         # else:
         #     y[i] = Lapp[0][i] - Lapp[1][i]
         #     x[i] = Lapp[1][i] - Lapp[2][i]
