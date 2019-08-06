@@ -81,7 +81,7 @@ def read_caesar(caesarfile):
     sfr = np.asarray([i.sfr for i in sim.galaxies])
     return z,ms,sfr
 
-def uv_vj_plot(ngal, Lapp, Kmag, sfr_lim, m_lim, k_lim, SFR=0, MS=0):
+def uv_vj_plot(ngal, Lapp, m_lim, SFR, MS):
     # Simple function that provides U-V vs V_J colours for all the galaxies in a given snapshot
     # If SFR and stellar mass are provided, scatter points are color-coded with sSFR
     # The bands in Lapp should be given as Lapp[0] = U, Lapp[1] = V and Lapp[2] = J
@@ -92,11 +92,10 @@ def uv_vj_plot(ngal, Lapp, Kmag, sfr_lim, m_lim, k_lim, SFR=0, MS=0):
     x = []
     sSFR = []
     for i in range(0, ngal):
-        ssfr = np.log10(SFR[i]/(10**MS[i])+1e-14)
-        if ssfr >= sfr_lim and Kmag[i]<=k_lim:
+        if MS[i]>=9.5:
             y.append(Lapp[0][i] - Lapp[1][i])
             x.append(Lapp[1][i] - Lapp[2][i])
-            sSFR.append(ssfr)
+            sSFR.append(SFR[i]/MS[i] + 1e-14)
         # else:
         #     y[i] = Lapp[0][i] - Lapp[1][i]
         #     x[i] = Lapp[1][i] - Lapp[2][i]
@@ -110,7 +109,7 @@ def uv_vj_plot(ngal, Lapp, Kmag, sfr_lim, m_lim, k_lim, SFR=0, MS=0):
     ax.set_ylabel('U - V', fontsize=16)
     if isinstance(SFR, np.ndarray) and isinstance(MS, np.ndarray):
         #sSFR = SFR/MS + 1e-14
-        sc = ax.scatter(x,y,c=sSFR,cmap='plasma',s=8)
+        sc = ax.scatter(x,y,c=np.log10(sSFR),cmap='plasma',s=8)
         cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
         cb.set_label(label=r'$\log$(sSFR[yr$^{-1})$', fontsize=16)
         fig.tight_layout()
@@ -409,9 +408,9 @@ if __name__ == '__main__':
     #print(Lapp[1][20]-Labs[1][20])
     #print(Lapp[2][10]-Labs[2][10])
     #ks_mass_plot(ngal, Lapp[0], sfr, mstar, 24.5)
-    filtername = colorinfo[9].split()[6:8]
-    # uv_vj_plot(ngal,Labs,Lapp[3], -10.0, None, 23.0,SFR=sfr,MS=mstar)
-    histo_mag(ngal,Lapp[0],mstar,filtername, 20, 9.5)
+    #filtername = colorinfo[9].split()[6:8]
+    uv_vj_plot(ngal,Labs,9.5,SFR=sfr,MS=mstar)
+    #histo_mag(ngal,Lapp[0],mstar,filtername, 20, 9.5)
     #scatter_app_vs_mass(ngal, Lapp[0], mstar, filtername)
     # print('Now starting to make plots...')
     # #merg_data = '/home/curro/quenchingSIMBA/code/mergers/%s/merger_results.pkl' % (MODEL)
