@@ -296,23 +296,24 @@ def uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quenchings):
         if possible_q:
             possible_q = np.asarray(possible_q)
             diff = t_hubble - possible_q
-            q_time.append(np.amin(diff))
-            tau_q.append(possible_tau[np.argmin(diff)])
-            U.append(Labs[0][i])
-            V.append(Labs[1][i])
-            J.append(Labs[2][i])
-            sSFR.append(np.log10(sfr[i]/(10**mstar[i])+1e-14))
-            #if q_time[-1] > 1 and (U[-1]-V[-1]) < 1.5 and (V[-1]-J[-1]) < 1.0:
-                #print(np.log10(sfr[i]/(10**mstar[i])+1e-14),sfr_condition_2('end',t_hubble))
-            if possible_tau[np.argmin(diff)] >= (10**(-1.5)):
-                U_slow.append(Labs[0][i])
-                V_slow.append(Labs[1][i])
-                J_slow.append(Labs[2][i]) 
-            else:
-                U_fast.append(Labs[0][i])
-                V_fast.append(Labs[1][i])
-                J_fast.append(Labs[2][i]) 
-        else:
+            if np.argmin(diff)<=1.0:
+                q_time.append(np.amin(diff))
+                tau_q.append(possible_tau[np.argmin(diff)])
+                U.append(Labs[0][i])
+                V.append(Labs[1][i])
+                J.append(Labs[2][i])
+                sSFR.append(np.log10(sfr[i]/(10**mstar[i])+1e-14))
+                #if q_time[-1] > 1 and (U[-1]-V[-1]) < 1.5 and (V[-1]-J[-1]) < 1.0:
+                    #print(np.log10(sfr[i]/(10**mstar[i])+1e-14),sfr_condition_2('end',t_hubble))
+                if possible_tau[np.argmin(diff)] >= (10**(-1.5)):
+                    U_slow.append(Labs[0][i])
+                    V_slow.append(Labs[1][i])
+                    J_slow.append(Labs[2][i]) 
+                else:
+                    U_fast.append(Labs[0][i])
+                    V_fast.append(Labs[1][i])
+                    J_fast.append(Labs[2][i]) 
+        elif mstar[i]>=9.5:
             U_non.append(Labs[0][i])
             V_non.append(Labs[1][i])
             J_non.append(Labs[2][i])
@@ -409,7 +410,7 @@ if __name__ == '__main__':
     #print(Lapp[2][10]-Labs[2][10])
     #ks_mass_plot(ngal, Lapp[0], sfr, mstar, 24.5)
     #filtername = colorinfo[9].split()[6:8]
-    uv_vj_plot(ngal,Labs,9.5,SFR=sfr,MS=mstar)
+    uv_vj_plot(ngal,Labs_nd,9.5,SFR=sfr,MS=mstar)
     #histo_mag(ngal,Lapp[0],mstar,filtername, 20, 9.5)
     #scatter_app_vs_mass(ngal, Lapp[0], mstar, filtername)
     # print('Now starting to make plots...')
