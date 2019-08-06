@@ -236,9 +236,9 @@ def uvj_mergertime(redshift,caesar_id,Labs, merger_file):
     ax.set_xlabel('V - J', fontsize=16)
     ax.set_ylabel('U - V', fontsize=16)
     ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
-    sc = ax.scatter(x,y,c=np.log10(m_time),cmap='plasma',s=8)
+    sc = ax.scatter(x,y,c=m_time,cmap='plasma',s=8)
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
-    cb.set_label(label=r'$\log(t_h - t_m)$', fontsize=16)
+    cb.set_label(label=r'$t_h - t_m$', fontsize=16)
     fig.tight_layout()
     fig.savefig('../color_plots/uv_vj_mtime_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
     print('Merger plot done.')
@@ -302,7 +302,7 @@ def uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quenchings):
         if possible_q:
             possible_q = np.asarray(possible_q)
             diff = t_hubble - possible_q
-            if np.argmin(diff)<=1.0:
+            if np.amin(diff)<=1.0:
                 q_time.append(np.amin(diff))
                 tau_q.append(possible_tau[np.argmin(diff)])
                 U.append(Labs[0][i])
@@ -354,7 +354,7 @@ def uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quenchings):
     ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
     sc = ax.scatter(x,y,c=q_time,cmap='plasma',s=8)
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
-    cb.set_label(label=r'$\log(t_h - t_q)$', fontsize=16)
+    cb.set_label(label=r'$t_h - t_q$', fontsize=16)
     fig.tight_layout()
     fig.savefig('../color_plots/uv_vj_qtime_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
     print('First quench plot done')
