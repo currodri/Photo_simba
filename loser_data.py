@@ -81,7 +81,7 @@ def read_caesar(caesarfile):
     sfr = np.asarray([i.sfr for i in sim.galaxies])
     return z,ms,sfr
 
-def uv_vj_plot(ngal, Lapp, SFR=0, MS=0):
+def uv_vj_plot(ngal, Lapp, SFR=0, MS=0, sfr_lim, m_lim):
     # Simple function that provides U-V vs V_J colours for all the galaxies in a given snapshot
     # If SFR and stellar mass are provided, scatter points are color-coded with sSFR
     # The bands in Lapp should be given as Lapp[0] = U, Lapp[1] = V and Lapp[2] = J
@@ -93,7 +93,7 @@ def uv_vj_plot(ngal, Lapp, SFR=0, MS=0):
     sSFR = []
     for i in range(0, ngal):
         ssfr = np.log10(SFR[i]/MS[i]+1e-14)
-        if ssfr >= -0.5:
+        if ssfr >= sfr_lim:
             y.append(Lapp[0][i] - Lapp[1][i])
             x.append(Lapp[1][i] - Lapp[2][i])
             sSFR.append(ssfr)
@@ -373,7 +373,7 @@ if __name__ == '__main__':
     #print(Lapp[1][20]-Labs[1][20])
     #print(Lapp[2][10]-Labs[2][10])
     #filtername = colorinfo[9].split()[6:8]
-    uv_vj_plot(ngal,Labs,SFR=sfr,MS=mstar)
+    uv_vj_plot(ngal,Labs,SFR=sfr,MS=mstar, -1.0, None)
     #histo_mag(ngal, Lapp[0],filtername, 10)
     #scatter_app_vs_mass(ngal, Lapp[0], mstar, filtername)
     # print('Now starting to make plots...')
