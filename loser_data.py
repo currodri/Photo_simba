@@ -90,12 +90,14 @@ def uv_vj_plot(ngal, Lapp, m_lim, SFR, MS):
     #sSFR = np.zeros(ngal)
     y = []
     x = []
-    sSFR = []
+    #sSFR = []
+    A_V = []
     for i in range(0, ngal):
         if MS[i]>=9.5:
             y.append(Lapp[0][i] - Lapp[1][i])
             x.append(Lapp[1][i] - Lapp[2][i])
-            sSFR.append(SFR[i]/(10**MS[i]) + 1e-14)
+            #sSFR.append(SFR[i]/(10**MS[i]) + 1e-14)
+            A_V = SFR[i]
         # else:
         #     y[i] = Lapp[0][i] - Lapp[1][i]
         #     x[i] = Lapp[1][i] - Lapp[2][i]
@@ -109,11 +111,13 @@ def uv_vj_plot(ngal, Lapp, m_lim, SFR, MS):
     ax.set_ylabel('U - V', fontsize=16)
     if isinstance(SFR, np.ndarray) and isinstance(MS, np.ndarray):
         #sSFR = SFR/MS + 1e-14
-        sc = ax.scatter(x,y,c=np.log10(sSFR),cmap='plasma',s=8)
+        sc = ax.scatter(x,y,c=A_V,cmap='plasma',s=8)
         cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
-        cb.set_label(label=r'$\log$(sSFR[yr$^{-1})$', fontsize=16)
+        #cb.set_label(label=r'$\log$(sSFR[yr$^{-1})$', fontsize=16)
+        cb.set_label(label=r'$A_V$', fontsize=16)
         fig.tight_layout()
-        fig.savefig('../color_plots/uv_vj_ssfr_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+        #fig.savefig('../color_plots/uv_vj_ssfr_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+        fig.savefig('../color_plots/uv_vj_av_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
     else:
         ax.hexbin(x, y, gridsize=50,bins='log', cmap='Greys')
         fig.tight_layout()
@@ -393,7 +397,7 @@ if __name__ == '__main__':
 
     lfile = '/home/rad/data/%s/%s/Groups/phot_%s_%03d.hdf5' % (MODEL,WIND,MODEL,int(SNAP))
     redshift,t_hubble,boxsize,colorinfo,nbands,ngal,caesar_id,sfr,LyC,mformed,mstar,L_FIR,meanage,Zstar,A_V,Labs,Labs_nd,Lapp,Lapp_nd = read_mags(lfile,magcols)
-    print ('z=',redshift,'L=',boxsize,'Nbands=',nbands,'Ngal=',ngal, 'A_V=',A_V) #,'\n',mstar,'\n',Lmag,'\n',Lmag_nd
+    print ('z=',redshift,'L=',boxsize,'Nbands=',nbands,'Ngal=',ngal) #,'\n',mstar,'\n',Lmag,'\n',Lmag_nd
     cfile = '/home/rad/data/%s/%s/Groups/%s_%03d.hdf5' % (MODEL,WIND,MODEL,int(SNAP))
     #redshift_caesar,ms_caesar,sfr_caesar = read_caesar(cfile)
     #print(sfr)
@@ -410,7 +414,7 @@ if __name__ == '__main__':
     #print(Lapp[2][10]-Labs[2][10])
     #ks_mass_plot(ngal, Lapp[0], sfr, mstar, 24.5)
     #filtername = colorinfo[9].split()[6:8]
-    uv_vj_plot(ngal,Labs_nd,9.5,SFR=sfr,MS=mstar)
+    uv_vj_plot(ngal,Labs_nd,9.5,SFR=A_V,MS=mstar)
     #histo_mag(ngal,Lapp[0],mstar,filtername, 20, 9.5)
     #scatter_app_vs_mass(ngal, Lapp[0], mstar, filtername)
     # print('Now starting to make plots...')
