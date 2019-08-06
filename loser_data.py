@@ -149,16 +149,19 @@ def ks_mass_plot(ngal, Kmag, SFR, MS, k_lim):
     fig.tight_layout()
     fig.savefig('../color_plots/ks_mass_scatter_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
-def histo_mag(ngal, Lapp, filtername, nbins):
+def histo_mag(ngal, Lapp, MS, filtername, nbins, m_lim):
     # Simple function that provides the histogram distribution for a given band.
     # It requires the magnitudes in that band Lapp, the name of the filter from 
     # the loser colorinfo and the number of bins.
-
+    mag = []
+    for i in range(0, ngal):
+        if MS[i]>=9.5:
+            mag.append(Lapp[i])
     fig = plt.figure(num=None, figsize=(8, 6), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
     ax.set_xlabel(str(filtername[0])+str(filtername[1])+'Magnitude', fontsize=16)
     ax.set_ylabel(r'$N/N_{Tot}$', fontsize=16)
-    bin_count, bin_edges = np.histogram(Lapp, bins=nbins)
+    bin_count, bin_edges = np.histogram(mag, bins=nbins)
     bin_cent = 0.5*(bin_edges[1:]+bin_edges[:-1])
     ax.step(bin_cent, bin_count/float(ngal), where='mid')
     fig.tight_layout()
@@ -405,10 +408,10 @@ if __name__ == '__main__':
     #print(Lapp[0][0]-Labs[0][0])
     #print(Lapp[1][20]-Labs[1][20])
     #print(Lapp[2][10]-Labs[2][10])
-    ks_mass_plot(ngal, Lapp[0], sfr, mstar, 24.5)
-    # filtername = colorinfo[9].split()[6:8]
+    #ks_mass_plot(ngal, Lapp[0], sfr, mstar, 24.5)
+    filtername = colorinfo[9].split()[6:8]
     # uv_vj_plot(ngal,Labs,Lapp[3], -10.0, None, 23.0,SFR=sfr,MS=mstar)
-    # histo_mag(ngal,Lapp[3],filtername, 20)
+    histo_mag(ngal,Lapp[0],mstar,filtername, 20, 9.5)
     #scatter_app_vs_mass(ngal, Lapp[0], mstar, filtername)
     # print('Now starting to make plots...')
     # #merg_data = '/home/curro/quenchingSIMBA/code/mergers/%s/merger_results.pkl' % (MODEL)
