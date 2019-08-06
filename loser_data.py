@@ -106,6 +106,7 @@ def uv_vj_plot(ngal, Lapp, m_lim, SFR, MS):
     x = np.asarray(x)
     #sSFR = np.asarray(sSFR)
     A_V = np.asarray(A_V)
+    print(len(y), len(x), len(A_V))
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
     ax.set_xlabel('V - J', fontsize=16)
