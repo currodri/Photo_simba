@@ -92,7 +92,7 @@ def uv_vj_plot(ngal, Lapp, sfr_lim, m_lim, SFR=0, MS=0):
     x = []
     sSFR = []
     for i in range(0, ngal):
-        ssfr = np.log10(SFR[i]/MS[i]+1e-14)
+        ssfr = np.log10(SFR[i]/(10**MS[i])+1e-14)
         if ssfr >= sfr_lim:
             y.append(Lapp[0][i] - Lapp[1][i])
             x.append(Lapp[1][i] - Lapp[2][i])
@@ -133,6 +133,9 @@ def histo_mag(ngal, Lapp, filtername, nbins):
     ax.step(bin_cent, bin_count/float(ngal), where='mid')
     fig.tight_layout()
     fig.savefig('../color_plots/'+str(filtername[0])+str(filtername[1])+'_histo_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+
+
+
 def scatter_app_vs_mass(ngal,Lapp,mass,filtername):
     # This plots the scattered distribution for a given band wrt the stellar mass 
     fig = plt.figure(num=None, figsize=(6, 6), dpi=80, facecolor='w', edgecolor='k')
@@ -373,7 +376,7 @@ if __name__ == '__main__':
     #print(Lapp[1][20]-Labs[1][20])
     #print(Lapp[2][10]-Labs[2][10])
     #filtername = colorinfo[9].split()[6:8]
-    uv_vj_plot(ngal,Labs, -1.0, None,SFR=sfr,MS=mstar)
+    uv_vj_plot(ngal,Labs, -10.0, None,SFR=sfr,MS=mstar)
     #histo_mag(ngal, Lapp[0],filtername, 10)
     #scatter_app_vs_mass(ngal, Lapp[0], mstar, filtername)
     # print('Now starting to make plots...')
