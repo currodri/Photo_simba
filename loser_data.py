@@ -119,6 +119,35 @@ def uv_vj_plot(ngal, Lapp, Kmag, sfr_lim, m_lim, k_lim, SFR=0, MS=0):
         ax.hexbin(x, y, gridsize=50,bins='log', cmap='Greys')
         fig.tight_layout()
         fig.savefig('../color_plots/uv_vj_hexbin_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+
+def ks_mass_plot(ngal, Kmag, SFR, MS, k_lim):
+    # Simple function that provides U-V vs V_J colours for all the galaxies in a given snapshot
+    # If SFR and stellar mass are provided, scatter points are color-coded with sSFR
+    # The bands in Lapp should be given as Lapp[0] = U, Lapp[1] = V and Lapp[2] = J
+    #y = np.zeros(ngal) # U-V
+    #x = np.zeros(ngal) # V-J
+    #sSFR = np.zeros(ngal)
+    mass = []
+    mag = []
+    sSFR = []
+    for i in range(0, ngal):
+        if Kmag[i]<=k_lim and MS[i]>=8.0:
+            mass.append(MS[i])
+            mag.append(Kmag[i])
+            sSFR.append(SFR/(10**MS)+1e-14)
+    mass = np.asarray(mass)
+    mag = np.asarray(mag)
+    sSFR = np.asarray(sSFR)
+    fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
+    ax = fig.add_subplot(1,1,1)
+    ax.set_xlabel('Ks mag', fontsize=16)
+    ax.set_ylabel(r'$\log(M_*[M_{\odot}])$', fontsize=16)
+    sc = ax.scatter(mag,mass,c=np.log10(sSFR),cmap='plasma',s=8)
+    cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
+    cb.set_label(label=r'$\log$(sSFR[yr$^{-1})$', fontsize=16)
+    fig.tight_layout()
+    fig.savefig('../color_plots/ks_mass_scatter_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+
 def histo_mag(ngal, Lapp, filtername, nbins):
     # Simple function that provides the histogram distribution for a given band.
     # It requires the magnitudes in that band Lapp, the name of the filter from 
@@ -375,9 +404,10 @@ if __name__ == '__main__':
     #print(Lapp[0][0]-Labs[0][0])
     #print(Lapp[1][20]-Labs[1][20])
     #print(Lapp[2][10]-Labs[2][10])
-    filtername = colorinfo[9].split()[6:8]
-    uv_vj_plot(ngal,Labs,Lapp[3], -10.0, None, 23.0,SFR=sfr,MS=mstar)
-    histo_mag(ngal,Lapp[3],filtername, 20)
+    ks_mass_plot(ngal, Lapp[0], SFR, MS, 23.0)
+    # filtername = colorinfo[9].split()[6:8]
+    # uv_vj_plot(ngal,Labs,Lapp[3], -10.0, None, 23.0,SFR=sfr,MS=mstar)
+    # histo_mag(ngal,Lapp[3],filtername, 20)
     #scatter_app_vs_mass(ngal, Lapp[0], mstar, filtername)
     # print('Now starting to make plots...')
     # #merg_data = '/home/curro/quenchingSIMBA/code/mergers/%s/merger_results.pkl' % (MODEL)
