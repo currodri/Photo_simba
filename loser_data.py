@@ -97,7 +97,7 @@ def uv_vj_plot(ngal, Lapp, m_lim, SFR, MS):
             y.append(Lapp[0][i] - Lapp[1][i])
             x.append(Lapp[1][i] - Lapp[2][i])
             #sSFR.append(SFR[i]/(10**MS[i]) + 1e-14)
-            A_V = SFR[i]
+            A_V.append(SFR[i])
         # else:
         #     y[i] = Lapp[0][i] - Lapp[1][i]
         #     x[i] = Lapp[1][i] - Lapp[2][i]
@@ -400,7 +400,6 @@ if __name__ == '__main__':
     lfile = '/home/rad/data/%s/%s/Groups/phot_%s_%03d.hdf5' % (MODEL,WIND,MODEL,int(SNAP))
     redshift,t_hubble,boxsize,colorinfo,nbands,ngal,caesar_id,sfr,LyC,mformed,mstar,L_FIR,meanage,Zstar,A_V,Labs,Labs_nd,Lapp,Lapp_nd = read_mags(lfile,magcols)
     print ('z=',redshift,'L=',boxsize,'Nbands=',nbands,'Ngal=',ngal) #,'\n',mstar,'\n',Lmag,'\n',Lmag_nd
-    print(A_V)
     cfile = '/home/rad/data/%s/%s/Groups/%s_%03d.hdf5' % (MODEL,WIND,MODEL,int(SNAP))
     #redshift_caesar,ms_caesar,sfr_caesar = read_caesar(cfile)
     #print(sfr)
