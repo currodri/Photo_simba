@@ -47,15 +47,16 @@ for gal in selected_galaxies:
     V = np.asarray(gal.mags[1].Abs[::-1][0:ind_z+1])
     J = np.asarray(gal.mags[2].Abs[::-1][0:ind_z+1])
     bhmass = np.zeros(len(z))
-    for 
+    for i in range(0,len(z)):
+        bhmass[i] = float(gal.bh_m[np.where(gal.z==z[i])])
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
     ax.set_xlabel('V - J', fontsize=16)
     ax.set_ylabel('U - V', fontsize=16)
-
-
-    sc = ax.scatter(x,y,c=sSFR,cmap='plasma',s=8)
+    x = U - V 
+    y = V - J
+    sc = ax.scatter(x,y,c=np.log10(bhmass),cmap='plasma',s=10)
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
-    cb.set_label(label=r'$\log(sSFR)$', fontsize=16)
+    cb.set_label(label=r'$\log(M_{BH}[M_{\odot}])$', fontsize=16)
     fig.tight_layout()
-    fig.savefig('../color_plots/uv_vj_qssfr_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/uv_vj_track_'+str(gal.progen_id)+'.png',format='png', dpi=250, bbox_inches='tight')
