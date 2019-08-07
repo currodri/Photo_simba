@@ -66,7 +66,7 @@ def crossmatch_loserandquench(MODEL,WIND,SNAP_0,galaxies,magcols):
                     if red_filt == redshift:
                         for f in range(0, len(magcols)):
                             if l==0:
-                                f_info = filter_info.split()
+                                f_info = filter_info[f].split()
                                 gal.mags[f].filtername = f_info[6]+' '+f_info[7]+' '+f_info[8]
                                 gal.mags[f].wave_eff = float(f_info[5])
                             gal.mags[f].z.append(redshift)
