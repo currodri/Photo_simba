@@ -49,6 +49,8 @@ def crossmatch_loserandquench(MODEL,WIND,SNAP_0,galaxies,magcols):
     caesar_dir = '/home/rad/data/%s/%s/Groups/' % (MODEL,WIND)
     loser = filter(lambda file:file[-5:]=='.hdf5' and file[0]=='p' and int(file[-8:-5])<=SNAP_0, os.listdir('./'))
     loser_sorted = sorted(loser,key=lambda file: int(file[-8:-5]), reverse=True)
+    print(loser_sorted)
+    print(len(loser_sorted))
 
     for gal in galaxies:
         for i in range(0, len(magcols)):
@@ -61,7 +63,6 @@ def crossmatch_loserandquench(MODEL,WIND,SNAP_0,galaxies,magcols):
             for gal in galaxies:
                 for red_filt in gal.z[gal.caesar_id==float(caesar_id[i])]:
                     if red_filt == redshift:
-                        print('hey, match found')
                         for f in range(0, len(magcols)):
                             if l==0:
                                 f_info = filter_info.split()
