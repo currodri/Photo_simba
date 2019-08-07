@@ -2,22 +2,26 @@
 # Reads in the photometry files output by Loser (https://bitbucket.org/romeeld/closer/src/default/)
 # These are ASCII files, with suffix .app for apparent mags, .abs for absolute mags.
 
-#import pylab as plt
 import numpy as np
 import os
-import caesar
 import h5py
-
+from astropy.cosmology import FlatLambdaCDM
 import sys
 sys.path.insert(0, '../../SH_Project')
 from galaxy_class import Magnitude
 
 ###########################################################################
-def read_mags(infile,magcols, nodust=False):
+def read_mags(infile,magcols,MODEL,WIND,nodust=False):
     f = h5py.File(infile,'r')
-    header = f['HEADER_INFO']
-    redshift = float(header[0].split()[2])
-    t_hubble = float(header[0].split()[6])
+    snap = int(infile[-8:-5])
+    caesar_file = '/home/rad/data/%s/%s/Groups/%s_%s.hdf5' % (MODEL,WIND,MODEL,snap)
+    cfile = h5py.File(caesar_file)
+    redshift = cfile['simulation_attributes'].attrs['redshift']
+    omega_matter = cfile['simulation_attributes'].attrs['omega_matter']
+    omega_baryon = cfile['simulation_attributes'].attrs['omega_baryon']
+    h = cfile['simulation_attributes'].attrs['hubble_constant']
+    cosmo = FlatLambdaCDM(H0=100*h, Om0=omega_matter, Ob0=omega_baryon,Tcmb0=2.73)  # set our cosmological parameters
+    t_hubble = cosmo.age(redshift).value
     caesar_id = f['CAESAR_ID'][:]
     colorinfo = f['COLOR_INFO'][:]
     Lapp = []
@@ -54,7 +58,7 @@ def crossmatch_loserandquench(MODEL,WIND,SNAP_0,galaxies,magcols):
             gal.mags.append(Magnitude())
 
     for l in range(0, len(loser_sorted)):
-        redshift,t_hubble,filter_info,caesar_id,Labs,Lapp = read_mags(caesar_dir+loser_sorted[l],magcols)
+        redshift,t_hubble,filter_info,caesar_id,Labs,Lapp = read_mags(caesar_dir+loser_sorted[l],magcols,MODEL,WIND)
         print ('Reading loser file for z=%s' % (redshift))
         for i in range(0,len(caesar_id)):
             for gal in galaxies:
