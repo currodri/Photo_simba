@@ -27,7 +27,6 @@ def read_mags(infile,magcols, nodust=False):
     filter_info = []
     for i in range(len(magcols)):
         imag = int(magcols[i])
-        print ('Reading now filter for '+str(colorinfo[imag]))
         filter_info.append(str(colorinfo[imag]))
         Labs.append(f['absmag_%d'%imag])
         Lapp.append(f['appmag_%d'%imag])

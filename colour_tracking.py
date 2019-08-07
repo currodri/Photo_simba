@@ -42,11 +42,12 @@ selected_galaxies = d['galaxies'][GALAXY]
 for gal in selected_galaxies:
     z = np.asarray(gal.mags[0].z)
     ind_z = np.argmin(abs(z - REDSHIFT))
-
+    z = z[::-1][0:ind_z+1]
     U = np.asarray(gal.mags[0].Abs[::-1][0:ind_z+1])
     V = np.asarray(gal.mags[1].Abs[::-1][0:ind_z+1])
     J = np.asarray(gal.mags[2].Abs[::-1][0:ind_z+1])
-
+    bhmass = np.zeros(len(z))
+    for 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
     ax.set_xlabel('V - J', fontsize=16)
