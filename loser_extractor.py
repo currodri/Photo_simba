@@ -31,7 +31,7 @@ def read_mags(infile,magcols,MODEL,WIND,nodust=False):
     filter_info = []
     for i in range(len(magcols)):
         imag = int(magcols[i])
-        filter_info.append(str(colorinfo[imag]))
+        filter_info.append(colorinfo[imag])
         Labs.append(f['absmag_%d'%imag])
         Lapp.append(f['appmag_%d'%imag])
         if nodust:
