@@ -45,8 +45,8 @@ for gal in selected_galaxies:
     V = np.asarray(gal.mags[1].Abs)
     J = np.asarray(gal.mags[2].Abs)
     z = np.asarray(gal.mags[0].z)
-    
-    diff_z = abs(z - REDSHIFT)
+
+    ind_z = np.argmin(abs(z - REDSHIFT))
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
