@@ -55,7 +55,7 @@ def crossmatch_loserandquench(MODEL,WIND,SNAP_0,galaxies,magcols):
             gal.mags.append(Magnitude())
 
     for l in range(0, len(loser_sorted)):
-        redshift,t_hubble,filter_info,caesar_id,Labs,Lapp = read_mags(losers_sorted)[l],magcols)
+        redshift,t_hubble,filter_info,caesar_id,Labs,Lapp = read_mags(losers_sorted[l],magcols)
         for i in range(0,len(caesar_id)):
             for gal in galaxies:
                 for red_filt in gal.z[gal.caesar_id==float(caesar_id[i])]:
