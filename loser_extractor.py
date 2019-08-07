@@ -14,7 +14,7 @@ from galaxy_class import Magnitude
 
 ###########################################################################
 def read_mags(infile,magcols, nodust=False):
-    f = infile,'r')
+    f = h5py.File(infile,'r')
     header = f['HEADER_INFO']
     redshift = float(header[0].split()[2])
     t_hubble = float(header[0].split()[6])
