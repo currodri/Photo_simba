@@ -40,13 +40,12 @@ d = pickle.load(obj)
 selected_galaxies = d['galaxies'][GALAXY]
 
 for gal in selected_galaxies:
-
-    U = np.asarray(gal.mags[0].Abs)
-    V = np.asarray(gal.mags[1].Abs)
-    J = np.asarray(gal.mags[2].Abs)
     z = np.asarray(gal.mags[0].z)
-
     ind_z = np.argmin(abs(z - REDSHIFT))
+
+    U = np.asarray(gal.mags[0].Abs[::-1][0:ind_z+1])
+    V = np.asarray(gal.mags[1].Abs[::-1][0:ind_z+1])
+    J = np.asarray(gal.mags[2].Abs[::-1][0:ind_z+1])
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
