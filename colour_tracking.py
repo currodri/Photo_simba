@@ -39,3 +39,23 @@ d = pickle.load(obj)
 
 selected_galaxies = d['galaxies'][GALAXY]
 
+for gal in selected_galaxies:
+
+    U = np.asarray(gal.mags[0].Abs)
+    V = np.asarray(gal.mags[1].Abs)
+    J = np.asarray(gal.mags[2].Abs)
+    z = np.asarray(gal.mags[0].z)
+    
+    diff_z = abs(z - REDSHIFT)
+
+    fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
+    ax = fig.add_subplot(1,1,1)
+    ax.set_xlabel('V - J', fontsize=16)
+    ax.set_ylabel('U - V', fontsize=16)
+
+
+    sc = ax.scatter(x,y,c=sSFR,cmap='plasma',s=8)
+    cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
+    cb.set_label(label=r'$\log(sSFR)$', fontsize=16)
+    fig.tight_layout()
+    fig.savefig('../color_plots/uv_vj_qssfr_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')

@@ -61,14 +61,14 @@ def crossmatch_loserandquench(MODEL,WIND,SNAP_0,galaxies,magcols):
             for gal in galaxies:
                 for red_filt in gal.z[gal.caesar_id==float(caesar_id[i])]:
                     if red_filt == redshift:
+                        print('hey, match found')
                         for f in range(0, len(magcols)):
-                            mag_data = gal.mags[f]
                             if l==0:
                                 f_info = filter_info.split()
-                                mag_data.filtername = f_info[6]+' '+f_info[7]+' '+f_info[8]
-                                mag_data.wave_eff = float(f_info[5])
-                            mag_data.z.append(redshift)
-                            mag_data.Abs.append(Labs[f][l])
-                            mag_data.App.append(Lapp[f][l])
+                                gal.mags[f].filtername = f_info[6]+' '+f_info[7]+' '+f_info[8]
+                                gal.mags[f].wave_eff = float(f_info[5])
+                            gal.mags[f].z.append(redshift)
+                            gal.mags[f].Abs.append(Labs[f][l])
+                            gal.mags[f].App.append(Lapp[f][l])
     return galaxies
 
