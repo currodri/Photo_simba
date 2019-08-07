@@ -38,3 +38,4 @@ obj = open(data_file, 'rb')
 d = pickle.load(obj)
 
 selected_galaxies = d['galaxies'][GALAXY]
+
