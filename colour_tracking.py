@@ -41,6 +41,10 @@ d = pickle.load(obj)
 
 selected_galaxies = np.asarray(d['galaxies'])[GALAXY]
 
+markers = ['o','*','s','x']
+m_sizes = [20,40]
+props = dict(boxstyle='round', facecolor='white', edgecolor='k', alpha=0.7)
+
 for gal in selected_galaxies:
     z = np.asarray(gal.mags[0].z)
     ind_z = np.argmin(abs(z - REDSHIFT))
@@ -49,8 +53,7 @@ for gal in selected_galaxies:
     V = np.asarray(gal.mags[1].Abs[ind_z+1:][::-1])
     J = np.asarray(gal.mags[2].Abs[ind_z+1:][::-1])
     bhmass = np.zeros(len(z))
-    for i in range(0,len(z)):
-        bhmass[i] = float(gal.bhar[np.where(gal.z==z[i])]+1e-14)
+    bhar = np.zeros(len(z))
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
     ax.set_xlabel('V - J', fontsize=16)
@@ -58,7 +61,33 @@ for gal in selected_galaxies:
     x = U - V 
     y = V - J
     ax.plot(x,y, '-k')
-    sc = ax.scatter(x,y,c=np.log10(bhmass),cmap='plasma',s=20)
+    for i in range(0,len(z)):
+        bhmass[i] = float(gal.bh_m[np.where(gal.z==z[i])])
+        bhar[i] = float(gal.bhar[np.where(gal.z==z[i])])
+    max_bhm = np.amax(bhmass)
+    max_bhar = np.amax(bhar)
+    min_bhm = np.amin(bhmass)
+    min_bhar = np.amin(bhar)
+    for i in range(0, len(z)):
+        size = m_sizes[gal.g_type[np.where(gal.z==z[i])]]
+        if gal.mergers:
+            for merg in gal.mergers:
+                if z[i]==gal.z[merg.indx]:
+                    m = 1
+                    ax.text(0.99*x[i], 1.01*y[i], r'$R = $'+'{:.3}'.format(merg.merger_ratio), fontsize=8, bbox=props)
+        elif gal.quenching:
+            for quench in gal.quenching:
+                if z[i]==gal.z[quench.indx]:
+                    m = 2
+                    ax.text(0.99*x[i], 1.01*y[i], r'$\tau_{q} = $'+'{:.3}'.format(quench.quench_time)+r' Gyr', fontsize=8, bbox=props)
+        elif gal.rejuvenations:
+            for j in range(0, len(gal.rejuvenations)):
+                if z[i]==gal.z[gal.rejuvenations[j]]:
+                    m = 3
+        else:
+            m = 0
+        sc = ax.scatter(x[i],y[i],c=np.log10(bhmass[i]),cmap='plasma',s=size, marker=markers[m])
+        sc.set_clim(min_bhm,max_bhm)
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(M_{BH}[M_{\odot}])$', fontsize=16)
     fig.tight_layout()
