@@ -75,12 +75,12 @@ for gal in selected_galaxies:
             for merg in gal.mergers:
                 if z[i]==gal.z[merg.indx]:
                     m = 1
-                    ax.text(0.99*x[i], 1.01*y[i], r'$R = $'+'{:.3}'.format(merg.merger_ratio), fontsize=8, bbox=props)
+                    ax.text(0.99*x[i], 1.05*y[i], r'$R = $'+'{:.3}'.format(merg.merger_ratio), fontsize=8, bbox=props)
         elif gal.quenching:
             for quench in gal.quenching:
                 if z[i]==gal.z[quench.indx]:
                     m = 2
-                    ax.text(0.99*x[i], 1.01*y[i], r'$\tau_{q} = $'+'{:.3}'.format(quench.quench_time)+r' Gyr', fontsize=8, bbox=props)
+                    ax.text(0.99*x[i], 1.05*y[i], r'$\tau_{q} = $'+'{:.3}'.format(quench.quench_time)+r' Gyr', fontsize=8, bbox=props)
         elif gal.rejuvenations:
             for j in range(0, len(gal.rejuvenations)):
                 if z[i]==gal.z[gal.rejuvenations[j]]:
