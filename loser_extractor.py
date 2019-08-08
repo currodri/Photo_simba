@@ -13,8 +13,9 @@ from galaxy_class import Magnitude
 ###########################################################################
 def read_mags(infile,magcols,MODEL,WIND,nodust=False):
     f = h5py.File(infile,'r')
-    snap = int(infile[-8:-5])
+    snap = infile[-8:-5]
     caesar_file = '/home/rad/data/%s/%s/Groups/%s_%s.hdf5' % (MODEL,WIND,MODEL,snap)
+    print(caesar_file)
     cfile = h5py.File(caesar_file)
     redshift = cfile['simulation_attributes'].attrs['redshift']
     omega_matter = cfile['simulation_attributes'].attrs['omega_matter']
@@ -71,21 +72,5 @@ def crossmatch_loserandquench(MODEL,WIND,SNAP_0,galaxies,magcols):
                     gal.mags[f].z.append(redshift)
                     gal.mags[f].Abs.append(Labs[f][indx])
                     gal.mags[f].App.append(Lapp[f][indx])
-
-    # for l in range(0, len(loser_sorted)):
-    #     redshift,t_hubble,filter_info,caesar_id,Labs,Lapp = read_mags(caesar_dir+loser_sorted[l],magcols,MODEL,WIND)
-    #     print ('Reading loser file for z=%s' % (redshift))
-    #     for i in range(0,len(caesar_id)):
-    #         for gal in galaxies:
-    #             for red_filt in gal.z[gal.caesar_id==float(caesar_id[i])]:
-    #                 if red_filt == redshift:
-    #                     for f in range(0, len(magcols)):
-    #                         if l==0:
-    #                             f_info = filter_info[f].split()
-    #                             gal.mags[f].filtername = f_info[6]+' '+f_info[7]+' '+f_info[8]
-    #                             gal.mags[f].wave_eff = float(f_info[5])
-    #                         gal.mags[f].z.append(redshift)
-    #                         gal.mags[f].Abs.append(Labs[f][l])
-    #                         gal.mags[f].App.append(Lapp[f][l])
     return galaxies
 
