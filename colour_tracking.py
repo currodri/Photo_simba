@@ -69,6 +69,7 @@ for gal in selected_galaxies:
     min_bhm = np.amin(bhmass)
     min_bhar = np.amin(bhar)
     for i in range(0, len(z)):
+        m = 0
         size = m_sizes[int(gal.g_type[np.where(gal.z==z[i])])]
         if gal.mergers:
             for merg in gal.mergers:
@@ -84,8 +85,6 @@ for gal in selected_galaxies:
             for j in range(0, len(gal.rejuvenations)):
                 if z[i]==gal.z[gal.rejuvenations[j]]:
                     m = 3
-        else:
-            m = 0
         sc = ax.scatter(x[i],y[i],c=np.log10(bhmass[i]),cmap='plasma',s=size, marker=markers[m])
         sc.set_clim(min_bhm,max_bhm)
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
