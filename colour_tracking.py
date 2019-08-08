@@ -43,8 +43,10 @@ selected_galaxies = np.asarray(d['galaxies'])[GALAXY]
 
 for gal in selected_galaxies:
     z = np.asarray(gal.mags[0].z)
+    print(z)
     ind_z = np.argmin(abs(z - REDSHIFT))
     z = z[::-1][0:ind_z+1]
+    print(z)
     U = np.asarray(gal.mags[0].Abs[::-1][0:ind_z+1])
     V = np.asarray(gal.mags[1].Abs[::-1][0:ind_z+1])
     J = np.asarray(gal.mags[2].Abs[::-1][0:ind_z+1])
