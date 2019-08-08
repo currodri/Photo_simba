@@ -50,7 +50,7 @@ for gal in selected_galaxies:
     J = np.asarray(gal.mags[2].Abs[ind_z+1:][::-1])
     bhmass = np.zeros(len(z))
     for i in range(0,len(z)):
-        bhmass[i] = float(gal.bhar[np.where(gal.z==z[i])])
+        bhmass[i] = float(gal.bhar[np.where(gal.z==z[i])]+1e-14)
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
     ax.set_xlabel('V - J', fontsize=16)
