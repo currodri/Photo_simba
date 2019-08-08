@@ -32,7 +32,9 @@ MODEL = sys.argv[1]     # e.g. m100n1024
 REDSHIFT = float(sys.argv[2])  # e.g. 0.5
 GALAXY = [int(sys.argv[3])]    # e.g. 987
 if len(sys.argv) > 4:
-    GALAXY = sys.argv[4:] # this is for the case in which we want the tracks for multiple galaxies
+    GaLAXY = []
+    for i in range(3,len(sys.argv)):
+        GALAXY.append(sys.argv[i]) # this is for the case in which we want the tracks for multiple galaxies
 
 # Read data from pickle file
 data_file = '/home/curro/quenchingSIMBA/code/SH_Project/mandq_results_%s.pkl' % (MODEL)
