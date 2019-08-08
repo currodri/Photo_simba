@@ -30,7 +30,7 @@ from galaxy_class import Magnitude, GalaxyData
 
 MODEL = sys.argv[1]     # e.g. m100n1024
 REDSHIFT = sys.argv[2]  # e.g. 0.5
-GALAXY = [sys.argv[3]]    # e.g. 987
+GALAXY = [int(sys.argv[3])]    # e.g. 987
 if len(sys.argv) > 4:
     GALAXY = sys.argv[4:] # this is for the case in which we want the tracks for multiple galaxies
 
