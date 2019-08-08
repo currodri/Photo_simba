@@ -64,10 +64,10 @@ for gal in selected_galaxies:
     for i in range(0,len(z)):
         bhmass[i] = float(gal.bh_m[np.where(gal.z==z[i])])
         bhar[i] = float(gal.bhar[np.where(gal.z==z[i])])
-    max_bhm = np.amax(bhmass)
-    max_bhar = np.amax(bhar)
-    min_bhm = np.amin(bhmass)
-    min_bhar = np.amin(bhar)
+    max_bhm = np.log10(np.amax(bhmass))
+    max_bhar = np.log10(np.amax(bhar))
+    min_bhm = np.log10(np.amin(bhmass))
+    min_bhar = np.log10(np.amin(bhar))
     for i in range(0, len(z)):
         m = 0
         size = m_sizes[int(gal.g_type[np.where(gal.z==z[i])])]
