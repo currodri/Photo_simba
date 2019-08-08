@@ -29,7 +29,7 @@ from galaxy_class import Magnitude, GalaxyData
 # Get details from terminal
 
 MODEL = sys.argv[1]     # e.g. m100n1024
-REDSHIFT = sys.argv[2]  # e.g. 0.5
+REDSHIFT = float(sys.argv[2])  # e.g. 0.5
 GALAXY = [int(sys.argv[3])]    # e.g. 987
 if len(sys.argv) > 4:
     GALAXY = sys.argv[4:] # this is for the case in which we want the tracks for multiple galaxies
@@ -43,7 +43,6 @@ selected_galaxies = np.asarray(d['galaxies'])[GALAXY]
 
 for gal in selected_galaxies:
     z = np.asarray(gal.mags[0].z)
-    print(z, REDSHIFT)
     ind_z = np.argmin(abs(z - REDSHIFT))
     z = z[::-1][0:ind_z+1]
     U = np.asarray(gal.mags[0].Abs[::-1][0:ind_z+1])
