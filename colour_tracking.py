@@ -69,7 +69,7 @@ for gal in selected_galaxies:
     min_bhm = np.amin(bhmass)
     min_bhar = np.amin(bhar)
     for i in range(0, len(z)):
-        size = m_sizes[gal.g_type[np.where(gal.z==z[i])]]
+        size = m_sizes[int(gal.g_type[np.where(gal.z==z[i])])]
         if gal.mergers:
             for merg in gal.mergers:
                 if z[i]==gal.z[merg.indx]:
