@@ -57,7 +57,8 @@ for gal in selected_galaxies:
     ax.set_ylabel('U - V', fontsize=16)
     x = U - V 
     y = V - J
-    sc = ax.scatter(x,y,c=np.log10(bhmass),cmap='plasma',s=10)
+    ax.plot(x,y, '-k')
+    sc = ax.scatter(x,y,c=np.log10(bhmass),cmap='plasma',s=20)
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(M_{BH}[M_{\odot}])$', fontsize=16)
     fig.tight_layout()
