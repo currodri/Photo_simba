@@ -60,17 +60,31 @@ def crossmatch_loserandquench(MODEL,WIND,SNAP_0,galaxies,magcols):
     for l in range(0, len(loser_sorted)):
         redshift,t_hubble,filter_info,caesar_id,Labs,Lapp = read_mags(caesar_dir+loser_sorted[l],magcols,MODEL,WIND)
         print ('Reading loser file for z=%s' % (redshift))
-        for i in range(0,len(caesar_id)):
-            for gal in galaxies:
-                for red_filt in gal.z[gal.caesar_id==float(caesar_id[i])]:
-                    if red_filt == redshift:
-                        for f in range(0, len(magcols)):
-                            if l==0:
-                                f_info = filter_info[f].split()
-                                gal.mags[f].filtername = f_info[6]+' '+f_info[7]+' '+f_info[8]
-                                gal.mags[f].wave_eff = float(f_info[5])
-                            gal.mags[f].z.append(redshift)
-                            gal.mags[f].Abs.append(Labs[f][l])
-                            gal.mags[f].App.append(Lapp[f][l])
+        for gal in galaxies:
+            indx = int(gal.caesar_id[gal.z==float(redshift)])
+            for f in range(0, len(magcols)):
+                if l==0:
+                    f_info = filter_info[f].split()
+                    gal.mags[f].filtername = f_info[6]+' '+f_info[7]+' '+f_info[8]
+                    gal.mags[f].wave_eff = float(f_info[5])
+                gal.mags[f].z.append(redshift)
+                gal.mags[f].Abs.append(Labs[f][indx])
+                gal.mags[f].App.append(Lapp[f][indx])
+
+    # for l in range(0, len(loser_sorted)):
+    #     redshift,t_hubble,filter_info,caesar_id,Labs,Lapp = read_mags(caesar_dir+loser_sorted[l],magcols,MODEL,WIND)
+    #     print ('Reading loser file for z=%s' % (redshift))
+    #     for i in range(0,len(caesar_id)):
+    #         for gal in galaxies:
+    #             for red_filt in gal.z[gal.caesar_id==float(caesar_id[i])]:
+    #                 if red_filt == redshift:
+    #                     for f in range(0, len(magcols)):
+    #                         if l==0:
+    #                             f_info = filter_info[f].split()
+    #                             gal.mags[f].filtername = f_info[6]+' '+f_info[7]+' '+f_info[8]
+    #                             gal.mags[f].wave_eff = float(f_info[5])
+    #                         gal.mags[f].z.append(redshift)
+    #                         gal.mags[f].Abs.append(Labs[f][l])
+    #                         gal.mags[f].App.append(Lapp[f][l])
     return galaxies
 
