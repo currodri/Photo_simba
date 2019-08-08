@@ -39,7 +39,7 @@ data_file = '/home/curro/quenchingSIMBA/code/SH_Project/mandq_results_%s.pkl' % 
 obj = open(data_file, 'rb')
 d = pickle.load(obj)
 
-selected_galaxies = d['galaxies'][GALAXY]
+selected_galaxies = np.asarray(d['galaxies'])[GALAXY]
 
 for gal in selected_galaxies:
     z = np.asarray(gal.mags[0].z)
