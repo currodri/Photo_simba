@@ -43,13 +43,11 @@ selected_galaxies = np.asarray(d['galaxies'])[GALAXY]
 
 for gal in selected_galaxies:
     z = np.asarray(gal.mags[0].z)
-    print(z)
     ind_z = np.argmin(abs(z - REDSHIFT))
     z = z[ind_z+1:][::-1]
-    print(z)
-    U = np.asarray(gal.mags[0].Abs[::-1][0:ind_z+1])
-    V = np.asarray(gal.mags[1].Abs[::-1][0:ind_z+1])
-    J = np.asarray(gal.mags[2].Abs[::-1][0:ind_z+1])
+    U = np.asarray(gal.mags[0].Abs[ind_z+1:][::-1])
+    V = np.asarray(gal.mags[1].Abs[ind_z+1:][::-1])
+    J = np.asarray(gal.mags[2].Abs[ind_z+1:][::-1])
     bhmass = np.zeros(len(z))
     for i in range(0,len(z)):
         bhmass[i] = float(gal.bh_m[np.where(gal.z==z[i])])
