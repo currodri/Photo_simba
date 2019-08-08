@@ -23,6 +23,8 @@ import seaborn as sns
 sns.set(style="white")
 import cPickle as pickle
 import sys
+sys.path.insert(0, '../../SH_Project')
+from galaxy_class import Magnitude, GalaxyData
 
 # Get details from terminal
 
