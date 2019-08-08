@@ -61,7 +61,7 @@ def crossmatch_loserandquench(MODEL,WIND,SNAP_0,galaxies,magcols):
         redshift,t_hubble,filter_info,caesar_id,Labs,Lapp = read_mags(caesar_dir+loser_sorted[l],magcols,MODEL,WIND)
         print ('Reading loser file for z=%s' % (redshift))
         for gal in galaxies:
-            if len(gal.caesar_id[gal.z==float(redshift)])>1:
+            if len(gal.caesar_id[gal.z==float(redshift)][0])>1:
                 print(gal.z,float(redshift))
             indx = int(gal.caesar_id[gal.z==float(redshift)])
             for f in range(0, len(magcols)):
