@@ -60,8 +60,8 @@ for gal in selected_galaxies:
     ax = fig.add_subplot(1,1,1)
     ax.set_xlabel('V - J', fontsize=16)
     ax.set_ylabel('U - V', fontsize=16)
-    x = U - V 
-    y = V - J
+    x = V - J
+    y = U - V
     ax.plot(x,y, '-k')
     for i in range(0,len(z)):
         bhmass[i] = float(gal.bh_m[np.where(gal.z==z[i])])
