@@ -118,6 +118,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     J_non = np.asarray(J_non)
     x_non = V_non - J_non
     y_non = U_non - V_non
+    print(q_time.shape, tau_q.shape,sSFR.shape,x.shape,y.shape)
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
