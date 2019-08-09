@@ -22,7 +22,6 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set(style="white")
-from astropy.cosmology import FlatLambdaCDM
 import sys
 sys.path.insert(0, '../../SH_Project')
 from galaxy_class import Magnitude, GalaxyData
@@ -37,6 +36,7 @@ caesar_file = '/home/rad/data/%s/%s/Groups/%s_%s.hdf5' % (MODEL,WIND,MODEL,SNAP)
 print(caesar_file)
 cfile = h5py.File(caesar_file)
 REDSHIFT = float(cfile['simulation_attributes'].attrs['redshift'])
+print('Making UVJ plots for z = '+str(REDSHIFT))
 
 # Read data from pickle file
 data_file = '/home/curro/quenchingSIMBA/code/SH_Project/mandq_results_%s.pkl' % (MODEL)
@@ -55,8 +55,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     # This function obtains the UVJ colour plot for the galaxies that a given redshift experienced a quenching
     # as determined by the quenchingFinder algorithm. The scatter points are colour coded with the time past 
     # after the last quenching (Fig 1) or the quenching timescale (Fig 2).
-    cosmo = FlatLambdaCDM(H0=100*0.68, Om0=0.3, Ob0=0.04799952624117699,Tcmb0=2.73)
-    t_hubble = cosmo.age(redshift).value
+
     # Start by selecting the galaxies in the snapshot that experienced a quenching before and are still quenched
     U = []
     V = []
@@ -68,6 +67,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     V_non = []
     J_non = []
     for gal in galaxies:
+        print(gal.mags[0].z==redshift,gal.z==redshift)
         if gal.mags[0].Abs[gal.mags[0].z==redshift] and gal.t[gal.z==redshift]:
             if gal.quenching:
                 possible_q = []
