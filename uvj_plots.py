@@ -72,25 +72,36 @@ def uvj_quench(redshift,galaxies,masslimit):
         pos2 = np.where(gal.z==redshift)
         mag0 = np.asarray(gal.mags[0].Abs)
         if mag0[pos] and gal.t[0][pos2]:
-            m_gal = np.asarray(gal.m)
             if gal.quenching:
                 possible_q = []
                 possible_tau = []
+                possible_sfr = []
                 for quench in gal.quenching:
-                    indx = quench.indx
+                    end = quench.below11
                     ssfr = gal.ssfr[0][pos2]
                     snap_t = gal.t[0][pos2]
                     ssfr_cond = 10**sfr_condition('end', snap_t)
-                    if gal.t[0][indx] <= snap_t and (snap_t-gal.t[0][indx]) <= 1.0 and ssfr <= ssfr_cond:
-                        mag1 = np.asarray(gal.mags[1].Abs)
-                        mag2 = np.asarray(gal.mags[2].Abs)
-                        U.append(mag0[pos])
-                        V.append(mag1[pos])
-                        J.append(mag2[pos])
-                        sSFR.append(ssfr)
-                        q_time.append(snap_t-gal.t[0][indx])
-                        tau_q.append(quench.quench_time)
-            elif np.log10(m_gal[0][pos2]) >= masslimit:
+                    if gal.t[1][end] <= snap_t and (snap_t-gal.t[1][end]) <= 1.0 and ssfr <= ssfr_cond:
+                        possible_q.append(snap_t-gal.t[1][end])
+                        possible_tau.append(quench.quench_time/snap_t-gal.t[1][end])
+                        possible_sfr.append(gal.ssfr[0][pos2])
+                if possible_q:
+                    possible_q = np.asarray(possible_q)
+                    possible_tau = np.asarray(possible_tau)
+                    possible_sfr = np.asarray(possible_sfr)
+                    mag1 = np.asarray(gal.mags[1].Abs)
+                    mag2 = np.asarray(gal.mags[2].Abs)
+                    U.append(mag0[pos])
+                    V.append(mag1[pos])
+                    J.append(mag2[pos])
+                    sSFR.append(ssfr[np.argmin(possible_q)])
+                    q_time.append(np.amin(possible_q))
+                    tau_q.append(possible_tau[np.argmin(possible_q)])
+                else:
+                    U_non.append(gal.mags[0].Abs[gal.mags[0].z==redshift])
+                    V_non.append(gal.mags[1].Abs[gal.mags[1].z==redshift])
+                    J_non.append(gal.mags[2].Abs[gal.mags[2].z==redshift])
+            elif np.log10(gal.m[0][pos2]) >= masslimit:
                 U_non.append(gal.mags[0].Abs[gal.mags[0].z==redshift])
                 V_non.append(gal.mags[1].Abs[gal.mags[1].z==redshift])
                 J_non.append(gal.mags[2].Abs[gal.mags[2].z==redshift])
