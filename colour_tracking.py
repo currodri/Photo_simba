@@ -15,7 +15,8 @@ s1650043@ed.ac.uk
 """
 
 # Import required libraries
-import numpy as np 
+import numpy as np
+from numpy import ma
 import matplotlib
 matplotlib.use('Agg') # Must be before importing matplotlib.pyplot or pylab!
 import matplotlib.pyplot as plt
@@ -92,6 +93,8 @@ for gal in selected_galaxies:
         bhmass[i] = float(gal.bh_m[np.where(gal.z==z[i])])
         bhar[i] = float(gal.bhar[np.where(gal.z==z[i])])
     print(bhmass)
+    bhmass = ma.array(bhmass)
+    bhmass = ma.masked_where(bhmass>0,bhmass)
     max_bhm = np.log10(np.amax(bhmass))
     max_bhar = np.amax(bhar)
     min_bhm = np.log10(np.amin(bhmass))
@@ -113,7 +116,7 @@ for gal in selected_galaxies:
             for j in range(0, len(gal.rejuvenations)):
                 if z[i]==gal.z[gal.rejuvenations[j]]:
                     m = 3
-        sc = ax.scatter(x[i],y[i],c=bhmass[i],cmap='plasma',s=size, marker=markers[m])
+        sc = ax.scatter(x[i],y[i],c=np.log10(bhmass[i]+1e+8),cmap='plasma',s=size, marker=markers[m])
         sc.set_clim(min_bhm,max_bhm)
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(M_{BH}[M_{\odot}])$', fontsize=16)
