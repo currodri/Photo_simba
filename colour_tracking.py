@@ -80,6 +80,7 @@ for gal in selected_galaxies:
     x = V - J
     y = U - V
     ax.plot(x,y, '-k')
+    print(z,gal.z)
     for i in range(0,len(z)):
         bhmass[i] = float(gal.bh_m[np.where(gal.z==z[i])])
         bhar[i] = float(gal.bhar[np.where(gal.z==z[i])])
