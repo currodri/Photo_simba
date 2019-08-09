@@ -76,7 +76,7 @@ def uvj_quench(redshift,galaxies,masslimit):
                     ssfr = gal.ssfr[0][gal.z==redshift]
                     snap_t = gal.t[gal.z==redshift]
                     ssfr_cond = 10**sfr_condition('end', snap_t)
-                    if gal.t[indx] < = snap_t and (snap_t-gal.t[indx]) <= 1.0 and ssfr <= ssfr_cond:
+                    if gal.t[indx] <= snap_t and (snap_t-gal.t[indx]) <= 1.0 and ssfr <= ssfr_cond:
                         U.append(gal.mags[0].Abs[gal.mags[0].z==redshift])
                         V.append(gal.mags[1].Abs[gal.mags[1].z==redshift])
                         J.append(gal.mags[2].Abs[gal.mags[2].z==redshift])
