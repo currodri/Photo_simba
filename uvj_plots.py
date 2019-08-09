@@ -169,4 +169,31 @@ def uvj_quench(redshift,galaxies,masslimit):
     fig3.savefig('../color_plots/uv_vj_qsf_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
 
-uvj_quench(REDSHIFT,d['galaxies'],MASSLIMIT)
+def uvj_plot(redshift,galaxies,masslimit):
+
+    x = []
+    y = []
+    for gal in galaxies:
+        mag_z = np.asarray(gal.mags[0].z)
+        pos = np.where(mag_z==redshift)
+        pos2 = np.where(gal.z==redshift)
+        mag0 = np.asarray(gal.mags[0].Abs)
+        if mag0[pos] and gal.t[0][pos2] and np.log10(gal.m[0][pos2])>=masslimit:
+            U = gal.mags[0].Abs[gal.mags[0].z==redshift]
+            V = gal.mags[1].Abs[gal.mags[1].z==redshift]
+            J = gal.mags[2].Abs[gal.mags[2].z==redshift] 
+            x.append(V - J)
+            y.append(U - V)
+    x = np.asarray(x)
+    y = np.asarray(y)
+
+    fig3 = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
+    ax = fig3.add_subplot(1,1,1)
+    ax.set_xlabel('V - J', fontsize=16)
+    ax.set_ylabel('U - V', fontsize=16)
+    ax.hexbin(x, y, gridsize=50,bins='log', cmap='Greys')
+    fig3.tight_layout()
+    fig3.savefig('../color_plots/uv_vj_hexbin_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+
+#uvj_quench(REDSHIFT,d['galaxies'],MASSLIMIT)
+uvj_plot(REDSHIFT,d['galaxies'],MASSLIMIT)
