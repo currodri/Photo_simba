@@ -60,6 +60,7 @@ def crossmatch_loserandquench(MODEL,WIND,SNAP_0,galaxies,magcols):
             gal.mags.append(Magnitude())
 
     for l in range(0, len(loser_sorted)):
+        print(loser_sorted[l])
         ngal,redshift,t_hubble,filter_info,caesar_id,Labs,Lapp = read_mags(caesar_dir+loser_sorted[l],magcols,MODEL,WIND)
         print ('Reading loser file for z=%s' % (redshift))
         counter = 0
