@@ -74,7 +74,7 @@ def crossmatch_loserandquench(MODEL,WIND,SNAP_0,galaxies,magcols):
                     gal.mags[f].z.append(redshift)
                     gal.mags[f].Abs.append(Labs[f][indx])
                     gal.mags[f].App.append(Lapp[f][indx])
-                    counter = counter + 1
+                counter = counter + 1
         print('Cross-matched '+str(counter)+' galaxies out of '+str(ngal))
     return galaxies
 
