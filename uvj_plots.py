@@ -107,6 +107,7 @@ def uvj_quench(redshift,galaxies,masslimit):
                 J_non.append(gal.mags[2].Abs[gal.mags[2].z==redshift])
     q_time = np.asarray(q_time)
     tau_q = np.asarray(tau_q)
+    sSFR = n.asarray(sSFR)
     U = np.asarray(U)
     V = np.asarray(V)
     J = np.asarray(J)
