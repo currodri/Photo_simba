@@ -72,7 +72,7 @@ def uvj_quench(redshift,galaxies,masslimit):
         pos2 = np.where(gal.z==redshift)
         mag0 = np.asarray(gal.mags[0].Abs)
         if mag0[pos] and gal.t[0][pos2]:
-            if gal.quenching:
+            if gal.quenching and not isinstance(gal.t[1],int):
                 possible_q = []
                 possible_tau = []
                 possible_sfr = []
