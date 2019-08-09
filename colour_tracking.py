@@ -58,6 +58,7 @@ for gala in d['galaxies']:
         y.append(U - V)
 x_non = np.asarray(x)
 y_non = np.asarray(y)
+print(len(x_non),len(y_non))
 
 markers = ['o','*','s','x']
 m_sizes = [20,40]
@@ -83,8 +84,6 @@ for gal in selected_galaxies:
     for i in range(0,len(z)):
         bhmass[i] = float(gal.bh_m[np.where(gal.z==z[i])])
         bhar[i] = float(gal.bhar[np.where(gal.z==z[i])])
-    print(bhmass)
-    print(bhar)
     max_bhm = np.log10(np.amax(bhmass))
     max_bhar = np.amax(bhar)
     min_bhm = np.log10(np.amin(bhmass))
