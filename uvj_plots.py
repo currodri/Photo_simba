@@ -66,6 +66,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     U_non = []
     V_non = []
     J_non = []
+    print('Possible PSBs found for galaxies: ')
     for gal in galaxies:
         mag_z = np.asarray(gal.mags[0].z)
         pos = np.where(mag_z==redshift)
@@ -97,6 +98,8 @@ def uvj_quench(redshift,galaxies,masslimit):
                     sSFR.append(possible_ssfr[np.argmin(possible_q)])
                     q_time.append(np.amin(possible_q))
                     tau_q.append(possible_tau[np.argmin(possible_q)])
+                    if 0.7 <= (V[-1]-J[-1]) < 0.8 and 1.5 <= (U[-1]-V[-1]) < 1.63:
+                        print('Caesar ID: '+str(gal.caesar_id[pos2]))
                 else:
                     U_non.append(gal.mags[0].Abs[gal.mags[0].z==redshift])
                     V_non.append(gal.mags[1].Abs[gal.mags[1].z==redshift])
