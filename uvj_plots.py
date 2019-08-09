@@ -29,8 +29,8 @@ from galaxy_class import Magnitude, GalaxyData
 # Get details from terminal
 MODEL = sys.argv[1]     # e.g. m100n1024
 WIND = sys.argv[2]      # e.g. s50
-SNAP = int(sys.argv[2]) # e.g. 0.5
-MASSLIMIT = float(sys.argv[3]) # usually it should be log(M*)>9.5
+SNAP = int(sys.argv[3]) # e.g. 0.5
+MASSLIMIT = float(sys.argv[4]) # usually it should be log(M*)>9.5
 
 caesar_file = '/home/rad/data/%s/%s/Groups/%s_%s.hdf5' % (MODEL,WIND,MODEL,SNAP)
 print(caesar_file)
