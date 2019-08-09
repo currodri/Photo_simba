@@ -133,6 +133,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     ax = fig2.add_subplot(1,1,1)
     ax.set_xlabel('V - J', fontsize=16)
     ax.set_ylabel('U - V', fontsize=16)
+    print(len(tau_q), len(x), len(y))
     ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
     sc = ax.scatter(x,y,c=np.log10(tau_q),cmap='plasma',s=8)
     cb = fig2.colorbar(sc, ax=ax, orientation='horizontal')
