@@ -81,7 +81,7 @@ def read_caesar(caesarfile):
     sfr = np.asarray([i.sfr for i in sim.galaxies])
     return z,ms,sfr
 
-def uv_vj_plot(ngal, Lapp, m_lim, SFR, MS):
+def uv_vj_plot(ngal, Lapp, m_lim, SFR=0, MS=0):
     # Simple function that provides U-V vs V_J colours for all the galaxies in a given snapshot
     # If SFR and stellar mass are provided, scatter points are color-coded with sSFR
     # The bands in Lapp should be given as Lapp[0] = U, Lapp[1] = V and Lapp[2] = J
@@ -417,16 +417,17 @@ if __name__ == '__main__':
     #print(Lapp[2][10]-Labs[2][10])
     #ks_mass_plot(ngal, Lapp[0], sfr, mstar, 24.5)
     #filtername = colorinfo[9].split()[6:8]
+    uv_vj_plot(ngal,Labs,9.5)
     #uv_vj_plot(ngal,Labs,9.5,SFR=A_V,MS=mstar)
     #histo_mag(ngal,Lapp[0],mstar,filtername, 20, 9.5)
     #scatter_app_vs_mass(ngal, Lapp[0], mstar, filtername)
     # print('Now starting to make plots...')
     # #merg_data = '/home/curro/quenchingSIMBA/code/mergers/%s/merger_results.pkl' % (MODEL)
     # #quench_data = '/home/curro/quenchingSIMBA/code/quench_analysis/%s/quenching_results.pkl' % (MODEL)
-    data_file = '/home/curro/quenchingSIMBA/code/SH_Project/mandq_results_%s.pkl' % (MODEL)
-    file = open(data_file, 'rb')
-    d = pickle.load(file)
-    file.close()
-    quenchings = d['galaxies']
-    # #uvj_mergertime(redshift,caesar_id,Labs,merg_data)
-    uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quenchings)
+    # data_file = '/home/curro/quenchingSIMBA/code/SH_Project/mandq_results_%s.pkl' % (MODEL)
+    # file = open(data_file, 'rb')
+    # d = pickle.load(file)
+    # file.close()
+    # quenchings = d['galaxies']
+    # # #uvj_mergertime(redshift,caesar_id,Labs,merg_data)
+    # uvj_quench(redshift,caesar_id,Labs,sfr,mstar,quenchings)
