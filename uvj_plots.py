@@ -101,7 +101,8 @@ def uvj_quench(redshift,galaxies,masslimit):
                     U_non.append(gal.mags[0].Abs[gal.mags[0].z==redshift])
                     V_non.append(gal.mags[1].Abs[gal.mags[1].z==redshift])
                     J_non.append(gal.mags[2].Abs[gal.mags[2].z==redshift])
-            elif np.log10(gal.m[0][pos2]) >= masslimit:
+            #elif np.log10(gal.m[0][pos2]) >= masslimit:
+            else:
                 U_non.append(gal.mags[0].Abs[gal.mags[0].z==redshift])
                 V_non.append(gal.mags[1].Abs[gal.mags[1].z==redshift])
                 J_non.append(gal.mags[2].Abs[gal.mags[2].z==redshift])
@@ -118,8 +119,6 @@ def uvj_quench(redshift,galaxies,masslimit):
     J_non = np.asarray(J_non)
     x_non = V_non - J_non
     y_non = U_non - V_non
-    print(sSFR)
-    print(q_time.shape, tau_q.shape,sSFR.shape,x.shape,y.shape)
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
@@ -147,7 +146,6 @@ def uvj_quench(redshift,galaxies,masslimit):
     ax = fig2.add_subplot(1,1,1)
     ax.set_xlabel('V - J', fontsize=16)
     ax.set_ylabel('U - V', fontsize=16)
-    print(len(tau_q), len(x), len(y))
     ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
     sc = ax.scatter(x,y,c=np.log10(tau_q),cmap='plasma',s=8)
     cb = fig2.colorbar(sc, ax=ax, orientation='horizontal')
