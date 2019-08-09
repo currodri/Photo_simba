@@ -157,7 +157,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     y_slow = ma.masked_values(y, tau_q>=10**(-1.5))
     x_fast = ma.masked_values(x, tau_q<10**(-1.5))
     y_fast = ma.masked_values(y, tau_q<10**(-1.5))
-    print(x_slow,x_fast)
+    print(tau_q)
     fig3 = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig3.add_subplot(1,1,1)
     ax.set_xlabel('V - J', fontsize=16)
