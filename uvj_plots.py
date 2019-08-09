@@ -75,7 +75,7 @@ def uvj_quench(redshift,galaxies,masslimit):
             if gal.quenching and not isinstance(gal.t[1],int):
                 possible_q = []
                 possible_tau = []
-                possible_sfr = []
+                possible_ssfr = []
                 for quench in gal.quenching:
                     end = quench.below11
                     ssfr = gal.ssfr[0][pos2]
@@ -83,18 +83,18 @@ def uvj_quench(redshift,galaxies,masslimit):
                     ssfr_cond = 10**sfr_condition('end', snap_t)
                     if gal.t[1][end] <= snap_t and (snap_t-gal.t[1][end]) <= 1.0 and ssfr <= ssfr_cond:
                         possible_q.append(snap_t-gal.t[1][end])
-                        possible_tau.append(quench.quench_time/snap_t-gal.t[1][end])
-                        possible_sfr.append(gal.ssfr[0][pos2])
+                        possible_tau.append(quench.quench_time/gal.t[1][end])
+                        possible_ssfr.append(gal.ssfr[0][pos2])
                 if possible_q:
                     possible_q = np.asarray(possible_q)
                     possible_tau = np.asarray(possible_tau)
-                    possible_sfr = np.asarray(possible_sfr)
+                    possible_ssfr = np.asarray(possible_ssfr)
                     mag1 = np.asarray(gal.mags[1].Abs)
                     mag2 = np.asarray(gal.mags[2].Abs)
                     U.append(mag0[pos])
                     V.append(mag1[pos])
                     J.append(mag2[pos])
-                    sSFR.append(ssfr[np.argmin(possible_q)])
+                    sSFR.append(possible_ssfr[np.argmin(possible_q)])
                     q_time.append(np.amin(possible_q))
                     tau_q.append(possible_tau[np.argmin(possible_q)])
                 else:
@@ -123,7 +123,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     ax.set_xlabel('V - J', fontsize=16)
     ax.set_ylabel('U - V', fontsize=16)
     ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
-    sc = ax.scatter(x,y,c=sSFR,cmap='plasma',s=8)
+    sc = ax.scatter(x,y,c=np.log10(sSFR+1e-14),cmap='plasma',s=8)
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(sSFR)$', fontsize=16)
     fig.tight_layout()
