@@ -67,7 +67,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     V_non = []
     J_non = []
     for gal in galaxies:
-        print(gal.mags[0].z==redshift,gal.z==redshift)
+        print(gal.mags[0].z,redshift,gal.z,redshift)
         if gal.mags[0].Abs[gal.mags[0].z==redshift] and gal.t[gal.z==redshift]:
             if gal.quenching:
                 possible_q = []
