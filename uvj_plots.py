@@ -84,7 +84,7 @@ def uvj_quench(redshift,galaxies,masslimit):
                     if gal.t[1][end] <= snap_t and (snap_t-gal.t[1][end]) <= 1.0 and ssfr <= ssfr_cond:
                         possible_q.append(snap_t-gal.t[1][end])
                         possible_tau.append(quench.quench_time/gal.t[1][end])
-                        possible_ssfr.append(gal.ssfr[0][pos2])
+                        possible_ssfr.append(ssfr)
                 if possible_q:
                     possible_q = np.asarray(possible_q)
                     possible_tau = np.asarray(possible_tau)
@@ -118,6 +118,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     J_non = np.asarray(J_non)
     x_non = V_non - J_non
     y_non = U_non - V_non
+    print(sSFR)
     print(q_time.shape, tau_q.shape,sSFR.shape,x.shape,y.shape)
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
