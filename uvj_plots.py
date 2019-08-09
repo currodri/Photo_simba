@@ -16,6 +16,7 @@ s1650043@ed.ac.uk
 import numpy as np
 from numpy import ma
 import cPickle as pickle 
+import h5py
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
