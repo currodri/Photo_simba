@@ -55,11 +55,12 @@ def crossmatch_loserandquench(MODEL,WIND,SNAP_0,galaxies,magcols):
     loser = filter(lambda file:file[-5:]=='.hdf5' and file[0]=='p' and int(file[-8:-5])<=SNAP_0, os.listdir(caesar_dir))
     loser_sorted = sorted(loser,key=lambda file: int(file[-8:-5]), reverse=True)
 
-    for gal in galaxies:
-        for i in range(0, len(magcols)):
-            gal.mags.append(Magnitude())
-
+    for i in range(0,len(galaxies)):
+        for j in range(0, len(magcols)):
+            galaxies[i].mags.append(Magnitude())
+    print(loser_sorted)
     for l in range(0, len(loser_sorted)):
+        print(loser_sorted)
         print(loser_sorted[l])
         ngal,redshift,t_hubble,filter_info,caesar_id,Labs,Lapp = read_mags(caesar_dir+loser_sorted[l],magcols,MODEL,WIND)
         print ('Reading loser file for z=%s' % (redshift))
