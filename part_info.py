@@ -21,7 +21,7 @@ import sys
 import numpy as np
 from yt.utilities.cosmology import Cosmology
 from yt.units import km, s, Mpc
-import pickle
+import cPickle as pickle
 import matplotlib
 matplotlib.use('Agg') # Must be before importing matplotlib.pyplot or pylab!
 import matplotlib.pyplot as plt
