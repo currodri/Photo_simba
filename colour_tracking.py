@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set(style="white")
 import cPickle as pickle
+import h5py
 import sys
 sys.path.insert(0, '../../SH_Project')
 from galaxy_class import Magnitude, GalaxyData
@@ -90,6 +91,7 @@ for gal in selected_galaxies:
     for i in range(0,len(z)):
         bhmass[i] = float(gal.bh_m[np.where(gal.z==z[i])])
         bhar[i] = float(gal.bhar[np.where(gal.z==z[i])])
+    print(bhmass)
     max_bhm = np.log10(np.amax(bhmass))
     max_bhar = np.amax(bhar)
     min_bhm = np.log10(np.amin(bhmass))
