@@ -17,6 +17,7 @@ def read_mags(infile,magcols,MODEL,WIND,nodust=False):
     caesar_file = '/home/rad/data/%s/%s/Groups/%s_%s.hdf5' % (MODEL,WIND,MODEL,snap)
     print(caesar_file)
     cfile = h5py.File(caesar_file)
+    ngal = len(cfile['galaxy_data']['GroupID'])
     redshift = cfile['simulation_attributes'].attrs['redshift']
     omega_matter = cfile['simulation_attributes'].attrs['omega_matter']
     omega_baryon = cfile['simulation_attributes'].attrs['omega_baryon']
@@ -47,7 +48,7 @@ def read_mags(infile,magcols,MODEL,WIND,nodust=False):
     else:
         Labs = np.asarray(Labs)  # absolute magnitudes of galaxies in each desired band
         Lapp = np.asarray(Lapp)  # apparent magnitudes of galaxies in each desired band
-        return redshift,t_hubble,filter_info,caesar_id,Labs,Lapp
+        return ngal,redshift,t_hubble,filter_info,caesar_id,Labs,Lapp
 
 def crossmatch_loserandquench(MODEL,WIND,SNAP_0,galaxies,magcols):
     caesar_dir = '/home/rad/data/%s/%s/Groups/' % (MODEL,WIND)
@@ -59,8 +60,9 @@ def crossmatch_loserandquench(MODEL,WIND,SNAP_0,galaxies,magcols):
             gal.mags.append(Magnitude())
 
     for l in range(0, len(loser_sorted)):
-        redshift,t_hubble,filter_info,caesar_id,Labs,Lapp = read_mags(caesar_dir+loser_sorted[l],magcols,MODEL,WIND)
+        ngal,redshift,t_hubble,filter_info,caesar_id,Labs,Lapp = read_mags(caesar_dir+loser_sorted[l],magcols,MODEL,WIND)
         print ('Reading loser file for z=%s' % (redshift))
+        counter = 0
         for gal in galaxies:
             if gal.caesar_id[gal.z==float(redshift)]:
                 indx = int(gal.caesar_id[gal.z==float(redshift)])
@@ -72,5 +74,7 @@ def crossmatch_loserandquench(MODEL,WIND,SNAP_0,galaxies,magcols):
                     gal.mags[f].z.append(redshift)
                     gal.mags[f].Abs.append(Labs[f][indx])
                     gal.mags[f].App.append(Lapp[f][indx])
+                    counter += counter
+        print('Cross-matched '+str(counter)+' galaxies out of '+str(len(ngal)))
     return galaxies
 

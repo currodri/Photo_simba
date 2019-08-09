@@ -196,4 +196,5 @@ def uvj_plot(redshift,galaxies,masslimit):
     fig3.savefig('../color_plots/uv_vj_hexbin_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
 #uvj_quench(REDSHIFT,d['galaxies'],MASSLIMIT)
+
 uvj_plot(REDSHIFT,d['galaxies'],MASSLIMIT)
