@@ -101,8 +101,7 @@ def uvj_quench(redshift,galaxies,masslimit):
                     U_non.append(gal.mags[0].Abs[gal.mags[0].z==redshift])
                     V_non.append(gal.mags[1].Abs[gal.mags[1].z==redshift])
                     J_non.append(gal.mags[2].Abs[gal.mags[2].z==redshift])
-            #elif np.log10(gal.m[0][pos2]) >= masslimit:
-            else:
+            elif np.log10(gal.m[0][pos2]) >= masslimit:
                 U_non.append(gal.mags[0].Abs[gal.mags[0].z==redshift])
                 V_non.append(gal.mags[1].Abs[gal.mags[1].z==redshift])
                 J_non.append(gal.mags[2].Abs[gal.mags[2].z==redshift])
