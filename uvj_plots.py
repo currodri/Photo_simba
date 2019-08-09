@@ -71,23 +71,23 @@ def uvj_quench(redshift,galaxies,masslimit):
         pos = np.where(mag_z==redshift)
         pos2 = np.where(gal.z==redshift)
         mag0 = np.asarray(gal.mags[0].Abs)
-        if mag0[pos] and gal.t[pos2]:
+        if mag0[pos] and gal.t[0][pos2]:
             if gal.quenching:
                 possible_q = []
                 possible_tau = []
                 for quench in gal.quenching:
                     indx = quench.indx
                     ssfr = gal.ssfr[0][pos2]
-                    snap_t = gal.t[pos2]
+                    snap_t = gal.t[0][pos2]
                     ssfr_cond = 10**sfr_condition('end', snap_t)
-                    if gal.t[indx] <= snap_t and (snap_t-gal.t[indx]) <= 1.0 and ssfr <= ssfr_cond:
+                    if gal.t[0][indx] <= snap_t and (snap_t-gal.t[0][indx]) <= 1.0 and ssfr <= ssfr_cond:
                         mag1 = np.asarray(gal.mags[1].Abs)
                         mag2 = np.asarray(gal.mags[2].Abs)
                         U.append(mag0.Abs[pos])
                         V.append(mag1.Abs[pos])
                         J.append(mag2.Abs[pos])
                         sSFR.append(ssfr)
-                        q_time.append(snap_t-gal.t[indx])
+                        q_time.append(snap_t-gal.t[0][indx])
                         tau_q.append(quench.quenc_time)
             elif np.log10(gal.m[gal.z==redshift]) >= masslimit:
                 U_non.append(gal.mags[0].Abs[gal.mags[0].z==redshift])
