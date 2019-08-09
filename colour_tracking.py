@@ -45,7 +45,6 @@ obj = open(data_file, 'rb')
 d = pickle.load(obj)
 
 caesar_file = '/home/rad/data/%s/%s/Groups/%s_%s.hdf5' % (MODEL,WIND,MODEL,SNAP)
-print(caesar_file)
 cfile = h5py.File(caesar_file)
 REDSHIFT = float(cfile['simulation_attributes'].attrs['redshift'])
 
@@ -92,7 +91,8 @@ for gal in selected_galaxies:
     for i in range(0,len(z)):
         bhmass[i] = float(gal.bh_m[np.where(gal.z==z[i])])
         bhar[i] = float(gal.bhar[np.where(gal.z==z[i])])
-    print(bhmass)
+        if bhmass[i] == 0.0:
+            print(gal.caesar_id[np.where(gal.z==z[i])],z[i])
     max_bhm = np.log10(np.amax(bhmass))
     max_bhar = np.amax(bhar)
     min_bhm = np.log10(np.amin(bhmass))
@@ -114,7 +114,6 @@ for gal in selected_galaxies:
             for j in range(0, len(gal.rejuvenations)):
                 if z[i]==gal.z[gal.rejuvenations[j]]:
                     m = 3
-        print(bhmass[i])
         sc = ax.scatter(x[i],y[i],c=np.log10(bhmass[i]),cmap='plasma',s=size, marker=markers[m])
         sc.set_clim(min_bhm,max_bhm)
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
