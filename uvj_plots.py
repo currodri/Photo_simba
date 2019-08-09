@@ -173,6 +173,7 @@ def uvj_plot(redshift,galaxies,masslimit):
 
     x = []
     y = []
+    counter = 0
     for gal in galaxies:
         mag_z = np.asarray(gal.mags[0].z)
         pos = np.where(mag_z==redshift)
@@ -184,6 +185,8 @@ def uvj_plot(redshift,galaxies,masslimit):
             J = gal.mags[2].Abs[gal.mags[2].z==redshift] 
             x.append(V - J)
             y.append(U - V)
+            counter = counter + 1
+    print(counter)
     x = np.asarray(x)
     y = np.asarray(y)
     fig3 = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
