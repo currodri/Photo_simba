@@ -186,7 +186,6 @@ def uvj_plot(redshift,galaxies,masslimit):
             y.append(U - V)
     x = np.asarray(x)
     y = np.asarray(y)
-
     fig3 = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig3.add_subplot(1,1,1)
     ax.set_xlabel('V - J', fontsize=16)
