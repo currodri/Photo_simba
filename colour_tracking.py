@@ -66,6 +66,7 @@ props = dict(boxstyle='round', facecolor='white', edgecolor='k', alpha=0.7)
 for gal in selected_galaxies:
     z = np.asarray(gal.mags[0].z)
     ind_z = np.argmin(abs(z - REDSHIFT))
+    print(z,ind_z)
     z = z[ind_z+1:][::-1]
     U = np.asarray(gal.mags[0].Abs[ind_z+1:][::-1])
     V = np.asarray(gal.mags[1].Abs[ind_z+1:][::-1])
@@ -80,7 +81,6 @@ for gal in selected_galaxies:
     x = V - J
     y = U - V
     ax.plot(x,y, '-k')
-    print(z,gal.z)
     for i in range(0,len(z)):
         bhmass[i] = float(gal.bh_m[np.where(gal.z==z[i])])
         bhar[i] = float(gal.bhar[np.where(gal.z==z[i])])
