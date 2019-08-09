@@ -29,17 +29,23 @@ from galaxy_class import Magnitude, GalaxyData
 # Get details from terminal
 
 MODEL = sys.argv[1]     # e.g. m100n1024
-REDSHIFT = float(sys.argv[2])  # e.g. 0.5
-GALAXY = [int(sys.argv[3])]    # e.g. 987
-if len(sys.argv) > 4:
+WIND = sys.argv[2]      # e.g. s50
+SNAP = int(sys.argv[3])  # e.g. 0.5
+GALAXY = [int(sys.argv[4])]    # e.g. 987
+if len(sys.argv) > 5:
     GaLAXY = []
-    for i in range(3,len(sys.argv)):
+    for i in range(4,len(sys.argv)):
         GALAXY.append(int(sys.argv[i])) # this is for the case in which we want the tracks for multiple galaxies
 
 # Read data from pickle file
 data_file = '/home/curro/quenchingSIMBA/code/SH_Project/mandq_results_%s.pkl' % (MODEL)
 obj = open(data_file, 'rb')
 d = pickle.load(obj)
+
+caesar_file = '/home/rad/data/%s/%s/Groups/%s_%s.hdf5' % (MODEL,WIND,MODEL,SNAP)
+print(caesar_file)
+cfile = h5py.File(caesar_file)
+REDSHIFT = float(cfile['simulation_attributes'].attrs['redshift'])
 
 selected_galaxies = np.asarray(d['galaxies'])[GALAXY]
 
