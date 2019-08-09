@@ -45,15 +45,15 @@ selected_galaxies = np.asarray(d['galaxies'])[GALAXY]
 
 x = []
 y = []
-for gal in d['galaxies']:
-    mag_z = np.asarray(gal.mags[0].z)
+for gala in d['galaxies']:
+    mag_z = np.asarray(gala.mags[0].z)
     pos = np.where(mag_z==REDSHIFT)
-    pos2 = np.where(gal.z==REDSHIFT)
-    mag0 = np.asarray(gal.mags[0].Abs)
-    if mag0[pos] and gal.t[0][pos2] and np.log10(gal.m[0][pos2])>=9.5:
-        U = gal.mags[0].Abs[gal.mags[0].z==REDSHIFT]
-        V = gal.mags[1].Abs[gal.mags[1].z==REDSHIFT]
-        J = gal.mags[2].Abs[gal.mags[2].z==REDSHIFT] 
+    pos2 = np.where(gala.z==REDSHIFT)
+    mag0 = np.asarray(gala.mags[0].Abs)
+    if mag0[pos] and gala.t[0][pos2] and np.log10(gala.m[0][pos2])>=9.5:
+        U = gala.mags[0].Abs[gala.mags[0].z==REDSHIFT]
+        V = gala.mags[1].Abs[gala.mags[1].z==REDSHIFT]
+        J = gala.mags[2].Abs[gala.mags[2].z==REDSHIFT] 
         x.append(V - J)
         y.append(U - V)
 x_non = np.asarray(x)
