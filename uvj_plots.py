@@ -206,7 +206,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     ax.set_xlabel('V - J', fontsize=16)
     ax.set_ylabel('U - V', fontsize=16)
     ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
-    ax.scatter(x,y,c=tbt)
+    ax.scatter(x,y,c=tbt, s=8)
     fig.tight_layout()
     fig.savefig('../color_plots/uv_vj_qtbt_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
     
