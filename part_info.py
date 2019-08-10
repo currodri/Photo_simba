@@ -242,14 +242,14 @@ def s_Z_histogram(gal, nbins, mass_weight=False):
 if __name__ == '__main__':
     
     snapfile,caesarfile,metal1,metal2 = obtain_snap_shell()
-    s_gal = np.array([0])
+    s_gal = np.array([4973,8845,9553,9816,13620,17571,18977])
     metals = np.array([metal1,metal2])
-    #sim, redshift, h, cosmo, thubble, H0, rhocrit, mlim, gals = read_caesar(caesarfile,s_gal)
-    #smass,smetarray,sage,gmass,gsfr,gmetarray,gtemp,gnh,gpos,bhmass,bhmdot,pZstar,pCstar,pOstar,pZgas,pCgas,pOgas = read_snap(snapfile,metals)
-    #gals_data = part_to_gal(gals,smass,smetarray,sage,gmass,gsfr,gmetarray,gtemp,gnh,gpos,bhmass,bhmdot,pZstar,pCstar,pOstar,pZgas,pCgas,pOgas)
-    obj = open('./part_data_'+str(sys.argv[3])+'.pkl','rb')
-    gals_data = pickle.load(obj)
-    s_age_histogram(gals_data[0],15,mass_weight=True)
-    s_Z_histogram(gals_data[0],15,mass_weight=False)
+    sim, redshift, h, cosmo, thubble, H0, rhocrit, mlim, gals = read_caesar(caesarfile,s_gal)
+    smass,smetarray,sage,gmass,gsfr,gmetarray,gtemp,gnh,gpos,bhmass,bhmdot,pZstar,pCstar,pOstar,pZgas,pCgas,pOgas = read_snap(snapfile,metals)
+    gals_data = part_to_gal(gals,smass,smetarray,sage,gmass,gsfr,gmetarray,gtemp,gnh,gpos,bhmass,bhmdot,pZstar,pCstar,pOstar,pZgas,pCgas,pOgas)
+    #obj = open('./part_data_'+str(sys.argv[3])+'.pkl','rb')
+    #gals_data = pickle.load(obj)
+    #s_age_histogram(gals_data[0],15,mass_weight=True)
+    #s_Z_histogram(gals_data[0],15,mass_weight=False)
 
 
