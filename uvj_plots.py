@@ -108,6 +108,7 @@ def uvj_quench(redshift,galaxies,masslimit):
                         possible_h1.append(np.log10(h1_e/h1_s))
                         bhar_s = gal.bhar[ind_start] + 1e-3
                         bhar_e = gal.bhar[quench.indx] + 1e-3
+                        print(gal.bh_m[ind_start])
                         bhm_s = gal.bh_m[ind_start] + 1e+7
                         bhm_e = gal.bh_m[quench.indx] + 1e+7
                         possible_bhm.append(np.log10(bhm_e/bhm_s))
