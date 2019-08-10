@@ -63,6 +63,10 @@ def uvj_quench(redshift,galaxies,masslimit):
     q_time = []
     sSFR = []
     tau_q = []
+    h2_change = []
+    h1_change = []
+    bhar_change = []
+    tbt = []
     U_non = []
     V_non = []
     J_non = []
@@ -77,7 +81,12 @@ def uvj_quench(redshift,galaxies,masslimit):
                 possible_q = []
                 possible_tau = []
                 possible_ssfr = []
+                possible_h2 = []
+                possible_h1 = []
+                possible_bhar = []
+                possible_tbt = [] 
                 for quench in gal.quenching:
+                    start = quench.above9
                     end = quench.below11
                     ssfr = float(gal.ssfr[0][pos2])
                     snap_t = gal.t[0][pos2]
@@ -86,6 +95,24 @@ def uvj_quench(redshift,galaxies,masslimit):
                         possible_q.append(snap_t-gal.t[1][end])
                         possible_tau.append(quench.quench_time/gal.t[1][end])
                         possible_ssfr.append(ssfr)
+
+                        diff = abs(gal.t[0] - gal.t[1][start])
+                        ind_start = np.argmin(diff)
+                        h2_s = gal.h2[ind_start]/gal.m[0][ind_start] + 1e-12
+                        h2_e = gal.h2[quench.indx]/gal.m[0][quench.indx] + 1e-12
+                        possible_h2.append(np.log10(h2_e/h2_s))
+                        h1_s = gal.h1[ind_start]/gal.m[0][ind_start] + 1e-12
+                        h1_e = gal.h1[quench.indx]/gal.m[0][quench.indx] + 1e-12
+                        possible_h2.append(np.log10(h1_e/h1_s))
+                        bhar_s = gal.bhar[ind_start] + 1e-3
+                        bhar_e = gal.bhar[quench.indx] + 1e-3
+                        possible_bhar.append(np.log10(bhar_e/bhar_s))
+                        possible_tbt.append(8)
+                        for i in range(pos2,len(gal.t[0])):
+                            ssfr_cond = 10**sfr_condition('end',gal.t[0][i])
+                            if gal.ssfr[0][i] >= ssfr_cond:
+                                possible_tbt[-1] = 15
+
                 if possible_q:
                     possible_q = np.asarray(possible_q)
                     possible_tau = np.asarray(possible_tau)
@@ -98,6 +125,10 @@ def uvj_quench(redshift,galaxies,masslimit):
                     sSFR.append(possible_ssfr[np.argmin(possible_q)])
                     q_time.append(np.amin(possible_q))
                     tau_q.append(possible_tau[np.argmin(possible_q)])
+                    h2_change.append(possible_h2[np.argmin(possible_q)])
+                    h1_change.append(possible_h1[np.argmin(possible_q)])
+                    bhar_change.append(possible_bhar[np.argmin(possible_q)])
+                    tbt.append(possible_tbt[np.argmin(possible_q)])
                     if 0.7 <= (V[-1]-J[-1]) < 0.8 and 1.5 <= (U[-1]-V[-1]) < 1.63:
                         print('Caesar ID: '+str(gal.caesar_id[pos2]), 'Progen ID: '+str(gal.progen_id))
                 else:
@@ -111,6 +142,10 @@ def uvj_quench(redshift,galaxies,masslimit):
     q_time = np.asarray(q_time)
     tau_q = np.asarray(tau_q)
     sSFR = np.asarray(sSFR)
+    h2_change = np.asarray(h2_change)
+    h1_change = np.asarray(h1_change)
+    bhar_change = np.asarray(bhar_change)
+    tbt = np.asarray(tbt)
     U = np.asarray(U)
     V = np.asarray(V)
     J = np.asarray(J)
@@ -132,6 +167,48 @@ def uvj_quench(redshift,galaxies,masslimit):
     cb.set_label(label=r'$\log(sSFR)$', fontsize=16)
     fig.tight_layout()
     fig.savefig('../color_plots/uv_vj_qssfr_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+
+    fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
+    ax = fig.add_subplot(1,1,1)
+    ax.set_xlabel('V - J', fontsize=16)
+    ax.set_ylabel('U - V', fontsize=16)
+    ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
+    sc = ax.scatter(x,y,c=h2_change,cmap='plasma',s=8)
+    cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
+    cb.set_label(label=r'$\log(sSFR)$', fontsize=16)
+    fig.tight_layout()
+    fig.savefig('../color_plots/uv_vj_qh2_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+
+    fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
+    ax = fig.add_subplot(1,1,1)
+    ax.set_xlabel('V - J', fontsize=16)
+    ax.set_ylabel('U - V', fontsize=16)
+    ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
+    sc = ax.scatter(x,y,c=h1_change,cmap='plasma',s=8)
+    cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
+    cb.set_label(label=r'$\log(sSFR)$', fontsize=16)
+    fig.tight_layout()
+    fig.savefig('../color_plots/uv_vj_qh1_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+
+    fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
+    ax = fig.add_subplot(1,1,1)
+    ax.set_xlabel('V - J', fontsize=16)
+    ax.set_ylabel('U - V', fontsize=16)
+    ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
+    sc = ax.scatter(x,y,c=bhar_change,cmap='plasma',s=8)
+    cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
+    cb.set_label(label=r'$\log(sSFR)$', fontsize=16)
+    fig.tight_layout()
+    fig.savefig('../color_plots/uv_vj_qbhar_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+
+    fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
+    ax = fig.add_subplot(1,1,1)
+    ax.set_xlabel('V - J', fontsize=16)
+    ax.set_ylabel('U - V', fontsize=16)
+    ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
+    ax.scatter(x,y,s=tbt)
+    fig.tight_layout()
+    fig.savefig('../color_plots/uv_vj_qtbt_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
     
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
