@@ -66,6 +66,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     h2_change = []
     h1_change = []
     bhar_change = []
+    bhm_change = []
     tbt = []
     U_non = []
     V_non = []
@@ -84,6 +85,7 @@ def uvj_quench(redshift,galaxies,masslimit):
                 possible_h2 = []
                 possible_h1 = []
                 possible_bhar = []
+                possible_bhm = []
                 possible_tbt = [] 
                 for quench in gal.quenching:
                     start = quench.above9
@@ -106,6 +108,9 @@ def uvj_quench(redshift,galaxies,masslimit):
                         possible_h1.append(np.log10(h1_e/h1_s))
                         bhar_s = gal.bhar[ind_start] + 1e-3
                         bhar_e = gal.bhar[quench.indx] + 1e-3
+                        bhm_s = gal.bh_m[ind_start] + 1e+7
+                        bhm_e = gal.bhm_m[quench.indx] + 1e+7
+                        possible_bhm.append(np.log10(bhm_e/bhm_s))
                         possible_bhar.append(np.log10(bhar_e/bhar_s))
                         possible_tbt.append('b')
                         for i in range(int(pos2[0]),len(gal.t[0])):
@@ -128,6 +133,7 @@ def uvj_quench(redshift,galaxies,masslimit):
                     h2_change.append(possible_h2[np.argmin(possible_q)])
                     h1_change.append(possible_h1[np.argmin(possible_q)])
                     bhar_change.append(possible_bhar[np.argmin(possible_q)])
+                    bhm_change.append(possible_bhm[np.argmin(possible_q)])
                     tbt.append(possible_tbt[np.argmin(possible_q)])
                     if 0.7 <= (V[-1]-J[-1]) < 0.8 and 1.5 <= (U[-1]-V[-1]) < 1.63:
                         print('Caesar ID: '+str(gal.caesar_id[pos2]), 'Progen ID: '+str(gal.progen_id))
@@ -145,6 +151,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     h2_change = np.asarray(h2_change)
     h1_change = np.asarray(h1_change)
     bhar_change = np.asarray(bhar_change)
+    bhm_change = np.asarray(bhm_change)
     tbt = np.asarray(tbt)
     U = np.asarray(U)
     V = np.asarray(V)
@@ -200,6 +207,17 @@ def uvj_quench(redshift,galaxies,masslimit):
     cb.set_label(label=r'$\log(\Delta BHAR)$', fontsize=16)
     fig.tight_layout()
     fig.savefig('../color_plots/uv_vj_qbhar_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+
+    fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
+    ax = fig.add_subplot(1,1,1)
+    ax.set_xlabel('V - J', fontsize=16)
+    ax.set_ylabel('U - V', fontsize=16)
+    ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
+    sc = ax.scatter(x,y,c=bhm_change,cmap='plasma',s=8)
+    cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
+    cb.set_label(label=r'$\log(\Delta M_{BH})$', fontsize=16)
+    fig.tight_layout()
+    fig.savefig('../color_plots/uv_vj_qbhm_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
