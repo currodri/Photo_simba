@@ -98,7 +98,7 @@ def uvj_quench(redshift,galaxies,masslimit):
                     ssfr = float(gal.ssfr[0][pos2])
                     snap_t = gal.t[0][pos2]
                     ssfr_cond = 10**sfr_condition('end', snap_t)
-                    if gal.t[1][end] <= snap_t and (snap_t-gal.t[1][end]) <= 1.0 and ssfr <= ssfr_cond:
+                    if gal.t[1][end] <= snap_t and (snap_t-gal.t[1][end]) <= 1.0 and ssfr <= ssfr_cond and np.log10(gal.m[1][end])>=masslimit:
                         possible_q.append(snap_t-gal.t[1][end])
                         possible_tau.append(quench.quench_time/gal.t[1][end])
                         possible_ssfr.append(ssfr)
