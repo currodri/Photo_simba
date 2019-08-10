@@ -107,11 +107,11 @@ def uvj_quench(redshift,galaxies,masslimit):
                         bhar_s = gal.bhar[ind_start] + 1e-3
                         bhar_e = gal.bhar[quench.indx] + 1e-3
                         possible_bhar.append(np.log10(bhar_e/bhar_s))
-                        possible_tbt.append(8)
+                        possible_tbt.append('b')
                         for i in range(int(pos2[0]),len(gal.t[0])):
                             ssfr_cond = 10**sfr_condition('end',gal.t[0][i])
                             if gal.ssfr[0][i] >= ssfr_cond:
-                                possible_tbt[-1] = 15
+                                possible_tbt[-1] = 'r'
 
                 if possible_q:
                     possible_q = np.asarray(possible_q)
@@ -175,7 +175,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
     sc = ax.scatter(x,y,c=h2_change,cmap='plasma',s=8)
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
-    cb.set_label(label=r'$\log(sSFR)$', fontsize=16)
+    cb.set_label(label=r'$\log(\Delta f_{H2})$', fontsize=16)
     fig.tight_layout()
     fig.savefig('../color_plots/uv_vj_qh2_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
@@ -186,7 +186,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
     sc = ax.scatter(x,y,c=h1_change,cmap='plasma',s=8)
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
-    cb.set_label(label=r'$\log(sSFR)$', fontsize=16)
+    cb.set_label(label=r'$\log(\Delta f_{H1})$', fontsize=16)
     fig.tight_layout()
     fig.savefig('../color_plots/uv_vj_qh1_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
@@ -197,7 +197,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
     sc = ax.scatter(x,y,c=bhar_change,cmap='plasma',s=8)
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
-    cb.set_label(label=r'$\log(sSFR)$', fontsize=16)
+    cb.set_label(label=r'$\log(\Delta BHAR)$', fontsize=16)
     fig.tight_layout()
     fig.savefig('../color_plots/uv_vj_qbhar_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
@@ -206,7 +206,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     ax.set_xlabel('V - J', fontsize=16)
     ax.set_ylabel('U - V', fontsize=16)
     ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
-    ax.scatter(x,y,s=tbt)
+    ax.scatter(x,y,c=tbt)
     fig.tight_layout()
     fig.savefig('../color_plots/uv_vj_qtbt_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
     
