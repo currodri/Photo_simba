@@ -108,7 +108,7 @@ def uvj_quench(redshift,galaxies,masslimit):
                         bhar_e = gal.bhar[quench.indx] + 1e-3
                         possible_bhar.append(np.log10(bhar_e/bhar_s))
                         possible_tbt.append(8)
-                        for i in range(pos2,len(gal.t[0])):
+                        for i in range(int(pos2),len(gal.t[0])):
                             ssfr_cond = 10**sfr_condition('end',gal.t[0][i])
                             if gal.ssfr[0][i] >= ssfr_cond:
                                 possible_tbt[-1] = 15
