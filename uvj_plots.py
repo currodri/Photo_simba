@@ -98,11 +98,11 @@ def uvj_quench(redshift,galaxies,masslimit):
 
                         diff = abs(gal.t[0] - gal.t[1][start])
                         ind_start = np.argmin(diff)
-                        h2_s = gal.h2_gas[ind_start]/gal.m[0][ind_start] + 1e-12
-                        h2_e = gal.h2_gas[quench.indx]/gal.m[0][quench.indx] + 1e-12
+                        h2_s = gal.h2_gas[ind_start]/gal.m[0][ind_start] + 1e-2
+                        h2_e = gal.h2_gas[quench.indx]/gal.m[0][quench.indx] + 1e-2
                         possible_h2.append(np.log10(h2_e/h2_s))
-                        h1_s = gal.h1_gas[ind_start]/gal.m[0][ind_start] + 1e-12
-                        h1_e = gal.h1_gas[quench.indx]/gal.m[0][quench.indx] + 1e-12
+                        h1_s = gal.h1_gas[ind_start]/gal.m[0][ind_start] + 1e-2
+                        h1_e = gal.h1_gas[quench.indx]/gal.m[0][quench.indx] + 1e-2
                         possible_h1.append(np.log10(h1_e/h1_s))
                         bhar_s = gal.bhar[ind_start] + 1e-3
                         bhar_e = gal.bhar[quench.indx] + 1e-3
