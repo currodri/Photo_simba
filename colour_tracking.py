@@ -80,6 +80,7 @@ for gal in selected_galaxies:
     J = np.asarray(gal.mags[2].Abs[ind_z+1:][::-1])
     bhmass = np.zeros(len(z))
     bhar = np.zeros(len(z))
+    local_d = np.zeros(len(z))
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
     ax.set_xlabel('V - J', fontsize=16)
@@ -93,10 +94,13 @@ for gal in selected_galaxies:
         bhar[i] = float(gal.bhar[np.where(gal.z==z[i])])
         if bhmass[i] == 0.0:
             print(gal.caesar_id[np.where(gal.z==z[i])],z[i])
+        local_d[i] = float(gal.local_den[np.where(gal.z==z[i])])
     max_bhm = np.log10(np.amax(bhmass))
     max_bhar = np.amax(bhar)
     min_bhm = np.log10(np.amin(bhmass))
     min_bhar = np.amin(bhar)
+    max_local_d = np.log10(np.amax(local_den))
+    min_local_d = np.log10(np.amin(local_d))
     for i in range(0, len(z)):
         m = 0
         size = m_sizes[int(gal.g_type[np.where(gal.z==z[i])])]
@@ -114,9 +118,10 @@ for gal in selected_galaxies:
             for j in range(0, len(gal.rejuvenations)):
                 if z[i]==gal.z[gal.rejuvenations[j]]:
                     m = 3
-        sc = ax.scatter(x[i],y[i],c=np.log10(bhmass[i]),cmap='plasma',s=size, marker=markers[m])
-        sc.set_clim(min_bhm,max_bhm)
+        sc = ax.scatter(x[i],y[i],c=np.log10(local_d[i]),cmap='plasma',s=size, marker=markers[m])
+        sc.set_clim(min_local_d,max_local_d)
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
-    cb.set_label(label=r'$\log(M_{BH}[M_{\odot}])$', fontsize=16)
+    #cb.set_label(label=r'$\log(M_{BH}[M_{\odot}])$', fontsize=16)
+    cb.set_label(label=r'$\log(\rho)$', fontsize=16)
     fig.tight_layout()
     fig.savefig('../color_plots/uv_vj_track_'+str(gal.progen_id)+'.png',format='png', dpi=250, bbox_inches='tight')
