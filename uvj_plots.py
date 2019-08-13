@@ -42,6 +42,7 @@ print('Making UVJ plots for z = '+str(REDSHIFT))
 data_file = '/home/curro/quenchingSIMBA/code/SH_Project/mandq_results_%s.pkl' % (MODEL)
 obj = open(data_file, 'rb')
 d = pickle.load(obj)
+obj.close()
 
 def sfr_condition(type, time):
     if type == 'start':
@@ -130,8 +131,6 @@ def uvj_quench(redshift,galaxies,masslimit):
                     possible_q = np.asarray(possible_q)
                     possible_tau = np.asarray(possible_tau)
                     possible_ssfr = np.asarray(possible_ssfr)
-                    mag1 = np.asarray(gal.mags[1].Abs)
-                    mag2 = np.asarray(gal.mags[2].Abs)
                     U.append(gal.mags[0].Abs[gal.mags[0].z==redshift])
                     V.append(gal.mags[1].Abs[gal.mags[1].z==redshift])
                     J.append(gal.mags[2].Abs[gal.mags[2].z==redshift])
