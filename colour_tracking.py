@@ -99,7 +99,7 @@ for gal in selected_galaxies:
     max_bhar = np.amax(bhar)
     min_bhm = np.log10(np.amin(bhmass))
     min_bhar = np.amin(bhar)
-    max_local_d = np.log10(np.amax(local_den))
+    max_local_d = np.log10(np.amax(local_d))
     min_local_d = np.log10(np.amin(local_d))
     for i in range(0, len(z)):
         m = 0
