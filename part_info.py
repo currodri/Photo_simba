@@ -116,11 +116,9 @@ class Gal_PartData:
     def __init__(self, ID):
         self.id = ID
         self.smass = 0
-        self.smet = 0
         self.sage = 0
         self.gmass = 0
         self.gsfr = 0
-        self.gmet = 0
         self.gtemp = 0
         self.gnh = 0
         self.grad = 0
@@ -134,8 +132,8 @@ class Gal_PartData:
         self.pOgas = 0
     def sfr_weighted_Z(self):
         # class function that provides the SFR-weighted total metalicites of gas particles
-        Z_warm = np.array([self.gmet[i]/self.gsfr[i] for i in range(0,len(self.gmet)) if self.gsfr[i]>0])
-        Z_warm_tot = np.sum(self.gmet*self.gsfr)/(np.sum(self.gsfr)+1.e-10)
+        Z_warm = np.array([self.pZgas[i]/self.gsfr[i] for i in range(0,len(self.pZgas)) if self.gsfr[i]>0])
+        Z_warm_tot = np.sum(self.pZgas*self.gsfr)/(np.sum(self.gsfr)+1.e-10)
         return Z_warm,Z_warm_tot
     def sfr_weighted_CO(self):
         # class function that provides the SFR-weighted C/O fraction of gas particles
@@ -159,7 +157,7 @@ class Gal_PartData:
         return Z_mw
 
 # combine caesar galaxy info to particle info and return a list with each galaxy data
-def part_to_gal(gals,smass,smetarray,sage,gmass,gsfr,gmetarray,gtemp,gnh,gpos,bhmass,bhmdot,pZstar,pCstar,pOstar,pZgas,pCgas,pOgas):
+def part_to_gal(gals,snapfile,sim,metals,H0):
     gals_data  = []
     print('Connecting each particle with its galaxy...')
     for gal in gals:
@@ -168,25 +166,26 @@ def part_to_gal(gals,smass,smetarray,sage,gmass,gsfr,gmetarray,gtemp,gnh,gpos,bh
         gasparts = gal.glist  # list of gas particle IDs in gal
         bhparts = gal.bhlist  # list of BH particle IDs in gal  (can be more than 1)
         # collect gas info
-        new_gal_data.gsfr = np.array([gsfr[k] for k in gasparts])
-        new_gal_data.gmet = np.array([pZgas[k] for k in gasparts])
-        new_gal_data.grad  = np.array([np.linalg.norm(gpos[k]-gal.pos.value) for k in gasparts])
-        new_gal_data.pZgas = np.array([pZgas[k] for k in gasparts])
-        new_gal_data.pCgas = np.array([pCgas[k] for k in gasparts])
-        new_gal_data.pOgas = np.array([pOgas[k] for k in gasparts])
+        new_gal_data.gsfr = readsnap(snapfile,'sfr','gas',units=1,suppress=1)[gasparts]  # gas particle SFR Mo/yr
+        gmetarray = readsnap(snapfile,'Metallicity','gas',units=1,suppress=1)[gasparts]  # gas metal array
+        #new_gal_data.grad  = np.array([np.linalg.norm(gpos[k]-gal.pos.value) for k in gasparts])
+        new_gal_data.pZgas = np.asarray([i[0] for i in gmetarray])
+        new_gal_data.pCgas = np.asarray([i[metals[0]] for i in gmetarray])
+        new_gal_data.pOgas = np.asarray([i[metals[1]] for i in gmetarray])
         # collect star info
-        new_gal_data.smass = np.array([smass[k] for k in starparts])
-        new_gal_data.smet = np.array([smetarray[k] for k in starparts])
-        new_gal_data.sage = np.array([sage[k] for k in starparts])
-        new_gal_data.pZstar = np.array([pZstar[k] for k in starparts])
-        new_gal_data.pCstar = np.array([pCstar[k] for k in starparts])
-        new_gal_data.pOstar = np.array([pOstar[k] for k in starparts])
+        #new_gal_data.smass = np.array([smass[k] for k in starparts])
+        new_gal_data.sage = readsnap(snapfile,'age','star',units=1,suppress=1)[starparts]
+        new_gal_data.sage = a_to_t(new_gal_data.sage,sim.simulation.omega_matter,H0)  # age in Gyr
+        smetarray = readsnap(snapfile,'Metallicity','star',units=1,suppress=1)[gasparts]  # gas metal array
+        new_gal_data.pZstar = np.asarray([i[0] for i in smetarray])
+        new_gal_data.pCstar = np.asarray([i[metals[0]] for i in smetarray])
+        new_gal_data.pOstar = np.asarray([i[metals[1]] for i in smetarray])
         # collect BH and central gas info
-        pbhm = np.array([bhmass[k] for k in bhparts])
-        pbhar = np.array([bhmdot[k] for k in bhparts])
-        if len(pbhm)>0: 
-            new_gal_data.bhar = pbhar[np.argmax(pbhm)]  # BHAR for most massive BH in galaxy
-            new_gal_data.bhmass = pbhm.max()
+        #pbhm = np.array([bhmass[k] for k in bhparts])
+        #pbhar = np.array([bhmdot[k] for k in bhparts])
+        #if len(pbhm)>0: 
+            #new_gal_data.bhar = pbhar[np.argmax(pbhm)]  # BHAR for most massive BH in galaxy
+            #new_gal_data.bhmass = pbhm.max()
         gals_data.append(new_gal_data)
     print('Data for particles and galaxies saved')
     output = open('part_data_'+str(sys.argv[3])+'.pkl','wb')
@@ -246,9 +245,9 @@ if __name__ == '__main__':
     metals = np.array([metal1,metal2])
     sim, redshift, h, cosmo, thubble, H0, rhocrit, mlim, gals = read_caesar(caesarfile,s_gal)
     print(len(gals))
-    smass,smetarray,sage,gmass,gsfr,gmetarray,gtemp,gnh,gpos,bhmass,bhmdot,pZstar,pCstar,pOstar,pZgas,pCgas,pOgas = read_snap(snapfile,sim,metals)
+    #smass,smetarray,sage,gmass,gsfr,gmetarray,gtemp,gnh,gpos,bhmass,bhmdot,pZstar,pCstar,pOstar,pZgas,pCgas,pOgas = read_snap(snapfile,sim,metals)
     
-    gals_data = part_to_gal(gals,smass,smetarray,sage,gmass,gsfr,gmetarray,gtemp,gnh,gpos,bhmass,bhmdot,pZstar,pCstar,pOstar,pZgas,pCgas,pOgas)
+    gals_data = part_to_gal(gals,snapfile,sim,metals,H0)
     #obj = open('./part_data_'+str(sys.argv[3])+'.pkl','rb')
     #gals_data = pickle.load(obj)
     #s_age_histogram(gals_data[0],15,mass_weight=True)
