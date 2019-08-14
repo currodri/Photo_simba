@@ -25,7 +25,7 @@ sns.set(style="white")
 MODEL = sys.argv[1]
 WIND = sys.argv[2]
 SNAP = int(sys.argv[3])
-GALAXY = int(sys.argv[4])
+GALAXY = [int(sys.argv[4])]
 
 def plot_spectra(flux,waves,gal,snap):
     # Just do a simple spectra plot for the input of flux and wavelenghts given.
