@@ -158,6 +158,64 @@ def superflux(minz, manz, dz, ind, wave, flux, flux_err, z, ll_eff):
 
     return flux_super, flux_super_err
 
+def curro_normgappy(data,error,espec,mean,cov=False,verbose=False):
+
+    # Sanity checks
+    if np.size(data) == 0 or np.size(error) == 0 or np.size(espec) == 0 or np.size(mean) == 0:
+        print('ERROR: incorrect inputs')
+
+    tmp = np.shape(espec)  # number of eigenvectors
+    if np.size(tmp) == 2:
+        nrecon = tmp[0]
+    else:
+        nrecon = 1
+    nbin = np.shape(espec)[-1]  # number of data points
+    tmp = np.shape(data)  # number of observations to project
+    if np.size(tmp) == 2:
+        ngal = tmp[0]
+    else:
+        ngal = 1
+    
+    # Dimension mismatch check
+    if np.shape(data)[-1] != nbin:
+        print(
+            '[pca_normgappy] ERROR: "data" must have the same dimension as eigenvectors'
+        )
+        return None
+    if np.shape(error)[-1] != nbin:
+        print(
+            '[pca_normgappy] ERROR: "error" must have the same dimension as eigenvectors'
+        )
+        return None
+    if np.shape(mean)[0] != nbin:
+        print(
+            '[pca_normgappy] ERROR: "mean" must have the same dimension as eigenvectors'
+        )
+        return None
+    
+    # Project each galaxy in turn
+    pcs = np.zeros((ngal, nrecon), float)
+    norm = np.zeros(ngal, float)
+    if cov is not None:
+        ccov = np.zeros((ngal, nrecon, nrecon))
+
+    if ngal == 1:
+        data = data[np.newaxis, :]
+        error = error[np.newaxis, :]
+    
+    for j in range(0,ngal):
+        if verbose:
+            print('STATUS: processing spectrum')
+        # Calculate weighting array from error array, but if all bins have
+        # error=0, pass to the next spectrum
+        weight = np.zeros(nbin)
+        ind = error[j, :].nonzero()[0]
+        if np.size(ind) != 0:
+            weight[ind] = 1. / (error[j, :][ind]**2)
+        else:
+            continue
+        data_j = data[j,:] # Spectrum data for jth galaxy
+        
 def normgappy(data, error, espec, mean, cov=False, reconstruct=False, verbose=False):
     """
     Performs robust PCA projection, including normalization estimation.
