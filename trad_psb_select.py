@@ -39,7 +39,7 @@ def plot_spectra(flux,waves,gal,snap):
     fig.savefig('../color_plots/spectra_'+str(gal)+'_'+str(snap)+'.png',format='png', dpi=250, bbox_inches='tight')
 def read_pyloser(model,wind,snap,gals):
 
-    loser_file = '/home/rad/data/%s/%s/Groups/loser_%s_%s.hdf5' % (model,wind,model,snap)
+    loser_file = '/home/rad/data/%s/%s/Groups/loser_%s_%03d.hdf5' % (model,wind,model,snap)
     f = h5py.File(loser_file,'r')
     wavelengths = np.asarray(f['myspec_wavelengths'][:])
     fluxes = np.zeros((len(gals),len(wavelengths)))
