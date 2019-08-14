@@ -27,12 +27,27 @@ WIND = sys.argv[2]
 SNAP = int(sys.argv[3])
 GALAXY = [int(sys.argv[4])]
 
+def EW_hdelta(flux,waves):
+    hd_window = np.array([4088,4116]) # in Angstroms, as given by Balogh et al. (1999)
+    ind_start = np.argmin(abs(waves-hd_window[0]))
+    ind_end = np.argmin(abs(waves-hd_window[1]))
+    f = flux[ind_start:ind_end+1]
+    w = waves[ind_start:ind_end+1]
+    w_p = np.array([w[0],w[-1]])
+    f_p = np.array([f[0],f[-1]])
+    f_0 = np.interp(w,w_p,f_p)
+    d = abs(w[1] - w[0])
+    W = np.sum((1-f/f_0)*d)
+    return W, w_p
+
 def plot_spectra(flux,waves,gal,snap):
     # Just do a simple spectra plot for the input of flux and wavelenghts given.
-
     fig = plt.figure(num=None, figsize=(8, 5), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
     ax.plot(waves,flux,'k-')
+    W, w_p = EW_hdelta(flux,waves)
+    ax.text(0.5,0.5,r'H$_{\delta}$ = '+'{:.2}'.format(W))
+    ax.axvspan(w_p[0],w_p[1],alpha=0.6)
     ax.set_xlabel(r'$\lambda [10^{-10}$ m]', fontsize=16)
     ax.set_ylabel('Flux',fontsize=16)
     fig.tight_layout()
@@ -46,6 +61,9 @@ def read_pyloser(model,wind,snap,gals):
     for i in range(0,len(gals)):
         fluxes[i,:] = f['myspec'][int(gals[i]),:]
     return wavelengths,fluxes
+
+
+
 
 wave,flux = read_pyloser(MODEL,WIND,SNAP,GALAXY)
 plot_spectra(flux[0,:],wave,GALAXY[0],SNAP)
