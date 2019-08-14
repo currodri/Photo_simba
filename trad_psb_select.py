@@ -37,8 +37,6 @@ def EW_hdelta(flux,waves):
     f_p = np.array([f[0],f[-1]])
     f_0 = np.interp(w,w_p,f_p)
     d = abs(w[1] - w[0])
-    print(f,f_0)
-    print((1-f/f_0)*d)
     W = np.sum((1-f/f_0)*d)
     return W, w_p
 
