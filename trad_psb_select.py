@@ -48,4 +48,4 @@ def read_pyloser(model,wind,snap,gals):
     return wavelengths,fluxes
 
 wave,flux = read_pyloser(MODEL,WIND,SNAP,GALAXY)
-plot_spectra(flux[0,:],wave,GALAXY,SNAP)
+plot_spectra(flux[0,:],wave,GALAXY[0],SNAP)
