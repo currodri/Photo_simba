@@ -46,7 +46,7 @@ def plot_spectra(flux,waves,gal,snap):
     ax = fig.add_subplot(1,1,1)
     ax.plot(waves,flux,'k-')
     W, w_p = EW_hdelta(flux,waves)
-    ax.text(0.5,0.5,r'H$_{\delta}$ = '+'{:.2}'.format(W))
+    ax.text(0.5,0.5,r'H$_{\delta}$ = '+'{:.2}'.format(W),transform=ax.transAxes)
     ax.axvspan(w_p[0],w_p[1],alpha=0.6)
     ax.set_xlabel(r'$\lambda [10^{-10}$ m]', fontsize=16)
     ax.set_ylabel('Flux',fontsize=16)
