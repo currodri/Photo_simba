@@ -30,7 +30,7 @@ GALAXY = [int(sys.argv[4])]
 def plot_spectra(flux,waves,gal,snap):
     # Just do a simple spectra plot for the input of flux and wavelenghts given.
 
-    fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
+    fig = plt.figure(num=None, figsize=(8, 5), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
     ax.plot(waves,flux,'k-')
     ax.set_xlabel(r'$\lambda [10^{-10}$ m]', fontsize=16)
