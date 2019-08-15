@@ -84,7 +84,7 @@ def data_from_simba(ph_file, n_bands, mag_lim, ind_filt, ind_select):
     header = f['HEADER_INFO']
     redshift = float(header[0].split()[2]) # Get redshift of snapshot
     Lapp_old = np.zeros((len(caesar_id),n_bands))
-    ind = [1,3,4,5,6,7,8,9,10,11,12]
+    ind = [34,35,36,37,38,39,40,41,42,17,18]
     # Apparent magnitudes of galaxies in each desired band
     for (i,i_filt) in zip(ind, ind_filt):
         Lapp_old[:,i_filt] = f['appmag_%d'%i] # Save mags for the selected filters
@@ -149,7 +149,7 @@ def superflux(minz, manz, dz, ind, wave, flux, flux_err, z, ll_eff):
     '''
     Calculate rest-frame f_lambda and put into correct PCA supergrid
     '''
-    ngal = 10 #flux.shape[0]
+    ngal = flux.shape[0]
     n_band = len(ind)
     flux_super = np.zeros((ngal, n_band))
     flux_super_err = np.zeros((ngal, n_band))
@@ -372,7 +372,6 @@ def normgappy(data, error, espec, mean, cov=False, reconstruct=False, verbose=Fa
             # CONSERVED MEMORY NOT IMPLEMETED
             espec_big = np.repeat(espec[:, np.newaxis, :], nrecon, axis=1)
             M = np.sum(weight * np.transpose(espec_big, (1, 0, 2)) * espec_big, 2)
-            print(M)
 
             # Calculate the weighted data array, multiplied by the eigenvectors (eq. 4-5 [1])
             F = np.dot((data_j * weight), espec.T)
@@ -452,7 +451,7 @@ def normgappy(data, error, espec, mean, cov=False, reconstruct=False, verbose=Fa
     else:
         return pcs, norm
 
-def SC1_vs_SC2_scatter(pc_data):
+def SC1_vs_SC2_scatter(pc_data,snap):
 
     x = pc_data[:,0] #SC1
     y = pc_data[:,1] #SC2
@@ -465,7 +464,7 @@ def SC1_vs_SC2_scatter(pc_data):
     #ax.set_xlim([-50,150])
     #ax.set_ylim([-20, 30])
     fig.tight_layout()
-    fig.savefig('../color_plots/sc1_vs_sc2.png',
+    fig.savefig('../color_plots/sc1_vs_sc2_'+str(snap)+'.png',
                     format='png', dpi=250, bbox_inches='tight')
 
 wave,spec,mean,var,ind,minz,maxz,dz,filternames,ll_eff = read_eigensystem('../VWSC_simba/EBASIS/VWSC_eigenbasis_0p5z3_wavemin2500.fits', '../VWSC_simba/FILTERS/vwsc_uds.lis')
@@ -478,9 +477,7 @@ ll_obs = ll_eff[ind_filt]
 flux_super, flux_super_err = superflux(minz, maxz, dz, ind, wave, flux, flux_err, z, ll_eff)
 
 pcs, norm = normgappy(flux_super,flux_super_err,spec,mean)
-print(pcs,norm)
-pcs, norm = curro_normgappy(flux_super,flux_super_err,spec,mean)
-#pcs = np.asarray(pcs)
-print(pcs,norm)
 
-#SC1_vs_SC2_scatter(pcs)
+pcs = np.asarray(pcs)
+
+SC1_vs_SC2_scatter(pcs,125)
