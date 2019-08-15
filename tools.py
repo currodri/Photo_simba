@@ -67,7 +67,7 @@ def mag_to_jansky(mag_AB):
 
     return f_nu
 
-def data_from_simba(ph_file, n_bands, mag_lim, ind_filt, ind_select):
+def data_from_closer(ph_file, n_bands, mag_lim, ind_filt, ind_select):
     '''
     This routine reads in the selected apparent magnitudes from the SIMBA loser
     files in order to:
@@ -115,6 +115,54 @@ def data_from_simba(ph_file, n_bands, mag_lim, ind_filt, ind_select):
 
     return caesar_id, flux, flux_err, z, Kmag
     #return np.array([caesar_id[0]]), np.array([flux[0]]), np.array([flux_err[0]]), np.array([z[0]]), np.array([Kmag[0]])
+
+def data_from_pyloser(loser_file, n_bands, mag_lim, ind_filt, ind_select):
+    '''
+    This routine reads in the selected apparent magnitudes from the SIMBA loser
+    files in order to:
+    - Get errors in the magnitudes
+    - Apply magnitude cut
+    - Converts magnitudes into fluxes
+    - Add error floors
+    - Obtain redshift array
+    - Obtain K-mag array
+    '''
+    f = h5py.File(loser_file,'r') # Read in .hdf5 file with photometry catalogue
+    caesar_id = f['CAESAR_ID'][:]
+    print(len(caesar_id))
+    header = f['HEADER_INFO']
+    colorinfo = f['COLOR_INFO'][:]
+    redshift = float(header[0].split()[2]) # Get redshift of snapshot
+    Lapp_old = np.zeros((len(caesar_id),n_bands))
+    ind = [34,35,36,37,38,39,40,41,42,17,18]
+    # Apparent magnitudes of galaxies in each desired band
+    for (i,i_filt) in zip(ind, ind_filt):
+        Lapp_old[:,i_filt] = f['appmag_%d'%i] # Save mags for the selected filters
+        print ('Reading now filter for '+str(colorinfo[i]))
+    # Apply magnitude limit given by mag_lim
+    Lapp = []
+    for i in range(0, Lapp_old.shape[0]):
+        if Lapp_old[i][8]< mag_lim:
+            Lapp.append(Lapp_old[i])
+    Lapp = np.asarray(Lapp)
+    Lapp_err = np.full((len(Lapp),n_bands),0.01) # Create array with magnitude errors
+
+    flux = mag_to_jansky(Lapp)
+    flux_err = flux - mag_to_jansky(Lapp + Lapp_err)
+
+    # Adding error floors due to systematic errors in filters
+    irac_bands = [9,10]
+    flux_err = flux_err + 0.05*flux # 0.05 for all
+    for i in range(0, len(irac_bands)):
+        flux_err[:,irac_bands[i]] = flux_err[:,irac_bands[i]] + 0.2*flux[:,irac_bands[i]] # 0.2 for the IRAC bands
+
+    # Create array with redshifts
+    z = np.full(Lapp.shape[0], redshift)
+
+    # Get magnitude of selection filter
+    Kmag = Lapp[:,ind_select]
+
+    return caesar_id, flux, flux_err, z, Kmag
 
 def fill_flux(flux, z, minz, maxz, dz, ll_obs, ind):
     '''

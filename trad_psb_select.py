@@ -25,10 +25,23 @@ sns.set(style="white")
 MODEL = sys.argv[1]
 WIND = sys.argv[2]
 SNAP = int(sys.argv[3])
-GALAXY = [int(sys.argv[4])]
+#GALAXY = [int(sys.argv[4])]
 
 def EW_hdelta(flux,waves):
-    hd_window = np.array([4088,4116]) # in Angstroms, as given by Balogh et al. (1999)
+    hd_window = np.array([4088,4116]) # in Angstroms, as given by Goto et al. (2003)
+    ind_start = np.argmin(abs(waves-hd_window[0]))
+    ind_end = np.argmin(abs(waves-hd_window[1]))
+    f = flux[ind_start:ind_end+1]
+    w = waves[ind_start:ind_end+1]
+    w_p = np.array([w[0],w[-1]])
+    f_p = np.array([f[0],f[-1]])
+    f_0 = np.interp(w,w_p,f_p)
+    d = abs(w[1] - w[0])
+    W = np.sum((1-f/f_0)*d)
+    return W, w_p
+
+def EW_halpha(flux,waves):
+    hd_window = np.array([6555,6575]) # in Angstroms, as given by Goto et al. (2003)
     ind_start = np.argmin(abs(waves-hd_window[0]))
     ind_end = np.argmin(abs(waves-hd_window[1]))
     f = flux[ind_start:ind_end+1]
@@ -52,18 +65,35 @@ def plot_spectra(flux,waves,gal,snap):
     ax.set_ylabel('Flux',fontsize=16)
     fig.tight_layout()
     fig.savefig('../color_plots/spectra_'+str(gal)+'_'+str(snap)+'.png',format='png', dpi=250, bbox_inches='tight')
-def read_pyloser(model,wind,snap,gals):
-
+def read_pyloser(model,wind,snap):
+    
     loser_file = '/home/rad/data/%s/%s/Groups/loser_%s_%03d.hdf5' % (model,wind,model,snap)
     f = h5py.File(loser_file,'r')
     wavelengths = np.asarray(f['myspec_wavelengths'][:])
-    fluxes = np.zeros((len(gals),len(wavelengths)))
-    for i in range(0,len(gals)):
-        fluxes[i,:] = f['myspec'][int(gals[i]),:]
+    fluxes = np.zeros((len(f['iobjs'][:]),len(wavelengths)))
+    for i in range(0,fluxes.shape[0]):
+        fluxes[i,:] = f['myspec'][i,:]
     return wavelengths,fluxes
 
+def halpha_hdelta_plot(wave,flux,model,snap):
+    ngals = flux.shape[0]
+    halpha = np.zeros(ngals)
+    hdelta = np.zeros(ngals)
+    for i in range(0,ngals):
+        W_a, w_p = EW_halpha(flux[i,:],waves)
+        w_d, w_p = EW_hdelta(flux[i,:],waves)
+        halpha[i] = W_a
+        hdelta[i] = W_d
+    fig = plt.figure(num=None, figsize=(8, 5), dpi=80, facecolor='w', edgecolor='k')
+    ax = fig.add_subplot(1,1,1)
+    ax.hexbin(hdelta,halpha,gridsize=50,bins='log', cmap='Greys')
+    ax.set_xlabel(r'EW(H_{\delta})$ [\AA$]', fontsize=16)
+    ax.set_xlabel(r'EW(H_{\alpha})$ [\AA$]', fontsize=16)
+    fig.tight_layout()
+    fig.savefig('../color_plots/'+str(model)+'/hahd_'+str(snap)+'.png',format='png', dpi=250, bbox_inches='tight')
 
 
 
-wave,flux = read_pyloser(MODEL,WIND,SNAP,GALAXY)
-plot_spectra(flux[0,:],wave,GALAXY[0],SNAP)
+wave,flux = read_pyloser(MODEL,WIND,SNAP)
+halpha_hdelta_plot(wave,flux,MODEL,SNAP)
+#plot_spectra(flux[0,:],wave,GALAXY[0],SNAP)
