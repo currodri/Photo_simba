@@ -80,15 +80,15 @@ def halpha_hdelta_plot(wave,flux,model,snap):
     halpha = np.zeros(ngals)
     hdelta = np.zeros(ngals)
     for i in range(0,ngals):
-        W_a, w_p = EW_halpha(flux[i,:],waves)
-        w_d, w_p = EW_hdelta(flux[i,:],waves)
+        W_a, w_p = EW_halpha(flux[i,:],wave)
+        W_d, w_p = EW_hdelta(flux[i,:],wave)
         halpha[i] = W_a
         hdelta[i] = W_d
     fig = plt.figure(num=None, figsize=(8, 5), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
     ax.hexbin(hdelta,halpha,gridsize=50,bins='log', cmap='Greys')
-    ax.set_xlabel(r'EW(H_{\delta})$ [\AA$]', fontsize=16)
-    ax.set_xlabel(r'EW(H_{\alpha})$ [\AA$]', fontsize=16)
+    ax.set_xlabel(r'EW(H$_{\delta}) [\AA$]', fontsize=16)
+    ax.set_xlabel(r'EW(H$_{\alpha}) [\AA$]', fontsize=16)
     fig.tight_layout()
     fig.savefig('../color_plots/'+str(model)+'/hahd_'+str(snap)+'.png',format='png', dpi=250, bbox_inches='tight')
 
