@@ -111,7 +111,8 @@ def data_from_simba(ph_file, n_bands, mag_lim, ind_filt, ind_select):
     # Get magnitude of selection filter
     Kmag = Lapp[:,ind_select]
 
-    return [caesar_id[0]], [flux[0]], [flux_err[0]], [z[0]], [Kmag[0]]
+    #return [caesar_id[0]], [flux[0]], [flux_err[0]], [z[0]], [Kmag[0]]
+    return np.array([caesar_id[0]]), np.array([flux[0]]), np.array([flux_err[0]]), np.array([z[0]]), np.array([Kmag[0]])
 
 def fill_flux(flux, z, minz, maxz, dz, ll_obs, ind):
     '''
