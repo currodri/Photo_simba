@@ -227,17 +227,17 @@ def curro_normgappy(data,error,espec,mean,cov=False,verbose=False):
         F_big = np.repeat(F_k[:, np.newaxis], nrecon, axis=1)
         M_ik_new = M_ik*F_mu - E_big*F_big
 
-        F_new = M*F_k - F_mu*E
+        F_new = M*F_k - F_mu*E_i
         
         try:
-            Minv = np.linalg.inv(Mnew)
+            Minv = np.linalg.inv(M_ik_new)
         except:
             if verbose:
                 print('STATUS: problem with matrix inversion (setting pcs=0)')
             continue
         
-        pcs[j, :] = np.squeeze(np.sum(Fnew * Minv, 1))
-        norm[j] = Fpr / (Mpr + np.sum(pcs[j, :] * E))
+        pcs[j, :] = np.squeeze(np.sum(F_new * Minv, 1))
+        norm[j] = F_mu / (M + np.sum(pcs[j, :] * E_i))
 
         # Calculate covariance matrix (eq. 6 [1])
         if cov is True:
