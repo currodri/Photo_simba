@@ -91,7 +91,7 @@ def halpha_hdelta_plot(wave,flux,model,snap):
     ax = fig.add_subplot(1,1,1)
     ax.hexbin(hdelta,halpha,bins='log', cmap='Greys')
     ax.set_xlabel(r'EW(H$_{\delta}) [\AA$]', fontsize=16)
-    ax.set_xlabel(r'EW(H$_{\alpha}) [\AA$]', fontsize=16)
+    ax.set_ylabel(r'EW(H$_{\alpha}) [\AA$]', fontsize=16)
     fig.tight_layout()
     fig.savefig('../color_plots/'+str(model)+'/hahd_'+str(snap)+'.png',format='png', dpi=250, bbox_inches='tight')
 
