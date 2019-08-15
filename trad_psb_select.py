@@ -89,7 +89,7 @@ def halpha_hdelta_plot(wave,flux,model,snap):
     hdelta = np.asarray(hdelta)
     fig = plt.figure(num=None, figsize=(8, 5), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
-    ax.hexbin(hdelta,halpha,gridsize=10,bins='log', cmap='Greys')
+    ax.hexbin(hdelta,halpha,bins='log', cmap='Greys')
     ax.set_xlabel(r'EW(H$_{\delta}) [\AA$]', fontsize=16)
     ax.set_xlabel(r'EW(H$_{\alpha}) [\AA$]', fontsize=16)
     fig.tight_layout()
