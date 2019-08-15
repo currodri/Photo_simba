@@ -111,7 +111,7 @@ def data_from_simba(ph_file, n_bands, mag_lim, ind_filt, ind_select):
     # Get magnitude of selection filter
     Kmag = Lapp[:,ind_select]
 
-    return caesar_id, flux, flux_err, z, Kmag
+    return caesar_id[0], flux[0], flux_err[0], z[0], Kmag[0]
 
 def fill_flux(flux, z, minz, maxz, dz, ll_obs, ind):
     '''
@@ -215,7 +215,7 @@ def curro_normgappy(data,error,espec,mean,cov=False,verbose=False):
         else:
             continue
         data_j = data[j,:] # Spectrum data for jth galaxy
-
+        
         # Solve partial chi^2/partial N = 0
         F_mu = np.sum(weight*data_j*mean)
         M = np.sum(weight*mean*mean)
@@ -226,7 +226,7 @@ def curro_normgappy(data,error,espec,mean,cov=False,verbose=False):
         E_big = np.repeat(E_i[np.newaxis, :], nrecon, axis=0)
         F_big = np.repeat(F_k[:, np.newaxis], nrecon, axis=1)
         M_ik_new = M_ik*F_mu - E_big*F_big
-
+        print(M_ik)
         F_new = M*F_k - F_mu*E_i
         
         try:
@@ -371,6 +371,7 @@ def normgappy(data, error, espec, mean, cov=False, reconstruct=False, verbose=Fa
             # CONSERVED MEMORY NOT IMPLEMETED
             espec_big = np.repeat(espec[:, np.newaxis, :], nrecon, axis=1)
             M = np.sum(weight * np.transpose(espec_big, (1, 0, 2)) * espec_big, 2)
+            print(M)
 
             # Calculate the weighted data array, multiplied by the eigenvectors (eq. 4-5 [1])
             F = np.dot((data_j * weight), espec.T)
