@@ -215,6 +215,9 @@ def curro_normgappy(data,error,espec,mean,cov=False,verbose=False):
         else:
             continue
         data_j = data[j,:] # Spectrum data for jth galaxy
+
+        # Solve partial chi^2/partial N = 0
+        
         
 def normgappy(data, error, espec, mean, cov=False, reconstruct=False, verbose=False):
     """

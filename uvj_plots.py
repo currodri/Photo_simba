@@ -188,7 +188,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(sSFR)$', fontsize=16)
     fig.tight_layout()
-    fig.savefig('../color_plots/uv_vj_qssfr_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/'+str(MODEL)+'/uv_vj_qssfr_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
@@ -199,7 +199,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(\Delta(sSFR))$', fontsize=16)
     fig.tight_layout()
-    fig.savefig('../color_plots/uv_vj_q_dssfr_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/'+str(MODEL)+'/uv_vj_q_dssfr_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
@@ -210,7 +210,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(f_{H2} (start))$', fontsize=16)
     fig.tight_layout()
-    fig.savefig('../color_plots/uv_vj_q_h2_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/'+str(MODEL)+'/uv_vj_q_h2_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
@@ -221,7 +221,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(M_{*} (start))$', fontsize=16)
     fig.tight_layout()
-    fig.savefig('../color_plots/uv_vj_q_mass_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/'+str(MODEL)+'/uv_vj_q_mass_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
@@ -232,7 +232,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(\Delta f_{H2})$', fontsize=16)
     fig.tight_layout()
-    fig.savefig('../color_plots/uv_vj_qh2_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/'+str(MODEL)+'/uv_vj_qh2_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
@@ -243,7 +243,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(\Delta f_{H1})$', fontsize=16)
     fig.tight_layout()
-    fig.savefig('../color_plots/uv_vj_qh1_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/'+str(MODEL)+'/uv_vj_qh1_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
@@ -254,7 +254,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(\Delta BHAR)$', fontsize=16)
     fig.tight_layout()
-    fig.savefig('../color_plots/uv_vj_qbhar_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/'+str(MODEL)+'/uv_vj_qbhar_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
@@ -265,7 +265,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(\Delta M_{BH})$', fontsize=16)
     fig.tight_layout()
-    fig.savefig('../color_plots/uv_vj_qbhm_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/'+str(MODEL)+'/uv_vj_qbhm_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
@@ -274,7 +274,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
     ax.scatter(x,y,c=tbt, s=8)
     fig.tight_layout()
-    fig.savefig('../color_plots/uv_vj_qtbt_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/'+str(MODEL)+'/uv_vj_qtbt_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
     
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
@@ -285,7 +285,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$t_h - t_q$', fontsize=16)
     fig.tight_layout()
-    fig.savefig('../color_plots/uv_vj_qtime_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/'+str(MODEL)+'/uv_vj_qtime_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
    
     fig2 = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig2.add_subplot(1,1,1)
@@ -296,7 +296,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     cb = fig2.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(\tau_q/t_{H})$', fontsize=16)
     fig2.tight_layout()
-    fig2.savefig('../color_plots/uv_vj_qscale_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig2.savefig('../color_plots/'+str(MODEL)+'/uv_vj_qscale_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
     
 
     fig3 = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
@@ -315,7 +315,7 @@ def uvj_quench(redshift,galaxies,masslimit):
     ax.scatter(x_fast,y_fast,s=8, c = 'r', label='Fast quenching')
     ax.legend(loc='best')
     fig3.tight_layout()
-    fig3.savefig('../color_plots/uv_vj_qsf_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig3.savefig('../color_plots/'+str(MODEL)+'/uv_vj_qsf_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
 
 def uvj_plot(redshift,galaxies,masslimit):
@@ -344,7 +344,7 @@ def uvj_plot(redshift,galaxies,masslimit):
     ax.set_ylabel('U - V', fontsize=16)
     ax.hexbin(x, y, gridsize=50,bins='log', cmap='Greys')
     fig3.tight_layout()
-    fig3.savefig('../color_plots/uv_vj_hexbin_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig3.savefig('../color_plots/'+str(MODEL)+'/uv_vj_hexbin_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
 uvj_quench(REDSHIFT,d['galaxies'],MASSLIMIT)
 
