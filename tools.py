@@ -82,12 +82,14 @@ def data_from_simba(ph_file, n_bands, mag_lim, ind_filt, ind_select):
     caesar_id = f['CAESAR_ID'][:]
     print(len(caesar_id))
     header = f['HEADER_INFO']
+    colorinfo = f['COLOR_INFO'][:]
     redshift = float(header[0].split()[2]) # Get redshift of snapshot
     Lapp_old = np.zeros((len(caesar_id),n_bands))
     ind = [34,35,36,37,38,39,40,41,42,17,18]
     # Apparent magnitudes of galaxies in each desired band
     for (i,i_filt) in zip(ind, ind_filt):
         Lapp_old[:,i_filt] = f['appmag_%d'%i] # Save mags for the selected filters
+        print ('Reading now filter for '+str(colorinfo[imag]))
     # Apply magnitude limit given by mag_lim
     Lapp = []
     for i in range(0, Lapp_old.shape[0]):
@@ -470,7 +472,7 @@ def SC1_vs_SC2_scatter(pc_data,snap):
 wave,spec,mean,var,ind,minz,maxz,dz,filternames,ll_eff = read_eigensystem('../VWSC_simba/EBASIS/VWSC_eigenbasis_0p5z3_wavemin2500.fits', '../VWSC_simba/FILTERS/vwsc_uds.lis')
 ind_filt = [0,1,2,3,4,5,6,7,8,11,12]
 n_bands = len(ll_eff)
-caesar_id, flux, flux_err, z, Kmag = data_from_simba('/home/rad/data/m100n1024/s50/Groups/phot_m100n1024_125.hdf5', n_bands, 24.5, ind_filt, 8)
+caesar_id, flux, flux_err, z, Kmag = data_from_simba('/home/rad/data/m50n512/s50/Groups/phot_m50n512_125.hdf5', n_bands, 24.5, ind_filt, 8)
 
 ll_obs = ll_eff[ind_filt]
 
