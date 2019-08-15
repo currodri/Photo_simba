@@ -77,16 +77,19 @@ def read_pyloser(model,wind,snap):
 
 def halpha_hdelta_plot(wave,flux,model,snap):
     ngals = flux.shape[0]
-    halpha = np.zeros(ngals)
-    hdelta = np.zeros(ngals)
+    halpha = []
+    hdelta = []
     for i in range(0,ngals):
         W_a, w_p = EW_halpha(flux[i,:],wave)
         W_d, w_p = EW_hdelta(flux[i,:],wave)
-        halpha[i] = W_a
-        hdelta[i] = W_d
+        if W_a>=0 and W_d>=0:
+            halpha.append(W_a)
+            hdelta.append(W_d)
+    halpha = np.asarray(halpha)
+    hdelta = np.asarray(hdelta)
     fig = plt.figure(num=None, figsize=(8, 5), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
-    ax.hexbin(hdelta,halpha,gridsize=50,bins='log', cmap='Greys')
+    ax.hexbin(hdelta,halpha,gridsize=10,bins='log', cmap='Greys')
     ax.set_xlabel(r'EW(H$_{\delta}) [\AA$]', fontsize=16)
     ax.set_xlabel(r'EW(H$_{\alpha}) [\AA$]', fontsize=16)
     fig.tight_layout()
