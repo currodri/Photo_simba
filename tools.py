@@ -89,7 +89,7 @@ def data_from_simba(ph_file, n_bands, mag_lim, ind_filt, ind_select):
     # Apparent magnitudes of galaxies in each desired band
     for (i,i_filt) in zip(ind, ind_filt):
         Lapp_old[:,i_filt] = f['appmag_%d'%i] # Save mags for the selected filters
-        print ('Reading now filter for '+str(colorinfo[imag]))
+        print ('Reading now filter for '+str(colorinfo[i]))
     # Apply magnitude limit given by mag_lim
     Lapp = []
     for i in range(0, Lapp_old.shape[0]):
