@@ -111,8 +111,8 @@ def data_from_simba(ph_file, n_bands, mag_lim, ind_filt, ind_select):
     # Get magnitude of selection filter
     Kmag = Lapp[:,ind_select]
 
-    #return [caesar_id[0]], [flux[0]], [flux_err[0]], [z[0]], [Kmag[0]]
-    return np.array([caesar_id[0]]), np.array([flux[0]]), np.array([flux_err[0]]), np.array([z[0]]), np.array([Kmag[0]])
+    return caesar_id, flux, flux_err, z, Kmag
+    #return np.array([caesar_id[0]]), np.array([flux[0]]), np.array([flux_err[0]]), np.array([z[0]]), np.array([Kmag[0]])
 
 def fill_flux(flux, z, minz, maxz, dz, ll_obs, ind):
     '''
@@ -149,7 +149,7 @@ def superflux(minz, manz, dz, ind, wave, flux, flux_err, z, ll_eff):
     '''
     Calculate rest-frame f_lambda and put into correct PCA supergrid
     '''
-    ngal = flux.shape[0]
+    ngal = 1 #flux.shape[0]
     n_band = len(ind)
     flux_super = np.zeros((ngal, n_band))
     flux_super_err = np.zeros((ngal, n_band))
