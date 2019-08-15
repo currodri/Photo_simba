@@ -217,7 +217,40 @@ def curro_normgappy(data,error,espec,mean,cov=False,verbose=False):
         data_j = data[j,:] # Spectrum data for jth galaxy
 
         # Solve partial chi^2/partial N = 0
+        F_mu = np.sum(weight*data_j*mean)
+        M = np.sum(weight*mean*mean)
+        E_i = np.sum((weight * mean) * espec, axis=1)
+
+        M_ik = np.dot((weight*espec), espec.T)
+        F_k = np.dot((data_j*weight), espec.T)
+        E_big = np.repeat(E_i[np.newaxis, :], nrecon, axis=0)
+        F_big = np.repeat(F_k[:, np.newaxis], nrecon, axis=1)
+        M_ik_new = M_ik*F_mu - E_big*F_big
+
+        F_new = M*F_k - F_mu*E
         
+        try:
+            Minv = np.linalg.inv(Mnew)
+        except:
+            if verbose:
+                print('STATUS: problem with matrix inversion (setting pcs=0)')
+            continue
+        
+        pcs[j, :] = np.squeeze(np.sum(Fnew * Minv, 1))
+        norm[j] = Fpr / (Mpr + np.sum(pcs[j, :] * E))
+
+        # Calculate covariance matrix (eq. 6 [1])
+        if cov is True:
+            M_gappy = np.dot((espec * (weight * norm[j]**2)), espec.T)
+            ccov[j, :, :] = np.linalg.inv(M_gappy)
+
+        if cov is True:
+            return pcs, norm, ccov
+        else:
+            return pcs, norm
+
+
+
         
 def normgappy(data, error, espec, mean, cov=False, reconstruct=False, verbose=False):
     """
@@ -443,7 +476,9 @@ ll_obs = ll_eff[ind_filt]
 flux_super, flux_super_err = superflux(minz, maxz, dz, ind, wave, flux, flux_err, z, ll_eff)
 
 pcs, norm = normgappy(flux_super,flux_super_err,spec,mean)
+print(pcs[0],norm[0])
+pcs, norm = curro_normgappy(flux_super,flux_super_err,spec,mean)
+#pcs = np.asarray(pcs)
+print(pcs[0],norm[0])
 
-pcs = np.asarray(pcs)
-
-SC1_vs_SC2_scatter(pcs)
+#SC1_vs_SC2_scatter(pcs)
