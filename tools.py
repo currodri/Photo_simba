@@ -478,9 +478,9 @@ ll_obs = ll_eff[ind_filt]
 flux_super, flux_super_err = superflux(minz, maxz, dz, ind, wave, flux, flux_err, z, ll_eff)
 
 pcs, norm = normgappy(flux_super,flux_super_err,spec,mean)
-print(pcs[0],norm[0])
+print(pcs,norm)
 pcs, norm = curro_normgappy(flux_super,flux_super_err,spec,mean)
 #pcs = np.asarray(pcs)
-print(pcs[0],norm[0])
+print(pcs,norm)
 
 #SC1_vs_SC2_scatter(pcs)
