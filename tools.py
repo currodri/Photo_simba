@@ -154,10 +154,15 @@ def data_from_pyloser(loser_file, n_bands, mag_lim, ind_filt, ind_select):
 
     # Adding error floors due to systematic errors in filters
     irac_bands = [9,10]
-    flux_err = 0.05*flux # 0.05 for all
-    print(flux_err[0])
+    for i in range(0,flux_err.shape[0]):
+        for j in range(0,flux_err.shape[1]):
+            if flux_err[i,j] < 0.05*flux[i,j]:
+                flux_err[i,j] = 0.05*flux[i,j]
     for i in range(0, len(irac_bands)):
-        flux_err[:,irac_bands[i]] = 0.2*flux[:,irac_bands[i]] # 0.2 for the IRAC bands
+        for j in range(0,flux_err.shape[0]):
+            if flux_err[j,irac_bands[i]] < 0.2*flux[j,irac_bands[i]]:
+                flux_err[j,irac_bands[i]] = 0.2*flux[j,irac_bands[i]] # 0.2 for the IRAC bands
+    print(flux_err[0])
 
     # Create array with redshifts
     z = np.full(Lapp.shape[0], redshift)
