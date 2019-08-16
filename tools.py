@@ -162,7 +162,7 @@ def data_from_pyloser(loser_file, n_bands, mag_lim, ind_filt, ind_select):
         for j in range(0,flux_err.shape[0]):
             if flux_err[j,irac_bands[i]] < 0.2*flux[j,irac_bands[i]]:
                 flux_err[j,irac_bands[i]] = 0.2*flux[j,irac_bands[i]] # 0.2 for the IRAC bands
-                print(flux_err[j,irac_bands[i]],0.2*flux[j,irac_bands[i]])
+        print(flux_err[0,irac_bands[i]],0.2*flux[0,irac_bands[i]])
     print(flux_err[0])
 
     # Create array with redshifts
