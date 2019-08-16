@@ -62,11 +62,8 @@ def mag_to_jansky(mag_AB):
     From AB magnitude array, returns the equivalent array of the flux in units
     of Jansky (1Jy = 10-23 erg s-1 Hz-1 cm-2).
     '''
-    if mag_AB!=0.0:
-        f_nu_ergs = 10**(-0.4*(mag_AB + 48.6))
-        f_nu = f_nu_ergs*(10**23)
-    else:
-        f_nu = 0.0
+    f_nu_ergs = 10**(-0.4*(mag_AB + 48.6))
+    f_nu = f_nu_ergs*(10**23)
 
     return f_nu
 
@@ -149,6 +146,12 @@ def data_from_pyloser(loser_file, n_bands, mag_lim, ind_filt, ind_select):
     Lapp_err = np.full((len(Lapp),n_bands),0.01) # Create array with magnitude errors
     flux = mag_to_jansky(Lapp)
     flux_err = flux - mag_to_jansky(Lapp + Lapp_err)
+    ind_ignore = np.where(Lapp==0)
+    for i in range(0,len(ind_ignore[0])):
+        a = ind_ignore[0][i]
+        b = ind_ignore[1][i]
+        flux[a,b] = 0.0
+        flux_err[a,b] = 0.0
 
     # Adding error floors due to systematic errors in filters
     irac_bands = [9,10]
