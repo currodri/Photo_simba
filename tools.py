@@ -145,8 +145,6 @@ def data_from_pyloser(loser_file, n_bands, mag_lim, ind_filt, ind_select):
     Lapp_err = np.full((len(Lapp),n_bands),0.01) # Create array with magnitude errors
     flux = mag_to_jansky(Lapp)
     flux_err = flux - mag_to_jansky(Lapp + Lapp_err)
-    print(Lapp_err[0])
-    print(flux_err[0])
     ind_ignore = np.where(Lapp==0)
     for i in range(0,len(ind_ignore[0])):
         a = ind_ignore[0][i]
@@ -157,6 +155,7 @@ def data_from_pyloser(loser_file, n_bands, mag_lim, ind_filt, ind_select):
     # Adding error floors due to systematic errors in filters
     irac_bands = [9,10]
     flux_err = flux_err + 0.05*flux # 0.05 for all
+    print(flux_err[0])
     for i in range(0, len(irac_bands)):
         flux_err[:,irac_bands[i]] = flux_err[:,irac_bands[i]] + 0.2*flux[:,irac_bands[i]] # 0.2 for the IRAC bands
 
