@@ -17,10 +17,10 @@ import matplotlib
 matplotlib.use('Agg') # Must be before importing matplotlib.pyplot or pylab!
 import matplotlib.pyplot as plt
 ## CONSTANTS
-c_in_AA = 2.99792**18
-sol_lum_in_erg = 3.839**33
-pc_in_m = 3.08567758**16
-Mpc_in_cm = 3.08567758**23
+c_in_AA = 2.99792*(10**18)
+sol_lum_in_erg = 3.839*(10**33)
+pc_in_m = 3.08567758*(10**16)
+Mpc_in_cm = 3.08567758*(10**23)
 ##
 
 def read_eigensystem(evecfile, filterfile, verbose=True):
