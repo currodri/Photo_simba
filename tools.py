@@ -128,7 +128,7 @@ def data_from_pyloser(loser_file, n_bands, mag_lim, ind_filt, ind_select):
     - Obtain K-mag array
     '''
     f = h5py.File(loser_file,'r') # Read in .hdf5 file with photometry catalogue
-    caesar_id = f['iobj'][:]
+    caesar_id = f['iobjs'][:]
     redshift = 0.5 # Get redshift of snapshot
     Lapp_old = np.zeros((len(caesar_id),n_bands))
     #ind = [34,35,36,37,38,39,40,41,42,17,18]
