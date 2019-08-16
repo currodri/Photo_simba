@@ -136,6 +136,7 @@ def data_from_pyloser(loser_file, n_bands, mag_lim, ind_filt, ind_select):
     # Apparent magnitudes of galaxies in each desired band
     for (i,i_filt) in zip(ind, ind_filt):
         Lapp_old[:,i_filt] = f['mymags'][:,i] # Save mags for the selected filters
+    print(Lapp[0])
     # Apply magnitude limit given by mag_lim
     Lapp = []
     for i in range(0, Lapp_old.shape[0]):
