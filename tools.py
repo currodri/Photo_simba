@@ -180,8 +180,9 @@ def fill_flux(flux, z, minz, maxz, dz, ll_obs, ind):
     nz = len(zbin)
     n_band = len(ll_obs)
     ff = c_in_AA * flux / (ll_obs**2) # f_nu_obs to f_lambda_obs
+    print(c_in_AA *flux)
     ff = ff * (1+z) # f_lambda_obs to f_lambda_rest
-    print(flux)
+    
 
     # Find into which redshift bin the galaxy lands
     tmp = abs(z - zbin)
@@ -533,8 +534,8 @@ caesar_id, flux, flux_err, z, Kmag = data_from_pyloser('../VWSC_simba/CATS/simba
 ll_obs = ll_eff[ind_filt]
 
 flux_super, flux_super_err = superflux(minz, maxz, dz, ind, wave, flux, flux_err, z, ll_eff)
-print(flux_super[0])
-print(flux_super_err[0])
+# print(flux_super[0])
+# print(flux_super_err[0])
 
 pcs, norm = normgappy(flux_super,flux_super_err,spec,mean)
 
