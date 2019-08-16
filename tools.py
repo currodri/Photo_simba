@@ -176,13 +176,12 @@ def fill_flux(flux, z, minz, maxz, dz, ll_obs, ind):
     Place f_nu_obs into super-sampled array and then convert into f_lambda_rest.
     '''
     nredshift = int((maxz-minz)/dz) + 1
-    print(nredshift)
     zbin = np.linspace(minz, maxz, nredshift)
-    print(zbin)
     nz = len(zbin)
     n_band = len(ll_obs)
     ff = c_in_AA * flux / (ll_obs**2) # f_nu_obs to f_lambda_obs
     ff = ff * (1+z) # f_lambda_obs to f_lambda_rest
+    print(ff)
 
     # Find into which redshift bin the galaxy lands
     tmp = abs(z - zbin)
