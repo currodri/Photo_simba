@@ -59,11 +59,11 @@ def read_eigensystem(evecfile, filterfile, verbose=True):
 
 def mag_to_jansky(mag_AB):
     '''
-    From absolute magnitude array, returns the equivalent array of the flux in units
+    From AB magnitude array, returns the equivalent array of the flux in units
     of Jansky (1Jy = 10-23 erg s-1 Hz-1 cm-2).
     '''
     f_nu_ergs = 10**(-0.4*(mag_AB + 48.6))
-    f_nu = f_nu_ergs*(1**23)
+    f_nu = f_nu_ergs*(10**23)
 
     return f_nu
 
