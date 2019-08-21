@@ -16,6 +16,20 @@ import h5py
 import matplotlib
 matplotlib.use('Agg') # Must be before importing matplotlib.pyplot or pylab!
 import matplotlib.pyplot as plt
+
+
+
+#Imports needed for the paralelization
+import sys
+import multiprocessing
+
+#Set the number of processors to use. It can be defined passing an argument through 
+#the command line or taking the maximum number of cpus available in the system.
+if len(sys.argv) > 1:
+    num_proc = int(sys.argv[1])
+else:
+    num_proc = multiprocessing.cpu_count()
+
 ## CONSTANTS
 c_in_AA = 2.99792*(10**18)
 sol_lum_in_erg = 3.839*(10**33)
@@ -171,16 +185,19 @@ def data_from_pyloser(loser_file, n_bands, mag_lim, ind_filt, ind_select):
 
     return caesar_id, flux, flux_err, z, Kmag
 
-def fill_flux(flux, z, minz, maxz, dz, ll_obs, ind):
+def fill_flux(args):
     '''
     Place f_nu_obs into super-sampled array and then convert into f_lambda_rest.
     '''
+    #Unpack the tuple of arguments
+    flux, z, minz, maxz, dz, ll_obs, ind = args
+
+    
     nredshift = int((maxz-minz)/dz) + 1
     zbin = np.linspace(minz, maxz, nredshift)
     nz = len(zbin)
     n_band = len(ll_obs)
     ff = c_in_AA * flux / (ll_obs**2) # f_nu_obs to f_lambda_obs
-    print(ff)
     ff = ff * (1+z) # f_lambda_obs to f_lambda_rest
     
 
@@ -199,7 +216,7 @@ def fill_flux(flux, z, minz, maxz, dz, ll_obs, ind):
         row = int(ind[i]/nz)
         ind_select[0].append(row)
         ind_select[1].append(column)
-
+    ind_select = tuple(ind_select)
     fluxarr = fluxarr[ind_select]
 
     return fluxarr
@@ -212,9 +229,18 @@ def superflux(minz, manz, dz, ind, wave, flux, flux_err, z, ll_eff):
     n_band = len(ind)
     flux_super = np.zeros((ngal, n_band))
     flux_super_err = np.zeros((ngal, n_band))
-    for i in range(0, ngal):
-        flux_super[i] = fill_flux(flux[i],z[i],minz,maxz,dz,ll_eff,ind)
-        flux_super_err[i] = fill_flux(flux_err[i],z[i],minz,maxz,dz,ll_eff,ind)
+    flux_super = np.array([])
+
+    #List of tuples being each tuple the argument that is going to be passed
+    #to the function fill_flux
+    args = [(flux[i],z[i],minz,maxz,dz,ll_eff,ind) for i in range(ngal)]
+    #Compute the fill_flux with the different arguments and store it in a np array.
+    flux_super = np.array(p_workers.map(fill_flux, args))
+
+    #Do the same but changing the arguments
+    args = [(flux_err[i],z[i],minz,maxz,dz,ll_eff,ind) for i in range(ngal)]
+    flux_super_err = np.array(p_workers.map(fill_flux, args))
+
 
     return flux_super, flux_super_err
 
@@ -286,7 +312,6 @@ def curro_normgappy(data,error,espec,mean,cov=False,verbose=False):
         E_big = np.repeat(E_i[np.newaxis, :], nrecon, axis=0)
         F_big = np.repeat(F_k[:, np.newaxis], nrecon, axis=1)
         M_ik_new = M_ik*F_mu - E_big*F_big
-        print(M_ik)
         F_new = M*F_k - F_mu*E_i
         
         try:
@@ -310,9 +335,149 @@ def curro_normgappy(data,error,espec,mean,cov=False,verbose=False):
             return pcs, norm
 
 
+def norm_gappy(args):
+    # Unpack the arguments of the function
+    nrecon, nbin, error, data_j, mean, espec, verbose, cov = args
+    if verbose:
+            print('[pca_normgappy] STATUS: processing spectrum ')
 
-        
-def normgappy(data, error, espec, mean, cov=False, reconstruct=False, verbose=False):
+    # Calculate weighting array from 1-sig error array
+    # ! if all bins have error=0 continue to next spectrum
+    weight = np.zeros(nbin)
+    ind = error.nonzero()[0]
+    if np.size(ind) != 0:
+        try:
+            weight[ind] = 1. / (error[ind]**2)
+        except:
+            if verbose:
+                print(
+                    '[pca_normgappy] ERROR: error array problem in spectrum (setting pcs=0)'
+                )
+
+    ind = np.where(np.isfinite(weight) is False)[0]
+    if np.size(ind) != 0:
+        if verbose:
+            print(
+                '[pca_normgappy] ERROR: error array problem in spectrum (setting pcs=0)'
+            )
+
+    # Solve partial chi^2/partial N = 0
+    Fpr = np.sum(weight * data_j * mean)  # eq 4 [2]
+    Mpr = np.sum(weight * mean * mean)  # eq 5 [2]
+    E = np.sum((weight * mean) * espec, axis=1)  # eq 6 [2]
+
+    # Calculate the weighted eigenvectors, multiplied by the eigenvectors (eq. 4-5 [1])
+    espec_big = np.repeat(espec[:, np.newaxis, :], nrecon, axis=1)
+    M = np.sum(weight * np.transpose(espec_big, (1, 0, 2)) * espec_big, 2)
+
+    # Calculate the weighted data array, multiplied by the eigenvectors (eq. 4-5 [1])
+    F = np.dot((data_j * weight), espec.T)
+
+    # Calculate new M matrix, this time accounting for the unknown normalization (eq. 11 [2])
+    E_big = np.repeat(E[np.newaxis, :], nrecon, axis=0)
+    F_big = np.repeat(F[:, np.newaxis], nrecon, axis=1)
+    Mnew = Fpr * M - E_big * F_big
+
+    # Calculate the new F matrix, accounting for unknown normalization
+    Fnew = Mpr * F - Fpr * E
+
+    # Solve for Principle Component Amplitudes (eq. 5 [1])
+    try:
+        Minv = np.linalg.inv(Mnew)
+    except:
+        if verbose:
+            print(
+                '[pca_normgappy] STATUS: problem with matrix inversion (setting pcs=0)'
+            )
+
+    pcs = np.squeeze(np.sum(Fnew * Minv, 1))
+    norm = Fpr / (Mpr + np.sum(pcs * E))
+
+    # Calculate covariance matrix (eq. 6 [1])
+    if cov is True:
+        M_gappy = np.dot((espec * (weight * norm**2)), espec.T)
+        ccov = np.linalg.inv(M_gappy)
+        return pcs, norm, ccov
+    else:
+        return pcs, norm
+
+def parall_normgappy(data, error, espec, mean, cov=False,verbose=False):
+
+    # Sanity checks
+    if (np.size(data) == 0) | (np.size(error) == 0) | (np.size(espec) == 0) | (
+            np.size(mean) == 0):
+        print('[pca_normgappy] ERROR: incorrect input lengths')
+        return None
+
+    tmp = np.shape(espec)  # number of eigenvectors
+    if np.size(tmp) == 2:
+        nrecon = tmp[0]
+    else:
+        nrecon = 1
+    nbin = np.shape(espec)[-1]  # number of data points
+    tmp = np.shape(data)  # number of observations to project
+    if np.size(tmp) == 2:
+        ngal = tmp[0]
+    else:
+        ngal = 1
+
+    # Dimension mismatch check
+    if np.shape(data)[-1] != nbin:
+        print(
+            '[pca_normgappy] ERROR: "data" must have the same dimension as eigenvectors'
+        )
+        return None
+    if np.shape(error)[-1] != nbin:
+        print(
+            '[pca_normgappy] ERROR: "error" must have the same dimension as eigenvectors'
+        )
+        return None
+    if np.shape(mean)[0] != nbin:
+        print(
+            '[pca_normgappy] ERROR: "mean" must have the same dimension as eigenvectors'
+        )
+        return None
+
+    # Project each galaxy in turn
+    pcs = np.zeros((ngal, nrecon), float)
+    norm = np.zeros(ngal, float)
+    if cov is not None:
+        ccov = np.zeros((ngal, nrecon, nrecon))
+
+    if ngal == 1:
+        data = data[np.newaxis, :]
+        error = error[np.newaxis, :]
+
+    #List of tuples being each tuple the argument that is going to be passed
+    #to the function norm_gappy
+    args = [(nrecon, nbin, error[j,:], data[j,:], mean, espec, cov, verbose) for j in range(ngal)]
+    results = np.array(p_workers.map(norm_gappy,args))
+
+    for i in range(0, len(results)):
+        if ccov is True:
+            pcs[i,:] = results[i][0]
+            norm[i] = results[i][1]
+            ccov[i,:,:] = results[i][2]
+        else:
+            pcs[i,:] = results[i][0]
+            norm[i] = results[i][1]
+
+    if ngal == 1:
+        pcs = pcs[0]
+        data = data[0]
+        norm = norm[0]
+        if cov:
+            ccov = ccov[0]
+
+    # Return
+
+    if cov is True:
+        return pcs, norm, ccov
+    else:
+        return pcs, norm
+
+def normgappy(data, error, espec, mean, cov=False, \
+                reconstruct=False, verbose=False):
     """
     Performs robust PCA projection, including normalization estimation.
     Parameters
@@ -496,7 +661,7 @@ def normgappy(data, error, espec, mean, cov=False, reconstruct=False, verbose=Fa
     #     print("[pca_normgappy] STATUS: Results...")
     #     for i, pc in enumerate(pcs):
     #         print(f"               PCA{i+1}: {pc:2.5f}")
-    #         print(f"               Norm: {norm:2.5f}")
+    #     print(f"               Norm: {norm:2.5f}")
 
     # Return
     if reconstruct is True:
@@ -520,8 +685,8 @@ def SC1_vs_SC2_scatter(pc_data,snap):
     ax.set_ylabel('SC 2', fontsize=16)
     ax.set_xlabel('SC 1', fontsize=16)
     ax.scatter(x,y, s=10)
-    #ax.set_xlim([-50,150])
-    #ax.set_ylim([-20, 30])
+    ax.set_xlim([-50,150])
+    ax.set_ylim([-20, 30])
     fig.tight_layout()
     fig.savefig('../color_plots/sc1_vs_sc2_'+str(snap)+'.png',
                     format='png', dpi=250, bbox_inches='tight')
@@ -531,13 +696,18 @@ ind_filt = [0,1,2,3,4,5,6,7,8,11,12]
 n_bands = len(ll_eff)
 caesar_id, flux, flux_err, z, Kmag = data_from_pyloser('../VWSC_simba/CATS/simba/loserpsb_m50n512_125.hdf5', n_bands, 24.5, ind_filt, 8)
 
+#Let's create a pool of workers, that is a set of processes that we can use to handle computation.
+p_workers = multiprocessing.Pool(num_proc)
+
 ll_obs = ll_eff[ind_filt]
 
 flux_super, flux_super_err = superflux(minz, maxz, dz, ind, wave, flux, flux_err, z, ll_eff)
 # print(flux_super[0])
 # print(flux_super_err[0])
 
-pcs, norm = normgappy(flux_super,flux_super_err,spec,mean)
+# pcs, norm = normgappy(flux_super,flux_super_err,spec,mean)
+
+pcs, norm = parall_normgappy(flux_super,flux_super_err,spec,mean)
 
 pcs = np.asarray(pcs)
 

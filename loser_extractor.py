@@ -52,7 +52,7 @@ def read_mags(infile,magcols,MODEL,WIND,nodust=False):
 
 def crossmatch_loserandquench(MODEL,WIND,SNAP_0,galaxies,magcols):
     caesar_dir = '/home/rad/data/%s/%s/Groups/' % (MODEL,WIND)
-    loser = filter(lambda file:file[-5:]=='.hdf5' and file[0]=='p' and int(file[-8:-5])<=SNAP_0 and int(file[-8:-5])!=116, os.listdir(caesar_dir))
+    loser = filter(lambda file:file[-5:]=='.hdf5' and file[0]=='p' and int(file[-8:-5])<=SNAP_0 and int(file[-8:-5])!=116 and str(file[-8:-5])!='065', os.listdir(caesar_dir))
     loser_sorted = sorted(loser,key=lambda file: int(file[-8:-5]), reverse=True)
 
     for i in range(0,len(galaxies)):

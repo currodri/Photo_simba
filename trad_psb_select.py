@@ -28,43 +28,60 @@ SNAP = int(sys.argv[3])
 #GALAXY = [int(sys.argv[4])]
 
 def EW_hdelta(flux,waves):
-    hd_window = np.array([4088,4116]) # in Angstroms, as given by Goto et al. (2003)
+    hd_window = np.array([4082,4122]) # in Angstroms, as given by Goto et al. (2003)
+    blue_window = np.array([4030,4082])
+    red_window = np.array([4122,4170])
     ind_start = np.argmin(abs(waves-hd_window[0]))
     ind_end = np.argmin(abs(waves-hd_window[1]))
+    blue = np.median(flux[np.argmin(abs(waves-blue_window[0])):np.argmin(abs(waves-blue_window[1]))])
+    blue_w = (wave[np.argmin(abs(waves-blue_window[0]))]+wave[np.argmin(abs(waves-blue_window[1]))])/2
+    red = np.median(flux[np.argmin(abs(waves-red_window[0])):np.argmin(abs(waves-red_window[1]))])
+    red_w = (wave[np.argmin(abs(waves-red_window[0]))]+wave[np.argmin(abs(waves-red_window[1]))])/2
     f = flux[ind_start:ind_end+1]
     w = waves[ind_start:ind_end+1]
-    w_p = np.array([w[0],w[-1]])
-    f_p = np.array([f[0],f[-1]])
+    w_p = np.array([blue_w,red_w])
+    f_p = np.array([blue,red])
     f_0 = np.interp(w,w_p,f_p)
     d = abs(w[1] - w[0])
     W = np.sum((1-f/f_0)*d)
+    w_p = np.array([w[0],w[-1]])
     return W, w_p
 
 def EW_halpha(flux,waves):
     hd_window = np.array([6555,6575]) # in Angstroms, as given by Goto et al. (2003)
+    blue_window = np.array([6490,6537])
+    red_window = np.array([6594,6640])
     ind_start = np.argmin(abs(waves-hd_window[0]))
     ind_end = np.argmin(abs(waves-hd_window[1]))
+    blue = np.median(flux[np.argmin(abs(waves-blue_window[0])):np.argmin(abs(waves-blue_window[1]))])
+    blue_w = (wave[np.argmin(abs(waves-blue_window[0]))]+wave[np.argmin(abs(waves-blue_window[1]))])/2
+    red = np.median(flux[np.argmin(abs(waves-red_window[0])):np.argmin(abs(waves-red_window[1]))])
+    red_w = (wave[np.argmin(abs(waves-red_window[0]))]+wave[np.argmin(abs(waves-red_window[1]))])/2
     f = flux[ind_start:ind_end+1]
     w = waves[ind_start:ind_end+1]
-    w_p = np.array([w[0],w[-1]])
-    f_p = np.array([f[0],f[-1]])
+    w_p = np.array([blue_w,red_w])
+    f_p = np.array([blue,red])
     f_0 = np.interp(w,w_p,f_p)
     d = abs(w[1] - w[0])
     W = np.sum((1-f/f_0)*d)
+    w_p = np.array([w[0],w[-1]])
     return W, w_p
 
-def plot_spectra(flux,waves,gal,snap):
+def plot_spectra(flux,waves,gal,snap,model):
     # Just do a simple spectra plot for the input of flux and wavelenghts given.
     fig = plt.figure(num=None, figsize=(8, 5), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
     ax.plot(waves,flux,'k-')
-    W, w_p = EW_hdelta(flux,waves)
-    ax.text(0.5,0.9,r'EW(H$_{\delta}$) = '+'{:.2}'.format(W)+'$\AA$',transform=ax.transAxes)
-    ax.axvspan(w_p[0],w_p[1],alpha=0.6)
+    Wd, w_pd = EW_hdelta(flux,waves)
+    Wa, w_pa = EW_halpha(flux,waves)
+    ax.text(0.05,0.8,r'EW(H$_{\delta}$) = '+'{:.2}'.format(Wd)+'$\AA$',transform=ax.transAxes)
+    ax.axvspan(w_pd[0],w_pd[1],alpha=0.6)
+    ax.text(0.4,0.6,r'EW(H$_{\alpha}$) = '+'{:.2}'.format(Wa)+'$\AA$',transform=ax.transAxes)
+    ax.axvspan(w_pa[0],w_pa[1],alpha=0.6)
     ax.set_xlabel(r'$\lambda [\AA$]', fontsize=16)
     ax.set_ylabel('Flux',fontsize=16)
     fig.tight_layout()
-    fig.savefig('../color_plots/spectra_'+str(gal)+'_'+str(snap)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/'+str(model)+'/spectra_'+str(gal)+'_'+str(snap)+'.png',format='png', dpi=250, bbox_inches='tight')
 def read_pyloser(model,wind,snap):
     
     loser_file = '/home/rad/data/%s/%s/Groups/loser_%s_%03d.hdf5' % (model,wind,model,snap)
@@ -82,12 +99,12 @@ def halpha_hdelta_plot(wave,flux,model,snap):
     for i in range(0,ngals):
         W_a, w_p = EW_halpha(flux[i,:],wave)
         W_d, w_p = EW_hdelta(flux[i,:],wave)
-        if W_a>=0 and W_d>=0:
+        if W_a>=-2.5 and W_d>=0:
             halpha.append(W_a)
             hdelta.append(W_d)
     halpha = np.asarray(halpha)
     hdelta = np.asarray(hdelta)
-    fig = plt.figure(num=None, figsize=(8, 5), dpi=80, facecolor='w', edgecolor='k')
+    fig = plt.figure(num=None, figsize=(7, 5), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
     ax.hexbin(hdelta,halpha,bins='log', cmap='Greys')
     ax.set_xlabel(r'EW(H$_{\delta}) [\AA$]', fontsize=16)
@@ -99,4 +116,4 @@ def halpha_hdelta_plot(wave,flux,model,snap):
 
 wave,flux = read_pyloser(MODEL,WIND,SNAP)
 halpha_hdelta_plot(wave,flux,MODEL,SNAP)
-#plot_spectra(flux[0,:],wave,GALAXY[0],SNAP)
+plot_spectra(flux[0,:],wave,0,SNAP,MODEL)
