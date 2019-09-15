@@ -6,7 +6,7 @@ Created on 09 August 2019
 @author: Curro Rodriguez Montero, School of Physics and Astronomy,
             University of Edinburgh, JCMB, King's Buildings
 
-This code provides a way to make UVJ plots that combine the results of the mergerFinder and quenchingFinder algorithms with
+This code provides a way to make SC1 vs SC2 plots that combine the results of the mergerFinder and quenchingFinder algorithms with
 the photometry data of cLoser (https://bitbucket.org/romeeld/closer/src/default/).
 
 For questions about the code:
@@ -39,7 +39,7 @@ REDSHIFT = float(cfile['simulation_attributes'].attrs['redshift'])
 print('Making UVJ plots for z = '+str(REDSHIFT))
 
 # Read data from pickle file
-data_file = '/home/curro/quenchingSIMBA/code/SH_Project/sup_mandq_results_%s.pkl' % (MODEL)
+data_file = '/home/curro/quenchingSIMBA/code/SH_Project/mandq_results_%s.pkl' % (MODEL)
 obj = open(data_file, 'rb')
 d = pickle.load(obj)
 obj.close()
@@ -48,19 +48,19 @@ def sfr_condition(type, time):
     if type == 'start':
         lsfr = np.log10(1/(time))-9
     elif type == 'end':
-        lsfr  = np.log10(0.04/(time))-9
+        #lsfr  = np.log10(0.04/(time))-9
+        lsfr  = np.log10(0.2/(time))-9
     return lsfr
 
 # Plotting routines
-def uvj_quench(redshift,galaxies,masslimit):
+def sc_quench(redshift,galaxies,masslimit):
     # This function obtains the UVJ colour plot for the galaxies that a given redshift experienced a quenching
     # as determined by the quenchingFinder algorithm. The scatter points are colour coded with the time past 
     # after the last quenching (Fig 1) or the quenching timescale (Fig 2).
 
     # Start by selecting the galaxies in the snapshot that experienced a quenching before and are still quenched
-    U = []
-    V = []
-    J = []
+    sc1 = []
+    sc2 = []
     q_time = []
     sSFR = []
     tau_q = []
@@ -72,9 +72,8 @@ def uvj_quench(redshift,galaxies,masslimit):
     bhar_change = []
     bhm_change = []
     tbt = []
-    U_non = []
-    V_non = []
-    J_non = []
+    sc1_non = []
+    sc2_non = []
     for gal in galaxies:
         mag_z = np.asarray(gal.mags[0].z)
         pos = np.where(mag_z==redshift)
@@ -131,9 +130,8 @@ def uvj_quench(redshift,galaxies,masslimit):
                     possible_q = np.asarray(possible_q)
                     possible_tau = np.asarray(possible_tau)
                     possible_ssfr = np.asarray(possible_ssfr)
-                    U.append(gal.mags[0].Abs[gal.mags[0].z==redshift])
-                    V.append(gal.mags[1].Abs[gal.mags[1].z==redshift])
-                    J.append(gal.mags[2].Abs[gal.mags[2].z==redshift])
+                    sc1.append(gal.scs[0].values[gal.scs[0].z==redshift])
+                    sc2.append(gal.scs[1].values[gal.scs[1].z==redshift])
                     sSFR.append(possible_ssfr[np.argmin(possible_q)])
                     q_time.append(np.amin(possible_q))
                     tau_q.append(possible_tau[np.argmin(possible_q)])
@@ -145,18 +143,12 @@ def uvj_quench(redshift,galaxies,masslimit):
                     mass.append(possible_mass[np.argmin(possible_q)])
                     h2.append(possible_fgas[np.argmin(possible_q)])
                     sSFR_change.append(possible_SFR[np.argmin(possible_q)])
-                    if 0.7 <= (V[-1]-J[-1]) < 0.8 and 1.5 <= (U[-1]-V[-1]) < 1.63:
-                        print('PSB at Caesar ID: '+str(gal.caesar_id[pos2]), 'Progen ID: '+str(gal.progen_id))
-                    elif 1.15 <= (V[-1]-J[-1]) < 1.25 and 1.73 <= (U[-1]-V[-1]) < 1.77:
-                        print('Top quenched at Caesar ID: '+str(gal.caesar_id[pos2]), 'Progen ID: '+str(gal.progen_id))
                 else:
-                    U_non.append(gal.mags[0].Abs[gal.mags[0].z==redshift])
-                    V_non.append(gal.mags[1].Abs[gal.mags[1].z==redshift])
-                    J_non.append(gal.mags[2].Abs[gal.mags[2].z==redshift])
+                    sc1_non.append(gal.scs[0].values[gal.scs[0].z==redshift])
+                    sc2_non.append(gal.scs[1].values[gal.scs[1].z==redshift])
             elif np.log10(gal.m[0][pos2]) >= masslimit:
-                U_non.append(gal.mags[0].Abs[gal.mags[0].z==redshift])
-                V_non.append(gal.mags[1].Abs[gal.mags[1].z==redshift])
-                J_non.append(gal.mags[2].Abs[gal.mags[2].z==redshift])
+                sc1_non.append(gal.scs[0].values[gal.scs[0].z==redshift])
+                sc2_non.append(gal.scs[1].values[gal.scs[1].z==redshift])
     q_time = np.asarray(q_time)
     tau_q = np.asarray(tau_q)
     sSFR = np.asarray(sSFR)
@@ -168,142 +160,162 @@ def uvj_quench(redshift,galaxies,masslimit):
     h2 = np.asarray(h2)
     mass = np.asarray(mass)
     tbt = np.asarray(tbt)
-    U = np.asarray(U)
-    V = np.asarray(V)
-    J = np.asarray(J)
-    x = V - J
-    y = U - V
-    U_non = np.asarray(U_non)
-    V_non = np.asarray(V_non)
-    J_non = np.asarray(J_non)
-    x_non = V_non - J_non
-    y_non = U_non - V_non
+    sc1 = np.asarray(sc1)
+    sc2 = np.asarray(sc2)
+    x = sc1
+    y = sc2
+    sc1_non = np.asarray(sc1_non)
+    sc2_non = np.asarray(sc2_non)
+    x_non = sc1_non
+    y_non = sc2_non
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
-    ax.set_xlabel('V - J', fontsize=16)
-    ax.set_ylabel('U - V', fontsize=16)
-    ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
-    sc = ax.scatter(x,y,c=np.log10(sSFR+1e-14),cmap='plasma',s=8)
+    ax.set_xlabel('SC1', fontsize=16)
+    ax.set_ylabel('SC2', fontsize=16)
+    ax.set_xlim([-50,150])
+    ax.set_ylim([-20, 30])
+    ax.hexbin(x_non, y_non, gridsize=40,bins='log', cmap='Greys')
+    sc = ax.scatter(x,y,c=np.log10(sSFR+1e-14),cmap='plasma',s=13)
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(sSFR)$', fontsize=16)
     fig.tight_layout()
-    fig.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/uv_vj_qssfr_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/sc1_sc2_qssfr_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
-    ax.set_xlabel('V - J', fontsize=16)
-    ax.set_ylabel('U - V', fontsize=16)
-    ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
-    sc = ax.scatter(x,y,c=np.log10(sSFR_change+1e-14),cmap='plasma',s=8)
+    ax.set_xlabel('SC1', fontsize=16)
+    ax.set_ylabel('SC2', fontsize=16)
+    ax.set_xlim([-50,150])
+    ax.set_ylim([-20, 30])
+    ax.hexbin(x_non, y_non, gridsize=40,bins='log', cmap='Greys')
+    sc = ax.scatter(x,y,c=np.log10(sSFR_change+1e-14),cmap='plasma',s=13)
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(\Delta(sSFR))$', fontsize=16)
     fig.tight_layout()
-    fig.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/uv_vj_q_dssfr_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/sc1_sc2_q_dssfr_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
-    ax.set_xlabel('V - J', fontsize=16)
-    ax.set_ylabel('U - V', fontsize=16)
-    ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
-    sc = ax.scatter(x,y,c=h2,cmap='plasma',s=8)
+    ax.set_xlabel('SC1', fontsize=16)
+    ax.set_ylabel('SC2', fontsize=16)
+    ax.set_xlim([-50,150])
+    ax.set_ylim([-20, 30])
+    ax.hexbin(x_non, y_non, gridsize=40,bins='log', cmap='Greys')
+    sc = ax.scatter(x,y,c=h2,cmap='plasma',s=13)
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(f_{H2} (start))$', fontsize=16)
     fig.tight_layout()
-    fig.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/uv_vj_q_h2_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/sc1_sc2_q_h2_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
-    ax.set_xlabel('V - J', fontsize=16)
-    ax.set_ylabel('U - V', fontsize=16)
-    ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
-    sc = ax.scatter(x,y,c=mass,cmap='plasma',s=8)
+    ax.set_xlabel('SC1', fontsize=16)
+    ax.set_ylabel('SC2', fontsize=16)
+    ax.hexbin(x_non, y_non, gridsize=40,bins='log', cmap='Greys')
+    sc = ax.scatter(x,y,c=mass,cmap='plasma',s=13)
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(M_{*} (start))$', fontsize=16)
     fig.tight_layout()
-    fig.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/uv_vj_q_mass_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/sc1_sc2_q_mass_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
-    ax.set_xlabel('V - J', fontsize=16)
-    ax.set_ylabel('U - V', fontsize=16)
-    ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
-    sc = ax.scatter(x,y,c=h2_change,cmap='plasma',s=8)
+    ax.set_xlabel('SC1', fontsize=16)
+    ax.set_ylabel('SC2', fontsize=16)
+    ax.set_xlim([-50,150])
+    ax.set_ylim([-20, 30])
+    ax.hexbin(x_non, y_non, gridsize=40,bins='log', cmap='Greys')
+    sc = ax.scatter(x,y,c=h2_change,cmap='plasma',s=13)
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(\Delta f_{H2})$', fontsize=16)
     fig.tight_layout()
-    fig.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/uv_vj_qh2_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/sc1_sc2_qh2_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
-    ax.set_xlabel('V - J', fontsize=16)
-    ax.set_ylabel('U - V', fontsize=16)
-    ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
-    sc = ax.scatter(x,y,c=h1_change,cmap='plasma',s=8)
+    ax.set_xlabel('SC1', fontsize=16)
+    ax.set_ylabel('SC2', fontsize=16)
+    ax.set_xlim([-50,150])
+    ax.set_ylim([-20, 30])
+    ax.hexbin(x_non, y_non, gridsize=40,bins='log', cmap='Greys')
+    sc = ax.scatter(x,y,c=h1_change,cmap='plasma',s=13)
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(\Delta f_{H1})$', fontsize=16)
     fig.tight_layout()
-    fig.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/uv_vj_qh1_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/sc1_sc2_qh1_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
-    ax.set_xlabel('V - J', fontsize=16)
-    ax.set_ylabel('U - V', fontsize=16)
-    ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
-    sc = ax.scatter(x,y,c=bhar_change,cmap='plasma',s=8)
+    ax.set_xlabel('SC1', fontsize=16)
+    ax.set_ylabel('SC2', fontsize=16)
+    ax.set_xlim([-50,150])
+    ax.set_ylim([-20, 30])
+    ax.hexbin(x_non, y_non, gridsize=40,bins='log', cmap='Greys')
+    sc = ax.scatter(x,y,c=bhar_change,cmap='plasma',s=13)
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(\Delta BHAR)$', fontsize=16)
     fig.tight_layout()
-    fig.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/uv_vj_qbhar_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/sc1_sc2_qbhar_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
-    ax.set_xlabel('V - J', fontsize=16)
-    ax.set_ylabel('U - V', fontsize=16)
-    ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
-    sc = ax.scatter(x,y,c=bhm_change,cmap='plasma',s=8)
+    ax.set_xlabel('SC1', fontsize=16)
+    ax.set_ylabel('SC2', fontsize=16)
+    ax.set_xlim([-50,150])
+    ax.set_ylim([-20, 30])
+    ax.hexbin(x_non, y_non, gridsize=40,bins='log', cmap='Greys')
+    sc = ax.scatter(x,y,c=bhm_change,cmap='plasma',s=13)
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(\Delta M_{BH})$', fontsize=16)
     fig.tight_layout()
-    fig.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/uv_vj_qbhm_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/sc1_sc2_qbhm_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
-    ax.set_xlabel('V - J', fontsize=16)
-    ax.set_ylabel('U - V', fontsize=16)
-    ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
-    ax.scatter(x,y,c=tbt, s=8)
+    ax.set_xlabel('SC1', fontsize=16)
+    ax.set_ylabel('SC2', fontsize=16)
+    ax.set_xlim([-50,150])
+    ax.set_ylim([-20, 30])
+    ax.hexbin(x_non, y_non, gridsize=40,bins='log', cmap='Greys')
+    ax.scatter(x,y,c=tbt, s=13)
     fig.tight_layout()
-    fig.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/uv_vj_qtbt_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/sc1_sc2_qtbt_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
     
     fig = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
-    ax.set_xlabel('V - J', fontsize=16)
-    ax.set_ylabel('U - V', fontsize=16)
-    ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
-    sc = ax.scatter(x,y,c=q_time,cmap='plasma',s=8)
+    ax.set_xlabel('SC1', fontsize=16)
+    ax.set_ylabel('SC2', fontsize=16)
+    ax.set_xlim([-50,150])
+    ax.set_ylim([-20, 30])
+    ax.hexbin(x_non, y_non, gridsize=40,bins='log', cmap='Greys')
+    sc = ax.scatter(x,y,c=q_time,cmap='plasma',s=13)
     cb = fig.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$t_h - t_q$', fontsize=16)
     fig.tight_layout()
-    fig.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/uv_vj_qtime_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/sc1_sc2_qtime_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
    
     fig2 = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig2.add_subplot(1,1,1)
-    ax.set_xlabel('V - J', fontsize=16)
-    ax.set_ylabel('U - V', fontsize=16)
-    ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
-    sc = ax.scatter(x,y,c=np.log10(tau_q),cmap='plasma',s=8)
+    ax.set_xlabel('SC1', fontsize=16)
+    ax.set_ylabel('SC2', fontsize=16)
+    ax.set_xlim([-50,150])
+    ax.set_ylim([-20, 30])
+    ax.hexbin(x_non, y_non, gridsize=40,bins='log', cmap='Greys')
+    sc = ax.scatter(x,y,c=np.log10(tau_q),cmap='plasma',s=13)
     cb = fig2.colorbar(sc, ax=ax, orientation='horizontal')
     cb.set_label(label=r'$\log(\tau_q/t_{H})$', fontsize=16)
     fig2.tight_layout()
-    fig2.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/uv_vj_qscale_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig2.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/sc1_sc2_qscale_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
     
 
     fig3 = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     ax = fig3.add_subplot(1,1,1)
-    ax.set_xlabel('V - J', fontsize=16)
-    ax.set_ylabel('U - V', fontsize=16)
-    ax.hexbin(x_non, y_non, gridsize=50,bins='log', cmap='Greys')
+    ax.set_xlabel('SC1', fontsize=16)
+    ax.set_ylabel('SC2', fontsize=16)
+    ax.set_xlim([-50,150])
+    ax.set_ylim([-20, 30])
+    ax.hexbin(x_non, y_non, gridsize=40,bins='log', cmap='Greys')
     x = ma.array(x)
     y = ma.array(y)
     tau_q = ma.array(tau_q)
@@ -311,41 +323,11 @@ def uvj_quench(redshift,galaxies,masslimit):
     y_fast = ma.masked_where(tau_q>=10**(-1.5),y)
     x_slow = ma.masked_where(tau_q<10**(-1.5),x)
     y_slow = ma.masked_where(tau_q<10**(-1.5),y)
-    ax.scatter(x_slow,y_slow,s=8, c = 'b', label='Slow quenching')
-    ax.scatter(x_fast,y_fast,s=8, c = 'r', label='Fast quenching')
+    ax.scatter(x_slow,y_slow,s=13, c = 'b', label='Slow quenching')
+    ax.scatter(x_fast,y_fast,s=13, c = 'r', label='Fast quenching')
     ax.legend(loc='best')
     fig3.tight_layout()
-    fig3.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/uv_vj_qsf_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
+    fig3.savefig('../color_plots/'+str(MODEL)+'/snap_'+str(SNAP)+'/sc1_sc2_qsf_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
 
+sc_quench(REDSHIFT,d['galaxies'],MASSLIMIT)
 
-def uvj_plot(redshift,galaxies,masslimit):
-
-    x = []
-    y = []
-    counter = 0
-    for gal in galaxies:
-        mag_z = np.asarray(gal.mags[0].z)
-        pos = np.where(mag_z==redshift)
-        pos2 = np.where(gal.z==redshift)
-        mag0 = np.asarray(gal.mags[0].Abs)
-        if mag0[pos] and gal.t[0][pos2] and np.log10(gal.m[0][pos2])>=masslimit:
-            U = gal.mags[0].Abs[gal.mags[0].z==redshift]
-            V = gal.mags[1].Abs[gal.mags[1].z==redshift]
-            J = gal.mags[2].Abs[gal.mags[2].z==redshift] 
-            x.append(V - J)
-            y.append(U - V)
-            counter = counter + 1
-    print(counter)
-    x = np.asarray(x)
-    y = np.asarray(y)
-    fig3 = plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
-    ax = fig3.add_subplot(1,1,1)
-    ax.set_xlabel('V - J', fontsize=16)
-    ax.set_ylabel('U - V', fontsize=16)
-    ax.hexbin(x, y, gridsize=50,bins='log', cmap='Greys')
-    fig3.tight_layout()
-    fig3.savefig('../color_plots/'+str(MODEL)+'/uv_vj_hexbin_'+str(SNAP)+'.png',format='png', dpi=250, bbox_inches='tight')
-
-uvj_quench(REDSHIFT,d['galaxies'],MASSLIMIT)
-
-#uvj_plot(REDSHIFT,d['galaxies'],MASSLIMIT)

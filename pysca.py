@@ -25,10 +25,11 @@ import multiprocessing
 
 #Set the number of processors to use. It can be defined passing an argument through 
 #the command line or taking the maximum number of cpus available in the system.
-if len(sys.argv) > 1:
-    num_proc = int(sys.argv[1])
-else:
-    num_proc = multiprocessing.cpu_count()
+# if len(sys.argv) > 1:
+#     num_proc = int(sys.argv[1])
+# else:
+#     num_proc = multiprocessing.cpu_count()
+num_proc = multiprocessing.cpu_count()
 
 ## CONSTANTS
 c_in_AA = 2.99792*(10**18)
@@ -111,15 +112,25 @@ def data_from_closer(ph_file, n_bands, mag_lim, ind_filt, ind_select):
             Lapp.append(Lapp_old[i])
     Lapp = np.asarray(Lapp)
     Lapp_err = np.full((len(Lapp),n_bands),0.01) # Create array with magnitude errors
-
     flux = mag_to_jansky(Lapp)
     flux_err = flux - mag_to_jansky(Lapp + Lapp_err)
+    ind_ignore = np.where(Lapp==0)
+    for i in range(0,len(ind_ignore[0])):
+        a = ind_ignore[0][i]
+        b = ind_ignore[1][i]
+        flux[a,b] = 0.0
+        flux_err[a,b] = 0.0
 
     # Adding error floors due to systematic errors in filters
-    irac_bands = [9,10]
-    flux_err = flux_err + 0.05*flux # 0.05 for all
+    irac_bands = [11,12]
+    for i in range(0,flux_err.shape[0]):
+        for j in range(0,flux_err.shape[1]):
+            if flux_err[i,j] < 0.05*flux[i,j]:
+                flux_err[i,j] = 0.05*flux[i,j]
     for i in range(0, len(irac_bands)):
-        flux_err[:,irac_bands[i]] = flux_err[:,irac_bands[i]] + 0.2*flux[:,irac_bands[i]] # 0.2 for the IRAC bands
+        for j in range(0,flux_err.shape[0]):
+            if flux_err[j,irac_bands[i]] < 0.2*flux[j,irac_bands[i]]:
+                flux_err[j,irac_bands[i]] = 0.2*flux[j,irac_bands[i]] # 0.2 for the IRAC bands
 
     # Create array with redshifts
     z = np.full(Lapp.shape[0], redshift)
@@ -127,10 +138,9 @@ def data_from_closer(ph_file, n_bands, mag_lim, ind_filt, ind_select):
     # Get magnitude of selection filter
     Kmag = Lapp[:,ind_select]
 
-    return caesar_id, flux, flux_err, z, Kmag
-    #return np.array([caesar_id[0]]), np.array([flux[0]]), np.array([flux_err[0]]), np.array([z[0]]), np.array([Kmag[0]])
+    return caesar_id, flux, flux_err, z, Kmags
 
-def data_from_pyloser(loser_file, n_bands, mag_lim, ind_filt, ind_select):
+def data_from_pyloser(loser_file, n_bands, mag_lim, ind_filt, ind_select, redshift):
     '''
     This routine reads in the selected apparent magnitudes from the SIMBA loser
     files in order to:
@@ -143,10 +153,14 @@ def data_from_pyloser(loser_file, n_bands, mag_lim, ind_filt, ind_select):
     '''
     f = h5py.File(loser_file,'r') # Read in .hdf5 file with photometry catalogue
     caesar_id = f['iobjs'][:]
-    redshift = 0.5 # Get redshift of snapshot
     Lapp_old = np.zeros((len(caesar_id),n_bands))
+    
+    # The array ind holds the selected filters indexes from the loser catalogue which match
+    # the filters used for the eigensystem. MAKE SURE THEY ARE EXACTLY THE SAME
+
     #ind = [34,35,36,37,38,39,40,41,42,17,18]
-    ind = [1,3,4,5,6,7,8,9,10,11,12]
+    #ind = [1,3,4,5,6,7,8,9,10,11,12]
+    ind = [22,23,25,26,27,28,10,11,12,13,14]
     # Apparent magnitudes of galaxies in each desired band
     for (i,i_filt) in zip(ind, ind_filt):
         Lapp_old[:,i_filt] = f['mymags'][:,i] # Save mags for the selected filters
@@ -221,7 +235,7 @@ def fill_flux(args):
 
     return fluxarr
 
-def superflux(minz, manz, dz, ind, wave, flux, flux_err, z, ll_eff):
+def superflux(minz, maxz, dz, ind, wave, flux, flux_err, z, ll_eff,p_workers):
     '''
     Calculate rest-frame f_lambda and put into correct PCA supergrid
     '''
@@ -243,97 +257,6 @@ def superflux(minz, manz, dz, ind, wave, flux, flux_err, z, ll_eff):
 
 
     return flux_super, flux_super_err
-
-def curro_normgappy(data,error,espec,mean,cov=False,verbose=False):
-
-    # Sanity checks
-    if np.size(data) == 0 or np.size(error) == 0 or np.size(espec) == 0 or np.size(mean) == 0:
-        print('ERROR: incorrect inputs')
-
-    tmp = np.shape(espec)  # number of eigenvectors
-    if np.size(tmp) == 2:
-        nrecon = tmp[0]
-    else:
-        nrecon = 1
-    nbin = np.shape(espec)[-1]  # number of data points
-    tmp = np.shape(data)  # number of observations to project
-    if np.size(tmp) == 2:
-        ngal = tmp[0]
-    else:
-        ngal = 1
-    
-    # Dimension mismatch check
-    if np.shape(data)[-1] != nbin:
-        print(
-            '[pca_normgappy] ERROR: "data" must have the same dimension as eigenvectors'
-        )
-        return None
-    if np.shape(error)[-1] != nbin:
-        print(
-            '[pca_normgappy] ERROR: "error" must have the same dimension as eigenvectors'
-        )
-        return None
-    if np.shape(mean)[0] != nbin:
-        print(
-            '[pca_normgappy] ERROR: "mean" must have the same dimension as eigenvectors'
-        )
-        return None
-    
-    # Project each galaxy in turn
-    pcs = np.zeros((ngal, nrecon), float)
-    norm = np.zeros(ngal, float)
-    if cov is not None:
-        ccov = np.zeros((ngal, nrecon, nrecon))
-
-    if ngal == 1:
-        data = data[np.newaxis, :]
-        error = error[np.newaxis, :]
-    
-    for j in range(0,ngal):
-        if verbose:
-            print('STATUS: processing spectrum')
-        # Calculate weighting array from error array, but if all bins have
-        # error=0, pass to the next spectrum
-        weight = np.zeros(nbin)
-        ind = error[j, :].nonzero()[0]
-        if np.size(ind) != 0:
-            weight[ind] = 1. / (error[j, :][ind]**2)
-        else:
-            continue
-        data_j = data[j,:] # Spectrum data for jth galaxy
-        
-        # Solve partial chi^2/partial N = 0
-        F_mu = np.sum(weight*data_j*mean)
-        M = np.sum(weight*mean*mean)
-        E_i = np.sum((weight * mean) * espec, axis=1)
-
-        M_ik = np.dot((weight*espec), espec.T)
-        F_k = np.dot((data_j*weight), espec.T)
-        E_big = np.repeat(E_i[np.newaxis, :], nrecon, axis=0)
-        F_big = np.repeat(F_k[:, np.newaxis], nrecon, axis=1)
-        M_ik_new = M_ik*F_mu - E_big*F_big
-        F_new = M*F_k - F_mu*E_i
-        
-        try:
-            Minv = np.linalg.inv(M_ik_new)
-        except:
-            if verbose:
-                print('STATUS: problem with matrix inversion (setting pcs=0)')
-            continue
-        
-        pcs[j, :] = np.squeeze(np.sum(F_new * Minv, 1))
-        norm[j] = F_mu / (M + np.sum(pcs[j, :] * E_i))
-
-        # Calculate covariance matrix (eq. 6 [1])
-        if cov is True:
-            M_gappy = np.dot((espec * (weight * norm[j]**2)), espec.T)
-            ccov[j, :, :] = np.linalg.inv(M_gappy)
-
-        if cov is True:
-            return pcs, norm, ccov
-        else:
-            return pcs, norm
-
 
 def norm_gappy(args):
     # Unpack the arguments of the function
@@ -401,7 +324,13 @@ def norm_gappy(args):
     else:
         return pcs, norm
 
-def parall_normgappy(data, error, espec, mean, cov=False,verbose=False):
+def parall_normgappy(data, error, espec, mean,p_workers, cov=False,verbose=False):
+    '''
+    This is the main code for Super Color Analysis: the spectrum vectors of the
+    galaxies are projected onto the eigenbasis and normalized.
+
+    Based on the original code in IDL by Vivienne Wild.
+    '''
 
     # Sanity checks
     if (np.size(data) == 0) | (np.size(error) == 0) | (np.size(espec) == 0) | (
@@ -475,207 +404,11 @@ def parall_normgappy(data, error, espec, mean, cov=False,verbose=False):
         return pcs, norm, ccov
     else:
         return pcs, norm
-
-def normgappy(data, error, espec, mean, cov=False, \
-                reconstruct=False, verbose=False):
-    """
-    Performs robust PCA projection, including normalization estimation.
-    Parameters
-    ----------
-    data : ndarray
-        1D spectrum or 2D specta with 'float' type.
-    error : ndarray
-        1D or 2D corresponding 1-sigma error array. Zeros indicate masked data.
-    espec : ndarray
-        2D array of eigenspectra, possibly truncated in dimension.
-    mean : ndarray
-        1D mean spectrum of the eigenspectra.
-    cov: bool, optional
-        Return covariance matrix.
-        Default is ''False''.
-    reconstruct : bool, optional
-        Fill in missing values with PCA estimation.
-        Default is ''False''.
-    verbose : bool, optional
-        Enable for status and debug messages.
-        Default is ''False''
-    Returns
-    -------
-    pcs : ndrray
-        1D or 2D array of Principal Components with 'float' type.
-    norm: float or ndarray
-        Normalization estimates.
-    data : ndrray
-        If reconstruct enabled, 1D or 2D reconstructed spectra.
-    ccov : ndarray
-        If cov enabled, 2D or 3D covariance matrices.
-    """
-
-    # Sanity checks
-    if (np.size(data) == 0) | (np.size(error) == 0) | (np.size(espec) == 0) | (
-            np.size(mean) == 0):
-        print('[pca_normgappy] ERROR: incorrect input lengths')
-        return None
-
-    tmp = np.shape(espec)  # number of eigenvectors
-    if np.size(tmp) == 2:
-        nrecon = tmp[0]
-    else:
-        nrecon = 1
-    nbin = np.shape(espec)[-1]  # number of data points
-    tmp = np.shape(data)  # number of observations to project
-    if np.size(tmp) == 2:
-        ngal = tmp[0]
-    else:
-        ngal = 1
-
-    # Dimension mismatch check
-    if np.shape(data)[-1] != nbin:
-        print(
-            '[pca_normgappy] ERROR: "data" must have the same dimension as eigenvectors'
-        )
-        return None
-    if np.shape(error)[-1] != nbin:
-        print(
-            '[pca_normgappy] ERROR: "error" must have the same dimension as eigenvectors'
-        )
-        return None
-    if np.shape(mean)[0] != nbin:
-        print(
-            '[pca_normgappy] ERROR: "mean" must have the same dimension as eigenvectors'
-        )
-        return None
-
-    # Project each galaxy in turn
-    pcs = np.zeros((ngal, nrecon), float)
-    norm = np.zeros(ngal, float)
-    if cov is not None:
-        ccov = np.zeros((ngal, nrecon, nrecon))
-
-    if ngal == 1:
-        data = data[np.newaxis, :]
-        error = error[np.newaxis, :]
-
-    for j in np.arange(0, ngal):
-
-        if verbose:
-            print('[pca_normgappy] STATUS: processing spectrum ')
-
-        # Calculate weighting array from 1-sig error array
-        # ! if all bins have error=0 continue to next spectrum
-        weight = np.zeros(nbin)
-        ind = error[j, :].nonzero()[0]
-        if np.size(ind) != 0:
-            try:
-                weight[ind] = 1. / (error[j, :][ind]**2)
-            except:
-                if verbose:
-                    print(
-                        '[pca_normgappy] ERROR: error array problem in spectrum (setting pcs=0)'
-                    )
-                continue
-
-        ind = np.where(np.isfinite(weight) is False)[0]
-        if np.size(ind) != 0:
-            if verbose:
-                print(
-                    '[pca_normgappy] ERROR: error array problem in spectrum (setting pcs=0)'
-                )
-            continue
-
-        data_j = data[j, :]
-
-        # Solve partial chi^2/partial N = 0
-        Fpr = np.sum(weight * data_j * mean)  # eq 4 [2]
-        Mpr = np.sum(weight * mean * mean)  # eq 5 [2]
-        E = np.sum((weight * mean) * espec, axis=1)  # eq 6 [2]
-
-        # Calculate the weighted eigenvectors, multiplied by the eigenvectors (eq. 4-5 [1])
-
-        if nrecon > 1:
-            # CONSERVED MEMORY NOT IMPLEMETED
-            espec_big = np.repeat(espec[:, np.newaxis, :], nrecon, axis=1)
-            M = np.sum(weight * np.transpose(espec_big, (1, 0, 2)) * espec_big, 2)
-
-            # Calculate the weighted data array, multiplied by the eigenvectors (eq. 4-5 [1])
-            F = np.dot((data_j * weight), espec.T)
-
-            # Calculate new M matrix, this time accounting for the unknown normalization (eq. 11 [2])
-            E_big = np.repeat(E[np.newaxis, :], nrecon, axis=0)
-            F_big = np.repeat(F[:, np.newaxis], nrecon, axis=1)
-            Mnew = Fpr * M - E_big * F_big
-
-            # Calculate the new F matrix, accounting for unknown normalization
-            Fnew = Mpr * F - Fpr * E
-
-            # Solve for Principle Component Amplitudes (eq. 5 [1])
-            try:
-                Minv = np.linalg.inv(Mnew)
-            except:
-                if verbose:
-                    print(
-                        '[pca_normgappy] STATUS: problem with matrix inversion (setting pcs=0)'
-                    )
-
-                continue
-
-            pcs[j, :] = np.squeeze(np.sum(Fnew * Minv, 1))
-            norm[j] = Fpr / (Mpr + np.sum(pcs[j, :] * E))
-
-            # Calculate covariance matrix (eq. 6 [1])
-            if cov is True:
-                M_gappy = np.dot((espec * (weight * norm[j]**2)), espec.T)
-                ccov[j, :, :] = np.linalg.inv(M_gappy)
-
-        else:  # if only one eigenvector
-            M = np.sum(weight * espec * espec)
-            F = np.sum(weight * data_j * espec)
-            Mnew = M * Fpr - E * F
-            Fnew = Mpr * F - E * Fpr
-            pcs[j, 0] = Fnew / Mnew
-            norm[j] = Fpr / (Mpr + pcs[j, 0] * E)
-            if cov is True:
-                ccov[j, 0, 0] = np.sum((1. / weight) * espec * espec)
-
-        # If reconstruction of data array required,
-        #   fill in regions with weight = 0 with PCA reconstruction
-        if reconstruct is True:
-            bad_pix = np.where(weight == 0.)
-            count = np.size(bad_pix)
-            if count == 0:
-                continue
-
-            rreconstruct = np.sum((pcs[j, :] * espec[:, bad_pix].T).T, 0)
-            rreconstruct += mean[bad_pix]
-            data[j, bad_pix] = reconstruct
-
-    if ngal == 1:
-        pcs = pcs[0]
-        data = data[0]
-        norm = norm[0]
-        if cov:
-            ccov = ccov[0]
-
-    # Report to user
-    # if verbose:
-    #     print("[pca_normgappy] STATUS: Results...")
-    #     for i, pc in enumerate(pcs):
-    #         print(f"               PCA{i+1}: {pc:2.5f}")
-    #     print(f"               Norm: {norm:2.5f}")
-
-    # Return
-    if reconstruct is True:
-        if cov is True:
-            return pcs, norm, data, ccov
-        else:
-            return pcs, norm, data
-
-    elif cov is True:
-        return pcs, norm, ccov
-    else:
-        return pcs, norm
-
-def SC1_vs_SC2_scatter(pc_data,snap):
+        
+def SC1_vs_SC2_scatter(pc_data,snap,lines):
+    '''
+    Example code that uses the SC1 and SC2 amplitudes to make a scatter plot.
+    '''
 
     x = pc_data[:,0] #SC1
     y = pc_data[:,1] #SC2
@@ -685,30 +418,188 @@ def SC1_vs_SC2_scatter(pc_data,snap):
     ax.set_ylabel('SC 2', fontsize=16)
     ax.set_xlabel('SC 1', fontsize=16)
     ax.scatter(x,y, s=10)
+
+    # Set classification lines in SC diagram
+    x_red = np.linspace(1.0,25.0,25) - 35.
+    y_red = lines['red_sl']*x_red+lines['red_int']     
+    ax.plot(x_red, y_red, 'k-')
+        
+    x_psb = np.linspace(1.0,40.0,40) - 10.
+    y_psb = lines['psb_sl']*x_psb+lines['psb_int']
+    ax.plot(x_psb,y_psb)
+
+    x_dusty = np.linspace(1.0,25.0,25) - 35.
+    y_dusty = lines['dusty_sl']*x_dusty+lines['dusty_int']
+    ax.plot(x_dusty,y_dusty)
+
+    x_psb2 = np.linspace(1.0,25.0,25) - 25.
+    y_psb2 = lines['psb2_sl']*x_psb2+lines['psb2_int']
+    ax.plot(x_psb2, y_psb2)
+
+
     ax.set_xlim([-50,150])
     ax.set_ylim([-20, 30])
     fig.tight_layout()
     fig.savefig('../color_plots/sc1_vs_sc2_'+str(snap)+'.png',
                     format='png', dpi=250, bbox_inches='tight')
 
-wave,spec,mean,var,ind,minz,maxz,dz,filternames,ll_eff = read_eigensystem('../VWSC_simba/EBASIS/VWSC_eigenbasis_0p5z3_wavemin2500.fits', '../VWSC_simba/FILTERS/vwsc_uds.lis')
-ind_filt = [0,1,2,3,4,5,6,7,8,11,12]
-n_bands = len(ll_eff)
-caesar_id, flux, flux_err, z, Kmag = data_from_pyloser('../VWSC_simba/CATS/simba/loserpsb_m50n512_125.hdf5', n_bands, 24.5, ind_filt, 8)
+def point_seg_distance(point, seg_start, seg_end, interval=True):
+    '''
+    Simple code that obtains the geometric distance between a point and a segment.
+    If the point is outside of the interval spanned by the segment, the distance
+    to the closest point is returned.
+    '''
 
-#Let's create a pool of workers, that is a set of processes that we can use to handle computation.
-p_workers = multiprocessing.Pool(num_proc)
+    lv = seg_start - seg_end
+    l = np.sqrt(np.dot(lv,lv))
 
-ll_obs = ll_eff[ind_filt]
+    lv = lv/l 
+    t = - (-np.dot(lv,point) + np.dot(seg_start,lv))/(np.dot(lv,lv))
+    pl = t * lv + seg_start
+    out = t < 0 or t > l
 
-flux_super, flux_super_err = superflux(minz, maxz, dz, ind, wave, flux, flux_err, z, ll_eff)
-# print(flux_super[0])
-# print(flux_super_err[0])
+    if interval and out:
+        d1 = np.sqrt(np.sum((point-seg_start)**2))
+        d2 = np.sqrt(np.sum((point-seg_end)**2))
+        ans = np.amin(np.array([d1,d2]))
+        if point[0] < pl[0]:
+            ans = - ans 
+    else:
+        ans = np.sqrt(np.sum((point-pl)**2))
+        if point[0] < pl[0]:
+            ans = - ans
+    return ans,pl[0]
 
-# pcs, norm = normgappy(flux_super,flux_super_err,spec,mean)
 
-pcs, norm = parall_normgappy(flux_super,flux_super_err,spec,mean)
+def SC_classification(pcs, lines, plot=True):
 
-pcs = np.asarray(pcs)
+    '''
 
-SC1_vs_SC2_scatter(pcs,125)
+    NOT USE!! Delimitation lines are still not properly adjusted. Will be corrected in future versions.
+
+    This code provides a classification of the continuum distribution of SC of 
+    a set of galaxies. It depends on the eigenbasis used, so make sure you're using
+    the right one for the input set in read_eigensystem.
+
+    The original code was written in IDL by Vivienne Wild.
+
+    pcs == array containing the SC amplitudes for the galaxies
+    lines == dictionary containing the set of intercepts and slope of the lines that
+                subdivide the disttribution.
+            An example of the format would be like this:
+            {'red_sl':0.783, 'red_int':14.83, 'psb_sl':0.4,'psb_int':10.86, 'psb2_sl':-0.34,'psb2_int':3.19,
+                'dusty_sl':-0.2, 'dusty_int':-13.75,'lomet_pc3lo':3.5, 'lomet_sl':0, 'lomet_pc1hi':10, 'green_cut':0, 'dust_cut':-20 }
+    plot == plot SC1 vs SC2 diagram with the classification overimposed. Default is True.
+    '''
+    ngal = pcs.shape[0]
+    pcs = np.asarray(pcs)
+
+    # Set classification lines in SC diagram
+    x_red = np.linspace(1.0,25.0,25) - 35.
+    y_red = lines['red_sl']*x_red+lines['red_int']     
+        
+    x_psb = np.linspace(1.0,40.0,40) - 10.
+    y_psb = lines['psb_sl']*x_psb+lines['psb_int']
+
+    x_dusty = np.linspace(1.0,25.0,25) - 35.
+    y_dusty = lines['dusty_sl']*x_dusty+lines['dusty_int']
+
+    x_psb2 = np.linspace(1.0,25.0,25) - 25.
+    y_psb2 = lines['psb2_sl']*x_psb2+lines['psb2_int']
+
+    # Distance from and along PSB line
+    dist_psb = np.zeros(ngal)
+    xy_psb = np.zeros(ngal)
+    seg_start = np.array([min(x_psb),min(y_psb)])
+    seg_end = np.array([max(x_psb),max(y_psb)])
+    for i in range(0, ngal):
+        dist_psb[i],xy_psb[i] = point_seg_distance(pcs[i][0:2],seg_start,seg_end)
+
+    # Distance from and along red line
+    dist_red = np.zeros(ngal)
+    xy_red = np.zeros(ngal)
+    seg_start = np.array([min(x_red),min(y_red)])
+    seg_end = np.array([max(x_red),max(y_red)])
+    for i in range(0, ngal):
+        dist_red[i],xy_red[i] = point_seg_distance(pcs[i][0:2],seg_start,seg_end)
+
+    # Distance from and along dusty line
+    dist_dusty = np.zeros(ngal)
+    xy_dusty = np.zeros(ngal)
+    seg_start = np.array([x_dusty[0],y_dusty[0]])
+    seg_end = np.array([x_dusty[24],y_dusty[24]])
+    for i in range(0, ngal):
+        dist_dusty[i],xy_dusty[i] = point_seg_distance(pcs[i][0:2],seg_start,seg_end)
+
+    # Distance from and along PSB 2 line
+    dist_psb2 = np.zeros(ngal)
+    xy_psb2 = np.zeros(ngal)
+    seg_start = np.array([x_psb2[0],y_psb2[0]])
+    seg_end = np.array([x_psb2[24],y_psb2[24]])
+    for i in range(0, ngal):
+        dist_psb2[i],xy_psb2[i] = point_seg_distance(pcs[i][0:2],seg_start,seg_end)
+
+    # Find Red Sequence
+    ind_red  = np.where(dist_red < 0. and dist_dusty > 0. and dist_psb2 < 0.)
+    ind_dusty = np.where(pcs[:,0] < lines['dust_cut'] and dist_dusty < 0.)
+    ind_dusty = np.isin(ind_dusty, ind_red)
+    ind_psb = np.where(dist_psb < 0. and dist_psb2 > 0.)
+
+    # Find Blue Cloud
+    ind_sf3 = np.where(pcs[:,0] < lines['green_cut'])
+    ind_sf3 = np.isin(ind_sf3, ind_dusty)
+    ind_sf3 = np.isin(ind_sf3, ind_red)
+    ind_sf3 = np.isin(ind_sf3, ind_psb)
+
+    ind_sf1 = np.where(pcs[:,0] > lines['sb_cut'])
+    ind_sf1 = np.isin(ind_sf1, ind_psb)
+    ind_sf1 = np.isin(ind_sf1, ind_dusty)
+
+    ind_sf2 = np.where(pcs[:,0] >= lines['green_cut'] and pcs[:,0] <= lines['sb_cut'])
+    ind_sf2 = np.isin(ind_sf2, ind_dusty)
+    ind_sf2 = np.isin(ind_sf2, ind_psb)
+    ind_sf2 = np.isin(ind_sf2, ind_red)
+
+    lometint = lines['lomet_pc3lo']
+    lometsl = lines['lomet_sl']
+
+    # Find Low Metallicity
+    ind_lomet = np.where(pcs[:,2] > lometsl*pcs[:,0]+lometint)
+    ind_lomet = np.isin(ind_lomet, ind_sf3)
+    ind_lomet = np.isin(ind_lomet, ind_sf2)
+    ind_lomet = np.isin(ind_lomet, ind_sf1)
+    ind_lomet = np.isin(ind_lomet, ind_dusty)
+
+    ind_red = np.isin(ind_red, ind_lomet)
+    ind_psb = np.isin(ind_psb, ind_lomet)
+    ind_dusty = np.isin(ind_dusty, ind_lomet)
+
+    # Get rind of the rubbish
+    #ind_junk = np.where(pcs[:,0]==0.)
+
+
+def main(lfile, caesar_redshift):
+    '''
+    Main routine for the parallelization of the SCA code for a given loser catologue file.
+
+    Make sure the paths to the eigenbasys and filters are correct.
+    '''
+    wave,spec,mean,var,ind,minz,maxz,dz,filternames,ll_eff = read_eigensystem('/home/curro/quenchingSIMBA/code/photo/VWSC_simba/EBASIS/VWSC_eigenbasis_0p5z3_wavemin2500.fits', '/home/curro/quenchingSIMBA/code/photo/VWSC_simba/FILTERS/vwsc_uds.lis')
+    ind_filt = [0,1,2,3,4,5,6,7,8,11,12]
+    n_bands = len(ll_eff)
+    caesar_id, flux, flux_err, z, Kmag = data_from_pyloser(lfile, n_bands, 300, ind_filt, 8, caesar_redshift)
+    
+    #Let's create a pool of workers, that is a set of processes that we can use to handle computation.
+    p_workers = multiprocessing.Pool(num_proc)
+    
+    ll_obs = ll_eff[ind_filt]
+
+    flux_super, flux_super_err = superflux(minz, maxz, dz, ind, wave, flux, flux_err, z, ll_eff,p_workers)
+    # Usually, limiting the analysis to thw first three eigenspectra is sufficient to hold the majority
+    # of the population variability.
+    pcs, norm = parall_normgappy(flux_super/(10**5),flux_super_err/(10**5),spec[0:3,:],mean,p_workers)
+
+    pcs = np.asarray(pcs)
+
+    return pcs
+
