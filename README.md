@@ -29,6 +29,5 @@ Eigensystems
 ============
 
 The eigensystem used for the testing of these codes was made by Viviene Wild using a super-sampled grid of broad-band fluxes, 
-shifted by dz=0.01 for 0.5 < z < 3.0. The arrays are then chopped to ensure there are no rest-frame wavelengths < minwave=2500AA and 
-> maxwave = 15000AA. If you would like to use this for your analysis, please contact me (s1650043@ed.ac.uk) or Vivienne Wild (vw8@st-andrews.ac.uk)
+shifted by dz=0.01 for 0.5 < z < 3.0. The arrays are then chopped to ensure there are no rest-frame wavelengths < minwave=2500AA and > maxwave = 15000AA. If you would like to use this for your analysis, please contact me (s1650043@ed.ac.uk) or Vivienne Wild (vw8@st-andrews.ac.uk)
 for permission.
